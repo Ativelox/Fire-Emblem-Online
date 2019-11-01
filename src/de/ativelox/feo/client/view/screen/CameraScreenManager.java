@@ -16,6 +16,8 @@ import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.map.Map;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.Display;
+import de.ativelox.feo.client.view.screen.editor.IMapEditorScreen;
+import de.ativelox.feo.client.view.screen.editor.IMapEditorUIScreen;
 import de.ativelox.feo.client.view.screen.editor.MapEditorScreen;
 import de.ativelox.feo.client.view.screen.editor.MapEditorUIScreen;
 import de.ativelox.feo.logging.ELogType;
@@ -139,8 +141,8 @@ public class CameraScreenManager implements IScreenManager {
 
         switch (screen) {
         case MAP_EDITOR_SCREEN:
-            MapEditorScreen editorScreen = new MapEditorScreen();
-            MapEditorUIScreen editorUIScreen = new MapEditorUIScreen();
+            IMapEditorScreen editorScreen = new MapEditorScreen();
+            IMapEditorUIScreen editorUIScreen = new MapEditorUIScreen();
             new MapEditorController(this, mInputManager, mDisplay, editorScreen, editorUIScreen);
             this.addScreen(editorScreen);
             this.addScreen(editorUIScreen);
@@ -149,7 +151,7 @@ public class CameraScreenManager implements IScreenManager {
         case GAME_SCREEN:
             Map map = new Map("ch0.map", 0, 0);
             mCamera.setBounds(map);
-            GameScreen gameScreen = new GameScreen(map);
+            IGameScreen gameScreen = new GameScreen(map);
             new GameController(this, mInputManager, gameScreen, new DefaultPlayerBehavior());
             this.addScreen(gameScreen);
             break;

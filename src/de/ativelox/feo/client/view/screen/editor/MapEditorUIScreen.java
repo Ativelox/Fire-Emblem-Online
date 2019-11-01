@@ -16,13 +16,12 @@ import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.screen.EScreen;
-import de.ativelox.feo.client.view.screen.IScreen;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
  *
  */
-public class MapEditorUIScreen implements IScreen, IRequireResources {
+public class MapEditorUIScreen implements IMapEditorUIScreen, IRequireResources {
 
     private List<ISpatial> mBorders;
 
@@ -58,11 +57,6 @@ public class MapEditorUIScreen implements IScreen, IRequireResources {
         if (mStatTile == null || mFormattedAvoidance == null) {
             return;
         }
-
-//        g.drawString(mFont, Color.black, "Cost: " + mCost, 5, mFont.getSize());
-//        g.drawString(mFont, Color.black, "Avoidance: " + mAvoidance, 5, mFont.getSize() * 2);
-//        g.drawString(mFont, Color.black, "Healing: " + mHealing, 5, mFont.getSize() * 3);
-//        g.drawString(mFont, Color.black, "Id: " + mId, 5, mFont.getSize() * 4);
 
         g.drawImage(mFormattedCost, 0, 0,
                 (int) ((3 / 2f) * mFormattedCost.getWidth(null) / Display.INTERNAL_RES_FACTOR),
@@ -106,14 +100,17 @@ public class MapEditorUIScreen implements IScreen, IRequireResources {
 
     }
 
+    @Override
     public void startRenderingBorder(ISpatial spatial) {
         mBorders.add(spatial);
     }
 
+    @Override
     public void stopRenderingBorder(ISpatial spatial) {
         mBorders.remove(spatial);
     }
 
+    @Override
     public void startDisplayingStats(ITile tile) {
         mStatTile = tile;
         mCost = "Cost: " + mStatTile.getCost() + "";
@@ -124,10 +121,12 @@ public class MapEditorUIScreen implements IScreen, IRequireResources {
         mAdd = true;
     }
 
+    @Override
     public void stopDisplayingStats(ITile tile) {
         mRemove = true;
     }
 
+    @Override
     public void setController(MapEditorController controller) {
         mController = controller;
     }

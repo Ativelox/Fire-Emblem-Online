@@ -30,7 +30,7 @@ import de.ativelox.feo.client.view.element.generic.ImageElement;
  *
  */
 public class GameScreen extends InputReceiver
-        implements IScreen, IRequireResources, ISelectionListener, IMoveFinishedListener {
+        implements IGameScreen, IRequireResources, ISelectionListener, IMoveFinishedListener {
 
     private final Map mMap;
 
@@ -58,6 +58,7 @@ public class GameScreen extends InputReceiver
         mSelectionRoutine = new UnitSelectionRoutine(mSelectionCursor, map);
     }
 
+    @Override
     public void setController(final GameController gc) {
         mController = gc;
     }
@@ -141,11 +142,13 @@ public class GameScreen extends InputReceiver
 
     }
 
+    @Override
     public void displayUnitWindow(IUnit unit) {
         mUnitDisplayPlaceholder = new ImageElement(unit.getX() + unit.getWidth(), unit.getY() - unit.getHeight(),
                 50 * Display.INTERNAL_RES_FACTOR, 10 * Display.INTERNAL_RES_FACTOR, false, EResource.MENU_BUTTON);
     }
 
+    @Override
     public void removeUnitWindow(IUnit unit) {
         mUnitDisplayPlaceholder = null;
     }

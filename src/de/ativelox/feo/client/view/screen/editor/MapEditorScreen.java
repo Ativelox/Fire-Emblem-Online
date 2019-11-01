@@ -4,9 +4,7 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,9 +21,6 @@ import de.ativelox.feo.client.model.property.EClickType;
 import de.ativelox.feo.client.model.property.IClickable;
 import de.ativelox.feo.client.model.property.IHoverable;
 import de.ativelox.feo.client.model.property.IRequireResources;
-import de.ativelox.feo.client.model.property.callback.IClickListener;
-import de.ativelox.feo.client.model.property.callback.IHoverListener;
-import de.ativelox.feo.client.model.property.callback.IRelativeMouseMoveListener;
 import de.ativelox.feo.client.model.util.MouseButtonMapper;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.Display;
@@ -36,14 +31,12 @@ import de.ativelox.feo.client.view.element.specific.GridPanel;
 import de.ativelox.feo.client.view.element.specific.IntegerField;
 import de.ativelox.feo.client.view.element.specific.UpdatingHorizontallyAlignedPanel;
 import de.ativelox.feo.client.view.screen.EScreen;
-import de.ativelox.feo.client.view.screen.IScreen;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
  *
  */
-public class MapEditorScreen implements IScreen, IRelativeMouseMoveListener, IHoverListener, KeyListener, MouseListener,
-        IClickListener, IRequireResources {
+public class MapEditorScreen implements IMapEditorScreen, IRequireResources {
 
     // panel left for tile selection, panel right for map preview buttons to
     // navigate.
@@ -130,11 +123,13 @@ public class MapEditorScreen implements IScreen, IRelativeMouseMoveListener, IHo
 
     }
 
+    @Override
     public void updateGrid(int width, int height) {
         mRightContainer.updateGrid(width, height);
 
     }
 
+    @Override
     public void setTileSet(String tileSetName, Collection<EditorTile> tileSet) {
         mTileSetName = tileSetName;
         load();
@@ -154,6 +149,7 @@ public class MapEditorScreen implements IScreen, IRelativeMouseMoveListener, IHo
 
     }
 
+    @Override
     public void setController(MapEditorController controller) {
         mController = controller;
         if (controller == null) {
@@ -176,7 +172,7 @@ public class MapEditorScreen implements IScreen, IRelativeMouseMoveListener, IHo
         mRightContainer.render(g);
         mInputFields.forEach(f -> f.render(g));
         mButton.forEach(b -> b.render(g));
-            
+
         g.drawImage(mFormattedText, mTextX, mTextY, mTextWidth, mTextHeight);
 
         if (mBound != null) {
@@ -337,6 +333,7 @@ public class MapEditorScreen implements IScreen, IRelativeMouseMoveListener, IHo
 
     }
 
+    @Override
     public void newBind(EditorTile tile) {
         mBound = tile;
     }
@@ -371,18 +368,22 @@ public class MapEditorScreen implements IScreen, IRelativeMouseMoveListener, IHo
 
     }
 
+    @Override
     public int getSnapTileSize() {
         return mRightContainer.getElementSize();
     }
 
+    @Override
     public Rectangle getSnapBounds() {
         return mRightContainer.getBounds();
     }
 
+    @Override
     public void updateGridValue(EditorTile data, int colIndex, int rowIndex) {
         mRightContainer.replace(data, colIndex, rowIndex);
     }
 
+    @Override
     public void clearMap() {
         mRightContainer.clear();
     }

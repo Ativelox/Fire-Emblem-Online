@@ -22,8 +22,8 @@ import de.ativelox.feo.client.model.property.callback.IRelativeMouseMoveListener
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.screen.EScreen;
 import de.ativelox.feo.client.view.screen.IScreenManager;
-import de.ativelox.feo.client.view.screen.editor.MapEditorScreen;
-import de.ativelox.feo.client.view.screen.editor.MapEditorUIScreen;
+import de.ativelox.feo.client.view.screen.editor.IMapEditorScreen;
+import de.ativelox.feo.client.view.screen.editor.IMapEditorUIScreen;
 import de.ativelox.feo.logging.ELogType;
 import de.ativelox.feo.logging.Logger;
 
@@ -43,9 +43,9 @@ public class MapEditorController implements IRelativeMouseMoveListener, IActionL
 
     private EditorTile mCurrentlyBound;
 
-    private final MapEditorScreen mScreen;
+    private final IMapEditorScreen mScreen;
 
-    private final MapEditorUIScreen mUiScreen;
+    private final IMapEditorUIScreen mUiScreen;
 
     private ITile[][] mGrid;
 
@@ -57,8 +57,8 @@ public class MapEditorController implements IRelativeMouseMoveListener, IActionL
 
     private final Display mDisplay;
 
-    public MapEditorController(IScreenManager manager, InputManager im, Display d, MapEditorScreen screen,
-            MapEditorUIScreen uiScreen) {
+    public MapEditorController(IScreenManager manager, InputManager im, Display d, IMapEditorScreen screen,
+            IMapEditorUIScreen uiScreen) {
         mTileTypes = ETileType.values();
         mTileSetIndex = 0;
         mInputManager = im;

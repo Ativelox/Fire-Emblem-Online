@@ -5,7 +5,7 @@ import de.ativelox.feo.client.controller.input.InputManager;
 import de.ativelox.feo.client.model.property.callback.IActionListener;
 import de.ativelox.feo.client.model.property.callback.IMovementListener;
 import de.ativelox.feo.client.model.unit.IUnit;
-import de.ativelox.feo.client.view.screen.GameScreen;
+import de.ativelox.feo.client.view.screen.IGameScreen;
 import de.ativelox.feo.client.view.screen.IScreenManager;
 
 /**
@@ -16,11 +16,11 @@ public class GameController {
 
     private final InputManager mInputManager;
 
-    private final GameScreen mScreen;
+    private final IGameScreen mScreen;
 
     private final IBehavior mAlliedBehavior;
 
-    public GameController(final IScreenManager sm, final InputManager im, final GameScreen screen,
+    public GameController(final IScreenManager sm, final InputManager im, final IGameScreen screen,
             IBehavior alliedBehavior) {
         screen.setController(this);
         alliedBehavior.setController(this);
