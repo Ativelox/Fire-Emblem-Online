@@ -13,7 +13,7 @@ import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.property.EDirection;
 import de.ativelox.feo.client.model.property.ICanMove;
 import de.ativelox.feo.client.model.property.IRequireResources;
-import de.ativelox.feo.client.model.property.callback.IMoveFinishedListener;
+import de.ativelox.feo.client.model.property.callback.IMoveListener;
 import de.ativelox.feo.client.model.property.callback.ISelectionListener;
 import de.ativelox.feo.client.model.util.IMoveRoutine;
 import de.ativelox.feo.client.model.util.SmoothMoveRoutine;
@@ -39,17 +39,25 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     private boolean mIsSelected;
 
     private final List<ISelectionListener> mSelectionListener;
-    private final List<IMoveFinishedListener> mMoveListener;
+    private final List<IMoveListener> mMoveListener;
 
     private final String mDataName;
 
-    public DummyUnit(int x, int y, String dataName) {
+    private final int mMovement;
+
+    private int mRange;
+
+    public DummyUnit(int x, int y, int movement, String dataName) {
         super(Tile.WIDTH * x, Tile.HEIGHT * y, Tile.WIDTH, Tile.HEIGHT);
 
         mMoveListener = new ArrayList<>();
         mSelectionListener = new ArrayList<>();
         mDataName = dataName;
         mMover = new SmoothMoveRoutine(this);
+
+        mMovement = movement;
+
+        mRange = 1;
 
         load();
     }
@@ -90,6 +98,7 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
 
     @Override
     public void move(Deque<Tile> path) {
+        mMoveListener.forEach(l -> l.onMoveStarted(this));
         mMover.move(path);
 
     }
@@ -170,14 +179,38 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     }
 
     @Override
-    public void addMoveFinishedListener(IMoveFinishedListener listener) {
+    public void addMoveFinishedListener(IMoveListener listener) {
         mMoveListener.add(listener);
 
     }
 
     @Override
-    public void removeMoveFinishedListener(IMoveFinishedListener listener) {
+    public void removeMoveFinishedListener(IMoveListener listener) {
         mMoveListener.remove(listener);
+
+    }
+
+    @Override
+    public int getMovement() {
+        return mMovement;
+
+    }
+
+    @Override
+    public int getRange() {
+        return mRange;
+    }
+
+    @Override
+    public void setRange(int range) {
+        mRange = range;
+
+    }
+
+    @Override
+    public void moveInstantly(int x, int y) {
+        this.setX(x);
+        this.setY(y);
 
     }
 }

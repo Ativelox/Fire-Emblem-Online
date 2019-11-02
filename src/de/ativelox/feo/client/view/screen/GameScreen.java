@@ -3,26 +3,32 @@ package de.ativelox.feo.client.view.screen;
 import de.ativelox.feo.client.controller.GameController;
 import de.ativelox.feo.client.controller.input.EAction;
 import de.ativelox.feo.client.controller.input.EAxis;
+import de.ativelox.feo.client.controller.input.InputManager;
 import de.ativelox.feo.client.controller.input.InputReceiver;
+import de.ativelox.feo.client.model.camera.Camera;
 import de.ativelox.feo.client.model.camera.ECameraApplication;
-import de.ativelox.feo.client.model.gfx.Assets;
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.gfx.EResource;
-import de.ativelox.feo.client.model.gfx.animation.IAnimation;
 import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.map.Map;
+import de.ativelox.feo.client.model.property.EActionWindowOption;
 import de.ativelox.feo.client.model.property.ICanMove;
-import de.ativelox.feo.client.model.property.IRequireResources;
+import de.ativelox.feo.client.model.property.ICancelable;
 import de.ativelox.feo.client.model.property.ISelectable;
-import de.ativelox.feo.client.model.property.callback.IMoveFinishedListener;
+import de.ativelox.feo.client.model.property.callback.ICancelListener;
+import de.ativelox.feo.client.model.property.callback.IMoveListener;
 import de.ativelox.feo.client.model.property.callback.ISelectionListener;
 import de.ativelox.feo.client.model.property.routine.UnitSelectionRoutine;
 import de.ativelox.feo.client.model.unit.DummyUnit;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.unit.UnitData;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
-import de.ativelox.feo.client.model.util.graph.GraphUtils;
 import de.ativelox.feo.client.view.Display;
+import de.ativelox.feo.client.view.element.game.ActionWindow;
+import de.ativelox.feo.client.view.element.game.ActionWindowButton;
+import de.ativelox.feo.client.view.element.game.MapSelector;
+import de.ativelox.feo.client.view.element.game.MovementIndicator;
+import de.ativelox.feo.client.view.element.game.MovementRange;
 import de.ativelox.feo.client.view.element.generic.ImageElement;
 
 /**
@@ -30,13 +36,13 @@ import de.ativelox.feo.client.view.element.generic.ImageElement;
  *
  */
 public class GameScreen extends InputReceiver
-        implements IGameScreen, IRequireResources, ISelectionListener, IMoveFinishedListener {
+        implements IGameScreen, ISelectionListener, IMoveListener, ICancelListener {
 
     private final Map mMap;
 
     private final IUnit mUnit;
 
-    private IAnimation mSelectionCursor;
+    private MapSelector mSelectionCursor;
 
     private GameController mController;
 
@@ -44,18 +50,32 @@ public class GameScreen extends InputReceiver
 
     private ImageElement mUnitDisplayPlaceholder;
 
-    private boolean mBlockCursorMovement;
+    private MovementRange mMovementRange;
 
-    public GameScreen(Map map) {
+    private MovementIndicator mMovementIndicator;
+
+    private ActionWindow mCurrentActionWindow;
+
+    private InputManager mInputManager;
+
+    private boolean mBlockInput;
+
+    public GameScreen(Map map, Camera camera, InputManager im) {
         mMap = map;
-        mUnit = new DummyUnit(4, 4, UnitData.SWORDMASTER_F);
+        mUnit = new DummyUnit(0, 0, 5, UnitData.SWORDMASTER_F);
         mUnit.add(this);
         mUnit.addMoveFinishedListener(this);
 
+        mInputManager = im;
+
         map.add(mUnit);
-        load();
+        map.load();
+
+        mSelectionCursor = new MapSelector(0, 0, map);
 
         mSelectionRoutine = new UnitSelectionRoutine(mSelectionCursor, map);
+
+        camera.ensureInViewport(mSelectionCursor);
     }
 
     @Override
@@ -66,11 +86,25 @@ public class GameScreen extends InputReceiver
     @Override
     public void render(DepthBufferedGraphics g) {
         mMap.render(g);
+
+        if (mMovementRange != null) {
+            mMovementRange.render(g);
+
+        }
+
+        if (mMovementIndicator != null) {
+            mMovementIndicator.render(g);
+        }
+
         mUnit.render(g);
         mSelectionCursor.render(g);
 
         if (mUnitDisplayPlaceholder != null) {
             mUnitDisplayPlaceholder.render(g);
+        }
+
+        if (mCurrentActionWindow != null) {
+            mCurrentActionWindow.render(g);
         }
     }
 
@@ -92,54 +126,59 @@ public class GameScreen extends InputReceiver
 
     @Override
     public ECameraApplication cameraApplied() {
-        return ECameraApplication.WINDOW_RESIZE_ONLY;
+        return ECameraApplication.DYNAMIC;
 
     }
 
     @Override
     public void update(TimeSnapshot ts) {
-        if (!mBlockCursorMovement) {
-            mSelectionCursor.setX((int) (mSelectionCursor.getX() + getMovement(EAxis.X) * Tile.WIDTH));
-            mSelectionCursor.setY((int) (mSelectionCursor.getY() + getMovement(EAxis.Y) * Tile.HEIGHT));
-        }
+        int tempX = mSelectionCursor.getX();
+        int tempY = mSelectionCursor.getY();
 
+        mSelectionCursor.setX((int) (mSelectionCursor.getX() + getMovement(EAxis.X) * Tile.WIDTH));
+        mSelectionCursor.setY((int) (mSelectionCursor.getY() + getMovement(EAxis.Y) * Tile.HEIGHT));
+
+        mSelectionCursor.update(ts);
+
+        if (tempX != mSelectionCursor.getX() || tempY != mSelectionCursor.getY()) {
+            this.cursorMoved();
+
+        }
         mSelectionRoutine.update(ts);
 
         mUnit.update(ts);
-        mSelectionCursor.update(ts);
 
         if (isActiveInitially(EAction.CONFIRMATION)) {
-            mSelectionRoutine.getSelected().ifPresent(p -> confirmationPressedOn(p));
+            confirm();
 
+        }
+        if (isActiveInitially(EAction.CANCEL)) {
+            cancel();
+        }
+
+        if (mCurrentActionWindow != null) {
+            mCurrentActionWindow.update(ts);
         }
 
         this.cycleFinished();
     }
 
-    private void confirmationPressedOn(IUnit unit) {
-        mSelectionCursor.hide();
-        mBlockCursorMovement = true;
-        mSelectionRoutine.block();
-        mSelectionRoutine.deSelectInstantly();
+    private void cancel() {
+        mController.getActiveBehavior().onCancel();
+    }
 
-        unit.move(GraphUtils.dijsktra(mMap.getInternalMap(), mMap.getByIndex(4, 4)).get(mMap.getByIndex(10, 8)));
+    private void cursorMoved() {
+        mController.getActiveBehavior().onCursorMove(mSelectionCursor);
 
     }
 
-    private void movingCanceled(IUnit unit) {
-        unit.selected();
-        mSelectionCursor.show();
-        mBlockCursorMovement = false;
+    private void confirm() {
+        if (mSelectionRoutine.getSelected().isPresent()) {
+            mController.getActiveBehavior().onUnitConfirm(mSelectionRoutine.getSelected().get());
 
-    }
-
-    @Override
-    public void load() {
-        mMap.load();
-        mSelectionCursor = Assets.getFor(EResource.MAP_SELECTOR);
-
-        mSelectionCursor.start();
-
+        } else {
+            mController.getActiveBehavior().onConfirm();
+        }
     }
 
     @Override
@@ -173,9 +212,60 @@ public class GameScreen extends InputReceiver
 
     @Override
     public void onMoveFinished(ICanMove mover) {
-        mBlockCursorMovement = false;
-        mSelectionCursor.show();
-        mSelectionRoutine.unblock();
+        if (mover instanceof IUnit) {
+            mController.getActiveBehavior().onMovementFinished((IUnit) mover);
+        }
+
+    }
+
+    @Override
+    public void displayUnitMovementRange(MovementRange range) {
+        mMovementRange = range;
+    }
+
+    @Override
+    public void removeUnitMovementRange() {
+        mMovementRange = null;
+
+    }
+
+    @Override
+    public void onMoveStarted(ICanMove mover) {
+
+    }
+
+    @Override
+    public void displayMovementIndicator(MovementIndicator indicator) {
+        mMovementIndicator = indicator;
+
+    }
+
+    @Override
+    public void removeMovementIndicator() {
+        mMovementIndicator = null;
+
+    }
+
+    @Override
+    public void displayActionWindow(EActionWindowOption... options) {
+        mCurrentActionWindow = new ActionWindow(options);
+        mCurrentActionWindow.registerTo(mInputManager);
+        mCurrentActionWindow.addCancelListener(this);
+        this.block();
+
+    }
+
+    @Override
+    public void onCancel(ICancelable cancelable) {
+        if (cancelable instanceof ActionWindowButton) {
+            mController.getActiveBehavior().onActionWindowCanceled();
+        }
+    }
+
+    @Override
+    public void removeActionWindow() {
+        this.mCurrentActionWindow = null;
+        this.unblock();
 
     }
 }

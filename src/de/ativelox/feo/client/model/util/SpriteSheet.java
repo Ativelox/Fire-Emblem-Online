@@ -178,4 +178,38 @@ public class SpriteSheet {
         return result;
 
     }
+
+    public static BufferedImage stitchVertically(List<Image> toStitch) {
+        if (toStitch.size() <= 0) {
+            Logger.get().log(ELogType.ERROR, "There were no images to stitch...");
+            return null;
+        }
+        int newWidth = 0;
+        int newHeight = 0;
+
+        for (final Image image : toStitch) {
+            newWidth += image.getWidth(null);
+            newHeight += image.getHeight(null);
+
+        }
+
+        BufferedImage result = new BufferedImage(newWidth * Display.INTERNAL_RES_FACTOR,
+                newHeight * Display.INTERNAL_RES_FACTOR, BufferedImage.TYPE_4BYTE_ABGR);
+        Graphics2D g = result.createGraphics();
+
+        int i = 0;
+        int lastHeight = 0;
+        for (final Image image : toStitch) {
+
+            if (i > 0) {
+                lastHeight += toStitch.get(i - 1).getHeight(null) * Display.INTERNAL_RES_FACTOR;
+            }
+            System.out.println(lastHeight);
+
+            g.drawImage(image, 0, lastHeight, image.getWidth(null) * Display.INTERNAL_RES_FACTOR,
+                    image.getHeight(null) * Display.INTERNAL_RES_FACTOR, null);
+            i++;
+        }
+        return result;
+    }
 }

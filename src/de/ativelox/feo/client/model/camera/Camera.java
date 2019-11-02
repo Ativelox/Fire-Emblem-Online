@@ -38,6 +38,8 @@ public class Camera implements IPriorityUpdateable, IMovementListener, IPanningL
 
     private AffineTransform mAll;
 
+    private ISpatial mFollow;
+
     public static final AffineTransform IDENTITY = new AffineTransform();
 
     private ISpatial mBounds;
@@ -73,11 +75,15 @@ public class Camera implements IPriorityUpdateable, IMovementListener, IPanningL
                 mTranslationY);
     }
 
+    public void ensureInViewport(ISpatial follow) {
+        mFollow = follow;
+    }
+
     private void validateValues() {
-        if(mBounds == null) {
+        if (mBounds == null) {
             return;
         }
-        
+
         if (mTranslationX > 0) {
             mTranslationX = 0;
         }
@@ -105,6 +111,24 @@ public class Camera implements IPriorityUpdateable, IMovementListener, IPanningL
             mTranslationY = 0;
         }
 
+        if (mFollow != null) {
+            if ((mFollow.getX() + mFollow.getWidth()) * (mScale - 1) + mTranslationX > Display.WIDTH) {
+                mTranslationX -= mFollow.getWidth();
+            }
+            if ((mFollow.getX() + mFollow.getWidth()) * (mScale - 1) + mTranslationX <= 0) {
+                mTranslationX += mFollow.getWidth();
+            }
+
+            if ((mFollow.getY() + mFollow.getHeight()) * (mScale - 1) + mTranslationY > Display.HEIGHT) {
+                mTranslationY -= mFollow.getHeight();
+            }
+
+            if ((mFollow.getY() + mFollow.getHeight()) * (mScale - 1) + mTranslationY <= 0) {
+                mTranslationY += mFollow.getWidth();
+            }
+
+        }
+
     }
 
     public Pair<Integer, Integer> invert(int x, int y) {
@@ -129,13 +153,11 @@ public class Camera implements IPriorityUpdateable, IMovementListener, IPanningL
 
     @Override
     public void onMoveX(double amount) {
-        mTranslationX -= 5 * amount;
 
     }
 
     @Override
     public void onMoveY(double amount) {
-        mTranslationY -= 5 * amount;
 
     }
 

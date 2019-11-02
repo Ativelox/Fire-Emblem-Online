@@ -22,6 +22,12 @@ public class ImageElement extends AScreenElement implements IRequireResource<Ima
         mImage = request();
     }
 
+    public ImageElement(int x, int y, int width, int height, boolean isPercent, Image image) {
+        super(x, y, width, height, isPercent);
+        mImage = image;
+        mImageResource = null;
+    }
+
     @Override
     public void render(DepthBufferedGraphics g) {
         g.drawImage(mImage, getX(), getY(), getWidth(), getHeight());

@@ -23,6 +23,10 @@ public class VerticalSelectionManager extends InputReceiver implements IUpdateab
     private boolean mIsCircular;
 
     public VerticalSelectionManager(boolean circular, ISelectable... selectables) {
+        this(circular, null, selectables);
+    }
+
+    public VerticalSelectionManager(boolean circular, InputReceiver parent, ISelectable... selectables) {
         mSelectables = new ArrayList<>();
 
         for (final ISelectable selectable : selectables) {
@@ -34,6 +38,10 @@ public class VerticalSelectionManager extends InputReceiver implements IUpdateab
         if (mSelectables.size() > 0) {
             this.resort();
             this.updateSelected(mSelectionIndex);
+        }
+
+        if (parent != null) {
+            parent.block();
         }
     }
 

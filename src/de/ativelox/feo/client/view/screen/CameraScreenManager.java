@@ -151,8 +151,8 @@ public class CameraScreenManager implements IScreenManager {
         case GAME_SCREEN:
             Map map = new Map("ch0.map", 0, 0);
             mCamera.setBounds(map);
-            IGameScreen gameScreen = new GameScreen(map);
-            new GameController(this, mInputManager, gameScreen, new DefaultPlayerBehavior());
+            IGameScreen gameScreen = new GameScreen(map, mCamera, mInputManager);
+            new GameController(this, mInputManager, map, gameScreen, new DefaultPlayerBehavior(map));
             this.addScreen(gameScreen);
             break;
         case MAIN_MENU_SCREEN:

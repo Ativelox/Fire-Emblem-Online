@@ -12,4 +12,12 @@ import de.ativelox.feo.client.model.property.IUpdateable;
  */
 public interface IUnit extends IRenderable, IUpdateable, ISpatial, ISelectable, ICanMove {
 
+    public int getMovement();
+
+    public int getRange();
+
+    public void setRange(int range);
+
+    public void moveInstantly(int x, int y);
+
 }

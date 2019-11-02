@@ -32,6 +32,7 @@ import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.gfx.tile.TileSet;
 import de.ativelox.feo.client.model.gfx.tile.editor.EditorTile;
 import de.ativelox.feo.client.model.gfx.tile.editor.EditorTileSet;
+import de.ativelox.feo.client.model.property.EIndicatorDirection;
 import de.ativelox.feo.client.model.property.IRequireResource;
 import de.ativelox.feo.client.model.util.SpriteSheet;
 import de.ativelox.feo.client.view.Display;
@@ -60,6 +61,11 @@ public class Assets {
     private static final String SELECTOR_LEFT_NAME = "selector_left.png";
     private static final String SELECTOR_RIGHT_NAME = "selector_right.png";
     private static final String MAP_SELECTOR_NAME = "map_selection.png";
+    private static final String MAP_INDICATOR_NAME = "arrows.png";
+    private static final String ACTION_WINDOW_TOP_NAME = "action_window_top.png";
+    private static final String ACTION_WINDOW_BOTTOM_NAME = "action_window_bot.png";
+    private static final String ACTION_WINDOW_MIDDLE_NAME = "action_window_middle.png";
+    private static final String ACTION_SELECTOR_NAME = "action_selector.png";
 
     private static Font DIALOGUE_FONT;
 
@@ -326,6 +332,80 @@ public class Assets {
             result = (T) new OffsetLoopingAnimation(mapSelectionSequence, EAnimationDirection.FORWARD_BACKWARD, 500,
                     20 * Display.INTERNAL_RES_FACTOR, 20 * Display.INTERNAL_RES_FACTOR,
                     -2 * Display.INTERNAL_RES_FACTOR, -2 * Display.INTERNAL_RES_FACTOR);
+            break;
+
+        case MAP_INDICATOR:
+            BufferedImage mapIndicatorSheet = SpriteSheet.load(SYSTEM_PATH.resolve(MAP_INDICATOR_NAME)).get();
+            Image[] mapIndicatorSequence = SpriteSheet.split(mapIndicatorSheet, 16, 16, 16, 0, 16);
+            EIndicatorDirection direction = EIndicatorDirection.valueOf(additionalInfo[0]);
+
+            Image tempResult = null;
+
+            switch (direction) {
+            case ARC_DOWN_RIGHT:
+                tempResult = mapIndicatorSequence[4];
+                break;
+            case ARC_LEFT_DOWN:
+                tempResult = mapIndicatorSequence[5];
+                break;
+            case ARC_LEFT_UP:
+                tempResult = mapIndicatorSequence[7];
+                break;
+            case ARC_UP_RIGHT:
+                tempResult = mapIndicatorSequence[6];
+                break;
+            case BEGINNING_DOWN_UP:
+                tempResult = mapIndicatorSequence[3];
+                break;
+            case BEGINNING_LEFT_RIGHT:
+                tempResult = mapIndicatorSequence[0];
+                break;
+            case BEGINNING_RIGHT_LEFT:
+                tempResult = mapIndicatorSequence[2];
+                break;
+            case BEGINNING_UP_DOWN:
+                tempResult = mapIndicatorSequence[1];
+                break;
+            case END_DOWN_UP:
+                tempResult = mapIndicatorSequence[11];
+                break;
+            case END_LEFT_RIGHT:
+                tempResult = mapIndicatorSequence[8];
+                break;
+            case END_RIGHT_LEFT:
+                tempResult = mapIndicatorSequence[10];
+                break;
+            case END_UP_DOWN:
+                tempResult = mapIndicatorSequence[9];
+                break;
+            case HORIZONTAL:
+                tempResult = mapIndicatorSequence[14];
+                break;
+            case VERTICAL:
+                tempResult = mapIndicatorSequence[12];
+                break;
+            default:
+                Logger.get().log(ELogType.ERROR, "Couldn't parse the following indicator direction: " + direction);
+                break;
+
+            }
+            result = (T) tempResult;
+            break;
+
+        case ACTION_WINDOW_TOP:
+            result = (T) SpriteSheet.load(SYSTEM_PATH.resolve(ACTION_WINDOW_TOP_NAME)).get();
+            break;
+
+        case ACTION_WINDOW_MIDDLE:
+            result = (T) SpriteSheet.load(SYSTEM_PATH.resolve(ACTION_WINDOW_MIDDLE_NAME)).get();
+            break;
+
+        case ACTION_WINDOW_BOTTOM:
+            result = (T) SpriteSheet.load(SYSTEM_PATH.resolve(ACTION_WINDOW_BOTTOM_NAME)).get();
+            break;
+
+        case ACTION_SELECTOR:
+            result = (T) SpriteSheet.load(SYSTEM_PATH.resolve(ACTION_SELECTOR_NAME)).get();
             break;
 
         default:

@@ -18,6 +18,8 @@ import de.ativelox.feo.logging.Logger;
  */
 public class InputReceiver implements IMovementListener, IPanningListener, IActionListener {
 
+    private boolean mBlockInput;
+
     /**
      * Contains all actions that are active in the given cycle.
      */
@@ -64,6 +66,10 @@ public class InputReceiver implements IMovementListener, IPanningListener, IActi
      * @return <tt>True</tt> if the action is active, <tt>false</tt> otherwise.
      */
     private boolean isActive(EAction action) {
+        if (mBlockInput) {
+            return false;
+        }
+
         return mPressedActions.contains(action);
 
     }
@@ -77,6 +83,10 @@ public class InputReceiver implements IMovementListener, IPanningListener, IActi
      *         otherwise.
      */
     private boolean isActiveInitially(EAction action) {
+        if (mBlockInput) {
+            return false;
+        }
+
         return mInitialPressedActions.contains(action);
     }
 
@@ -89,6 +99,10 @@ public class InputReceiver implements IMovementListener, IPanningListener, IActi
      *         otherwise.
      */
     protected boolean isActiveInitially(EAction... actions) {
+        if (mBlockInput) {
+            return false;
+        }
+
         for (final EAction action : actions) {
             if (!isActiveInitially(action)) {
                 return false;
@@ -99,6 +113,10 @@ public class InputReceiver implements IMovementListener, IPanningListener, IActi
     }
 
     protected double getMovement(EAxis axis) {
+        if (mBlockInput) {
+            return 0;
+        }
+
         if (axis == EAxis.X) {
             return mMovementX;
 
@@ -113,6 +131,10 @@ public class InputReceiver implements IMovementListener, IPanningListener, IActi
     }
 
     protected double getPanning(EAxis axis) {
+        if (mBlockInput) {
+            return 0;
+        }
+
         if (axis == EAxis.X) {
             return mPanningX;
 
@@ -134,6 +156,10 @@ public class InputReceiver implements IMovementListener, IPanningListener, IActi
      *         otherwise.
      */
     protected boolean isActive(EAction... actions) {
+        if (mBlockInput) {
+            return false;
+        }
+
         for (final EAction action : actions) {
             if (!isActive(action)) {
                 return false;
@@ -199,5 +225,14 @@ public class InputReceiver implements IMovementListener, IPanningListener, IActi
         mPanningX = 0;
         mPanningY = 0;
 
+    }
+
+    public void block() {
+        mBlockInput = true;
+
+    }
+
+    public void unblock() {
+        mBlockInput = false;
     }
 }

@@ -25,11 +25,11 @@ public class GraphUtils {
 
     }
 
-    public static <T extends ITile> Map<T, Deque<T>> dijsktra(T[][] map, T source) {
-        return GraphUtils.dijkstra(GraphUtils.convert(map), source);
+    public static <T extends ITile> Map<T, Deque<T>> dijsktra(T[][] map, T source, int range) {
+        return GraphUtils.dijkstra(GraphUtils.convert(map), source, range);
     }
 
-    public static <T> Map<T, Deque<T>> dijkstra(List<Node<T>> vertexList, T source) {
+    public static <T> Map<T, Deque<T>> dijkstra(List<Node<T>> vertexList, T source, int range) {
         Node<T> nodeSource = null;
 
         for (final Node<T> node : vertexList) {
@@ -95,7 +95,12 @@ public class GraphUtils {
             if (node == nodeSource) {
                 continue;
             }
-            paths.put(node.getData(), reconstruct(prev, node, nodeSource));
+            // only retrace paths that were in the given range.
+            // TODO: this should be handled earlier, the algorithm shouldn't even consider
+            // nodes outside the range.
+            if (dist.get(node) <= range) {
+                paths.put(node.getData(), reconstruct(prev, node, nodeSource));
+            }
         }
         return paths;
     }

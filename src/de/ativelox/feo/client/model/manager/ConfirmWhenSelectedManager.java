@@ -17,7 +17,7 @@ import de.ativelox.feo.client.model.util.TimeSnapshot;
 public class ConfirmWhenSelectedManager<T extends ISelectable & IConfirmable> extends InputReceiver
         implements IUpdateable {
 
-    private final List<T> mElements;
+    protected final List<T> mElements;
 
     public ConfirmWhenSelectedManager(T[] elements) {
         mElements = new ArrayList<>();
