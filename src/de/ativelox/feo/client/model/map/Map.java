@@ -99,6 +99,8 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
             return;
         }
 
+        mUnits.forEach(u -> u.update(ts));
+
     }
 
     public Tile getByIndex(int indexX, int indexY) {
@@ -127,6 +129,10 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
         return Optional.empty();
     }
 
+    public boolean isOccupied(Tile tile) {
+        return isOccupied(tile.getX(), tile.getY()).isPresent();
+    }
+
     @Override
     public void render(DepthBufferedGraphics g) {
         if (!mIsLoaded) {
@@ -150,6 +156,8 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
             g.drawLine(new Color(0, 0, 0, 50), j * Tile.HEIGHT, 0, j * Tile.HEIGHT, getHeight(), 5);
 
         }
+
+        mUnits.forEach(u -> u.render(g));
 
     }
 }

@@ -210,6 +210,27 @@ public class SpriteSheet {
                     image.getHeight(null) * Display.INTERNAL_RES_FACTOR, null);
             i++;
         }
+        g.dispose();
+
         return result;
+    }
+
+    public static BufferedImage applyTransparency(BufferedImage image, int alpha, boolean[] ignore) {
+        int[] pixels = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
+
+        for (int i = 0; i < pixels.length; i++) {
+            if (ignore[i]) {
+                continue;
+            }
+            Color c = new Color(pixels[i]);
+
+            c = new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
+            pixels[i] = c.getRGB();
+
+        }
+        image.setRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
+
+        return image;
+
     }
 }

@@ -18,6 +18,8 @@ import de.ativelox.feo.logging.Logger;
  */
 public class InputReceiver implements IMovementListener, IPanningListener, IActionListener {
 
+    private boolean mBlockNextUpdate;
+
     private boolean mBlockInput;
 
     /**
@@ -225,14 +227,20 @@ public class InputReceiver implements IMovementListener, IPanningListener, IActi
         mPanningX = 0;
         mPanningY = 0;
 
+        if (mBlockNextUpdate) {
+            mBlockInput = true;
+        } else {
+            mBlockInput = false;
+        }
+
     }
 
     public void block() {
-        mBlockInput = true;
+        mBlockNextUpdate = true;
 
     }
 
     public void unblock() {
-        mBlockInput = false;
+        mBlockNextUpdate = false;
     }
 }

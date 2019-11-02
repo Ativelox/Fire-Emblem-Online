@@ -19,7 +19,7 @@ public class ActionWindowButton extends ACancelableButton implements IRequireRes
 
     public ActionWindowButton(int x, int y, int order, String text) {
         super(x, y, 49 * Display.INTERNAL_RES_FACTOR, 16 * Display.INTERNAL_RES_FACTOR, false,
-                EResource.ACTION_WINDOW_MIDDLE, order, text);
+                EResource.ACTION_WINDOW_MIDDLE, order, text.replaceAll("_", " "));
     }
 
     @Override

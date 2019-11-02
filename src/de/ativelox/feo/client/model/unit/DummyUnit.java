@@ -1,5 +1,7 @@
 package de.ativelox.feo.client.model.unit;
 
+import java.awt.Color;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
@@ -34,6 +36,11 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     private IAnimation mMoveUp;
     private IAnimation mCurrentAnimation;
 
+    private final String mPortraitName;
+    private Image mPortrait;
+
+    private final String mName;
+
     private IMoveRoutine mMover;
 
     private boolean mIsSelected;
@@ -47,13 +54,19 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
 
     private int mRange;
 
-    public DummyUnit(int x, int y, int movement, String dataName) {
+    private boolean mIsWaiting;
+
+    public DummyUnit(int x, int y, int movement, String dataName, String portraitName, String name) {
         super(Tile.WIDTH * x, Tile.HEIGHT * y, Tile.WIDTH, Tile.HEIGHT);
+
+        mName = name;
 
         mMoveListener = new ArrayList<>();
         mSelectionListener = new ArrayList<>();
         mDataName = dataName;
         mMover = new SmoothMoveRoutine(this);
+
+        mPortraitName = portraitName;
 
         mMovement = movement;
 
@@ -65,6 +78,10 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     @Override
     public void render(DepthBufferedGraphics g) {
         mCurrentAnimation.render(g);
+        if (mIsWaiting) {
+            // TODO: debugging tool for now, since no palette change is supported atm.
+            g.fillRect(new Color(0, 0, 0, 150), getX(), getY(), getWidth(), getHeight(), 2);
+        }
 
     }
 
@@ -94,6 +111,8 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
         mCurrentAnimation.setY(getY());
 
         mCurrentAnimation.start();
+
+        mPortrait = Assets.getFor(EResource.PORTRAIT, mPortraitName);
     }
 
     @Override
@@ -132,6 +151,9 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     @Override
     public void onMoveFinished() {
         mCurrentAnimation = mHover;
+        mCurrentAnimation.setX(getX());
+        mCurrentAnimation.setY(getY());
+
         mCurrentAnimation.reset();
         mCurrentAnimation.start();
 
@@ -142,9 +164,15 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     @Override
     public void selected() {
         mIsSelected = true;
-        mCurrentAnimation = mSelection;
-        mCurrentAnimation.reset();
-        mCurrentAnimation.start();
+
+        if (!mIsWaiting) {
+            mCurrentAnimation = mSelection;
+
+            mCurrentAnimation.setX(getX());
+            mCurrentAnimation.setY(getY());
+            mCurrentAnimation.reset();
+            mCurrentAnimation.start();
+        }
 
         mSelectionListener.forEach(l -> l.onSelect(this));
 
@@ -212,5 +240,50 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
         this.setX(x);
         this.setY(y);
 
+    }
+
+    @Override
+    public void finished() {
+        mCurrentAnimation = mHover;
+        mCurrentAnimation.setX(getX());
+        mCurrentAnimation.setY(getY());
+        mCurrentAnimation.reset();
+        mCurrentAnimation.start();
+
+        mIsWaiting = true;
+
+    }
+
+    @Override
+    public boolean isWaiting() {
+        return mIsWaiting;
+    }
+
+    @Override
+    public void ready() {
+        mIsWaiting = false;
+
+    }
+
+    @Override
+    public Image getPortrait() {
+        return mPortrait;
+    }
+
+    @Override
+    public String getName() {
+        return mName;
+    }
+
+    @Override
+    public int getCurrentHP() {
+        // TODO Auto-generated method stub
+        return 20;
+    }
+
+    @Override
+    public int getMaximumHP() {
+        // TODO Auto-generated method stub
+        return 30;
     }
 }

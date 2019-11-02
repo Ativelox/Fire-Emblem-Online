@@ -1,17 +1,14 @@
-package de.ativelox.feo.client.view.screen;
+package de.ativelox.feo.client.view.screen.game;
 
 import de.ativelox.feo.client.controller.GameController;
 import de.ativelox.feo.client.controller.input.EAction;
 import de.ativelox.feo.client.controller.input.EAxis;
-import de.ativelox.feo.client.controller.input.InputManager;
 import de.ativelox.feo.client.controller.input.InputReceiver;
 import de.ativelox.feo.client.model.camera.Camera;
 import de.ativelox.feo.client.model.camera.ECameraApplication;
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
-import de.ativelox.feo.client.model.gfx.EResource;
 import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.map.Map;
-import de.ativelox.feo.client.model.property.EActionWindowOption;
 import de.ativelox.feo.client.model.property.ICanMove;
 import de.ativelox.feo.client.model.property.ICancelable;
 import de.ativelox.feo.client.model.property.ISelectable;
@@ -23,13 +20,13 @@ import de.ativelox.feo.client.model.unit.DummyUnit;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.unit.UnitData;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
-import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.element.game.ActionWindow;
 import de.ativelox.feo.client.view.element.game.ActionWindowButton;
 import de.ativelox.feo.client.view.element.game.MapSelector;
 import de.ativelox.feo.client.view.element.game.MovementIndicator;
 import de.ativelox.feo.client.view.element.game.MovementRange;
 import de.ativelox.feo.client.view.element.generic.ImageElement;
+import de.ativelox.feo.client.view.screen.EScreen;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
@@ -39,8 +36,6 @@ public class GameScreen extends InputReceiver
         implements IGameScreen, ISelectionListener, IMoveListener, ICancelListener {
 
     private final Map mMap;
-
-    private final IUnit mUnit;
 
     private MapSelector mSelectionCursor;
 
@@ -56,19 +51,18 @@ public class GameScreen extends InputReceiver
 
     private ActionWindow mCurrentActionWindow;
 
-    private InputManager mInputManager;
-
-    private boolean mBlockInput;
-
-    public GameScreen(Map map, Camera camera, InputManager im) {
+    public GameScreen(Map map, Camera camera) {
         mMap = map;
-        mUnit = new DummyUnit(0, 0, 5, UnitData.SWORDMASTER_F);
-        mUnit.add(this);
-        mUnit.addMoveFinishedListener(this);
+        IUnit unit = new DummyUnit(0, 0, 5, UnitData.SWORDMASTER_F, "fir.png", "Fir");
+        unit.add(this);
+        unit.addMoveFinishedListener(this);
 
-        mInputManager = im;
+        IUnit unit2 = new DummyUnit(5, 2, 10, UnitData.SWORDMASTER_F, "fir.png", "Teeeeest");
+        unit2.add(this);
+        unit2.addMoveFinishedListener(this);
 
-        map.add(mUnit);
+        map.add(unit);
+        map.add(unit2);
         map.load();
 
         mSelectionCursor = new MapSelector(0, 0, map);
@@ -95,8 +89,6 @@ public class GameScreen extends InputReceiver
         if (mMovementIndicator != null) {
             mMovementIndicator.render(g);
         }
-
-        mUnit.render(g);
         mSelectionCursor.render(g);
 
         if (mUnitDisplayPlaceholder != null) {
@@ -132,6 +124,8 @@ public class GameScreen extends InputReceiver
 
     @Override
     public void update(TimeSnapshot ts) {
+        mMap.update(ts);
+
         int tempX = mSelectionCursor.getX();
         int tempY = mSelectionCursor.getY();
 
@@ -145,8 +139,6 @@ public class GameScreen extends InputReceiver
 
         }
         mSelectionRoutine.update(ts);
-
-        mUnit.update(ts);
 
         if (isActiveInitially(EAction.CONFIRMATION)) {
             confirm();
@@ -179,17 +171,6 @@ public class GameScreen extends InputReceiver
         } else {
             mController.getActiveBehavior().onConfirm();
         }
-    }
-
-    @Override
-    public void displayUnitWindow(IUnit unit) {
-        mUnitDisplayPlaceholder = new ImageElement(unit.getX() + unit.getWidth(), unit.getY() - unit.getHeight(),
-                50 * Display.INTERNAL_RES_FACTOR, 10 * Display.INTERNAL_RES_FACTOR, false, EResource.MENU_BUTTON);
-    }
-
-    @Override
-    public void removeUnitWindow(IUnit unit) {
-        mUnitDisplayPlaceholder = null;
     }
 
     @Override
@@ -247,15 +228,6 @@ public class GameScreen extends InputReceiver
     }
 
     @Override
-    public void displayActionWindow(EActionWindowOption... options) {
-        mCurrentActionWindow = new ActionWindow(options);
-        mCurrentActionWindow.registerTo(mInputManager);
-        mCurrentActionWindow.addCancelListener(this);
-        this.block();
-
-    }
-
-    @Override
     public void onCancel(ICancelable cancelable) {
         if (cancelable instanceof ActionWindowButton) {
             mController.getActiveBehavior().onActionWindowCanceled();
@@ -263,8 +235,13 @@ public class GameScreen extends InputReceiver
     }
 
     @Override
-    public void removeActionWindow() {
-        this.mCurrentActionWindow = null;
+    public void blockInput() {
+        this.block();
+
+    }
+
+    @Override
+    public void unblockInput() {
         this.unblock();
 
     }

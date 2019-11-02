@@ -67,11 +67,10 @@ public class PathCalculationRoutine {
 
         mActor = unit;
 
-        mPaths = GraphUtils.dijsktra(mMap.getInternalMap(), mMap.getByPos(unit.getX(), unit.getY()),
-                unit.getMovement());
+        mPaths = GraphUtils.dijsktra(mMap, mMap.getByPos(unit.getX(), unit.getY()), unit.getMovement());
 
-        Set<Tile> ranged = GraphUtils.dijsktra(mMap.getInternalMap(), mMap.getByPos(unit.getX(), unit.getY()),
-                unit.getMovement() + unit.getRange()).keySet();
+        Set<Tile> ranged = GraphUtils
+                .dijsktra(mMap, mMap.getByPos(unit.getX(), unit.getY()), unit.getMovement() + unit.getRange()).keySet();
 
         ranged.removeAll(mPaths.keySet());
 
@@ -116,6 +115,10 @@ public class PathCalculationRoutine {
     }
 
     public void returnToLast() {
+        if (mStart == null) {
+            return;
+        }
+
         mActor.moveInstantly(mStart.getFirst(), mStart.getSecond());
 
     }
@@ -132,7 +135,6 @@ public class PathCalculationRoutine {
         if (mPaths == null) {
             return;
         }
-
         Deque<Tile> tiles = mPaths.get(mMap.getByPos(mCursorX, mCursorY));
 
         if (tiles == null && mLast == null) {
@@ -255,7 +257,7 @@ public class PathCalculationRoutine {
 
     public void executeIfValid() {
         if (isActive() && mCurrentPath != null) {
-            mActor.move(mCurrentPath);
+            mActor.move(new ArrayDeque<>(mCurrentPath));
         }
     }
 }

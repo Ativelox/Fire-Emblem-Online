@@ -96,7 +96,7 @@ public class DefaultLoopingAnimation extends ALoopingAnimation {
             return;
         }
 
-        g.drawImage(mSequence[mNext], getX(), getY(), getWidth(), getHeight());
+        g.drawImage(mSequence[mNext], getX(), getY(), getWidth(), getHeight(), 2);
 
     }
 

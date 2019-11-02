@@ -27,6 +27,10 @@ public abstract class AButtonElement extends ImageElement implements ISelectable
 
     private BufferedImage mFormattedText;
 
+    private int mTextWidth;
+
+    private int mTextHeight;
+
     public AButtonElement(int x, int y, int width, int height, boolean isPercent, EResource background, int order,
             String text) {
         super(x, y, width, height, isPercent, background);
@@ -39,6 +43,9 @@ public abstract class AButtonElement extends ImageElement implements ISelectable
         if (!text.isEmpty()) {
             load();
         }
+
+        mTextWidth = (int) (getWidth() / 1.5f);
+        mTextHeight = (int) (getHeight() / 2f);
     }
 
     public AButtonElement(int x, int y, int width, int height, boolean isPercent, EResource background, int order) {
@@ -58,9 +65,12 @@ public abstract class AButtonElement extends ImageElement implements ISelectable
             return;
         }
 
-        g.drawImage(mFormattedText, getX() + (getWidth() / 2) - (mFormattedText.getWidth() / 2),
-                getY() + (getHeight() / 2) - (mFormattedText.getHeight() / 2), mFormattedText.getWidth(),
-                mFormattedText.getHeight());
+        g.drawImage(mFormattedText, getX() + (getWidth() / 2) - (mTextWidth / 2),
+                getY() + (getHeight() / 2) - (mTextHeight / 2), mTextWidth, mTextHeight);
+
+//        g.drawImage(mFormattedText, getX() + (getWidth() / 2) - (mFormattedText.getWidth() / 2),
+//                getY() + (getHeight() / 2) - (mFormattedText.getHeight() / 2), mFormattedText.getWidth(),
+//                mFormattedText.getHeight());
     }
 
     protected abstract void renderSelection(DepthBufferedGraphics g);

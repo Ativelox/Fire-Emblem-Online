@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.ativelox.feo.client.model.gfx.tile.ITile;
+import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.logging.ELogType;
 import de.ativelox.feo.logging.Logger;
 
@@ -25,8 +25,9 @@ public class GraphUtils {
 
     }
 
-    public static <T extends ITile> Map<T, Deque<T>> dijsktra(T[][] map, T source, int range) {
-        return GraphUtils.dijkstra(GraphUtils.convert(map), source, range);
+    public static <T extends Tile> Map<T, Deque<T>> dijsktra(de.ativelox.feo.client.model.map.Map map, T source,
+            int range) {
+        return GraphUtils.dijkstra(GraphUtils.convert(map, source), source, range);
     }
 
     public static <T> Map<T, Deque<T>> dijkstra(List<Node<T>> vertexList, T source, int range) {
@@ -121,28 +122,34 @@ public class GraphUtils {
 
     }
 
-    private static <T extends ITile> List<Node<T>> convert(T[][] map) {
+    private static <T extends Tile> List<Node<T>> convert(de.ativelox.feo.client.model.map.Map map, T source) {
 
         List<Node<T>> result = new ArrayList<>();
         List<List<Node<T>>> temp = new ArrayList<>();
 
+        @SuppressWarnings("unchecked")
+        T[][] internalMap = (T[][]) map.getInternalMap();
+
         // setup 2d list
-        for (int i = 0; i < map.length; i++) {
+        for (int i = 0; i < internalMap.length; i++) {
             temp.add(new ArrayList<>());
         }
 
         // setup first row
-        Node<T> current = new Node<T>(map[0][0]);
+        Node<T> current = new Node<T>(internalMap[0][0]);
         temp.get(0).add(current);
-        for (int i = 0; i < map[0].length - 1; i++) {
-            Node<T> right = new Node<T>(map[0][i + 1]);
+        for (int i = 0; i < internalMap[0].length - 1; i++) {
+            Node<T> right = new Node<T>(internalMap[0][i + 1]);
             Edge<T> leftToRight = new Edge<>(current, right, right.getData().getCost());
             Edge<T> rightToLeft = new Edge<>(right, current, current.getData().getCost());
 
-            current.addOutgoingEdge(leftToRight);
-            right.addOutgoingEdge(rightToLeft);
-            current.addIngoingEdge(rightToLeft);
-            right.addIngoingEdge(leftToRight);
+            if (right.getData() == source || current.getData() == source
+                    || !(map.isOccupied(right.getData()) || map.isOccupied(current.getData()))) {
+                current.addOutgoingEdge(leftToRight);
+                right.addOutgoingEdge(rightToLeft);
+                current.addIngoingEdge(rightToLeft);
+                right.addIngoingEdge(leftToRight);
+            }
 
             current = right;
 
@@ -151,21 +158,24 @@ public class GraphUtils {
         }
 
         // iteratively link the columns and rows.
-        for (int i = 1; i < map.length; i++) {
-            Node<T> currentInRow = new Node<T>(map[i][0]);
+        for (int i = 1; i < internalMap.length; i++) {
+            Node<T> currentInRow = new Node<T>(internalMap[i][0]);
             temp.get(i).add(currentInRow);
 
-            for (int j = 0; j < map[i].length - 1; j++) {
-                Node<T> right = new Node<T>(map[i][j + 1]);
+            for (int j = 0; j < internalMap[i].length - 1; j++) {
+                Node<T> right = new Node<T>(internalMap[i][j + 1]);
 
                 // setup row link
                 Edge<T> leftToRight = new Edge<>(currentInRow, right, right.getData().getCost());
                 Edge<T> rightToLeft = new Edge<>(right, currentInRow, currentInRow.getData().getCost());
 
-                currentInRow.addOutgoingEdge(leftToRight);
-                right.addOutgoingEdge(rightToLeft);
-                currentInRow.addIngoingEdge(rightToLeft);
-                right.addIngoingEdge(leftToRight);
+                if (right.getData() == source || currentInRow.getData() == source
+                        || !(map.isOccupied(right.getData()) || map.isOccupied(currentInRow.getData()))) {
+                    currentInRow.addOutgoingEdge(leftToRight);
+                    right.addOutgoingEdge(rightToLeft);
+                    currentInRow.addIngoingEdge(rightToLeft);
+                    right.addIngoingEdge(leftToRight);
+                }
 
                 temp.get(i).add(right);
 
@@ -175,30 +185,37 @@ public class GraphUtils {
                 Edge<T> leftToLeftTop = new Edge<>(currentInRow, leftTop, leftTop.getData().getCost());
                 Edge<T> leftTopToLeft = new Edge<>(leftTop, currentInRow, currentInRow.getData().getCost());
 
-                currentInRow.addOutgoingEdge(leftToLeftTop);
-                currentInRow.addIngoingEdge(leftTopToLeft);
+                if (leftTop.getData() == source || currentInRow.getData() == source
+                        || !(map.isOccupied(leftTop.getData()) || map.isOccupied(currentInRow.getData()))) {
+                    currentInRow.addOutgoingEdge(leftToLeftTop);
+                    currentInRow.addIngoingEdge(leftTopToLeft);
 
-                leftTop.addOutgoingEdge(leftTopToLeft);
-                leftTop.addIngoingEdge(leftToLeftTop);
+                    leftTop.addOutgoingEdge(leftTopToLeft);
+                    leftTop.addIngoingEdge(leftToLeftTop);
+                }
 
                 currentInRow = right;
 
             }
-            Node<T> top = temp.get(i - 1).get(map[i].length - 1);
+            Node<T> top = temp.get(i - 1).get(internalMap[i].length - 1);
 
             Edge<T> rightToTop = new Edge<>(currentInRow, top, top.getData().getCost());
             Edge<T> topToRight = new Edge<>(top, currentInRow, currentInRow.getData().getCost());
 
-            top.addOutgoingEdge(topToRight);
-            top.addIngoingEdge(rightToTop);
+            if (top.getData() == source || currentInRow.getData() == source
+                    || !(map.isOccupied(top.getData()) || map.isOccupied(currentInRow.getData()))) {
 
-            currentInRow.addOutgoingEdge(rightToTop);
-            currentInRow.addIngoingEdge(topToRight);
+                top.addOutgoingEdge(topToRight);
+                top.addIngoingEdge(rightToTop);
+
+                currentInRow.addOutgoingEdge(rightToTop);
+                currentInRow.addIngoingEdge(topToRight);
+            }
 
         }
 
-        for (int i = 0; i < map.length; i++) {
-            for (int j = 0; j < map[i].length; j++) {
+        for (int i = 0; i < internalMap.length; i++) {
+            for (int j = 0; j < internalMap[i].length; j++) {
                 result.add(temp.get(i).get(j));
             }
         }

@@ -1,5 +1,7 @@
 package de.ativelox.feo.client.model.unit;
 
+import java.awt.Image;
+
 import de.ativelox.feo.client.model.property.ICanMove;
 import de.ativelox.feo.client.model.property.IRenderable;
 import de.ativelox.feo.client.model.property.ISelectable;
@@ -19,5 +21,19 @@ public interface IUnit extends IRenderable, IUpdateable, ISpatial, ISelectable, 
     public void setRange(int range);
 
     public void moveInstantly(int x, int y);
+
+    public void finished();
+
+    public void ready();
+
+    public boolean isWaiting();
+
+    public Image getPortrait();
+
+    public String getName();
+
+    public int getCurrentHP();
+
+    public int getMaximumHP();
 
 }

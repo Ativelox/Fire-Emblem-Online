@@ -26,10 +26,14 @@ public interface IBehavior {
 
     void onActionWindowCanceled();
 
+    void onSystemActionWindowCanceled();
+
     void onConfirm();
 
-    void turnStart();
+    void onTurnStart();
 
-    void turnEnd();
+    void onTurnEnd();
+
+    void onWaitAction();
 
 }

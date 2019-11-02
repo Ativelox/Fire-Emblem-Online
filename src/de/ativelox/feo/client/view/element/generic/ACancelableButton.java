@@ -25,7 +25,6 @@ public abstract class ACancelableButton extends AButtonElement implements ICance
 
     public ACancelableButton(int x, int y, int width, int height, boolean isPercent, EResource background, int order) {
         this(x, y, width, height, isPercent, background, order, "");
-        // TODO Auto-generated constructor stub
     }
 
     @Override

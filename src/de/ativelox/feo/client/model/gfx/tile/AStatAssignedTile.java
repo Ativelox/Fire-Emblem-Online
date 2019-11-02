@@ -13,7 +13,7 @@ public abstract class AStatAssignedTile extends SpatialObject implements ITile {
 
     public static final int WIDTH = 16 * Display.INTERNAL_RES_FACTOR;
     public static final int HEIGHT = 16 * Display.INTERNAL_RES_FACTOR;
-    
+
     protected final ETileType mType;
 
     private int mCost;
@@ -63,11 +63,26 @@ public abstract class AStatAssignedTile extends SpatialObject implements ITile {
 
         case VILLAGE:
             mAvoidance = 10;
+            break;
+
         case CLOSED:
+            mAvoidance = 10;
+            break;
+
         case HOUSE:
+            mAvoidance = 10;
+            break;
+
         case ARMORY:
+            mAvoidance = 10;
+            break;
+
         case VENDOR:
+            mAvoidance = 10;
+            break;
+
         case ARENA:
+            mAvoidance = 10;
             break;
 
         case FORT:
@@ -84,7 +99,11 @@ public abstract class AStatAssignedTile extends SpatialObject implements ITile {
         case FOREST:
             mCost = 2;
             mAvoidance = 20;
+            break;
+
         case PILLAR:
+            mCost = 2;
+            mAvoidance = 20;
             break;
 
         case WOODS:
@@ -99,7 +118,11 @@ public abstract class AStatAssignedTile extends SpatialObject implements ITile {
         case DESERT:
             mCost = 2;
             mAvoidance = 5;
+            break;
+
         case ARCH:
+            mCost = 2;
+            mAvoidance = 5;
             break;
 
         case RIVER:
@@ -119,7 +142,11 @@ public abstract class AStatAssignedTile extends SpatialObject implements ITile {
         case SEA:
             mAvoidance = 10;
             mCost = 255;
+            break;
+
         case LAKE:
+            mAvoidance = 10;
+            mCost = 255;
             break;
 
         case WALL:
@@ -129,8 +156,14 @@ public abstract class AStatAssignedTile extends SpatialObject implements ITile {
 
         case DOOR:
             mCost = 255;
+            break;
+
         case ROOF:
+            mCost = 255;
+            break;
+
         case CLIFF:
+            mCost = 255;
             break;
 
         case THRONE:

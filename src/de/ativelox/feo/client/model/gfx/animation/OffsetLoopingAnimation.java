@@ -26,7 +26,7 @@ public class OffsetLoopingAnimation extends DefaultLoopingAnimation {
         if (mHidden) {
             return;
         }
-        g.drawImage(mSequence[mNext], getX() + mOffsetX, getY() + mOffsetY, getWidth(), getHeight());
+        g.drawImage(mSequence[mNext], getX() + mOffsetX, getY() + mOffsetY, getWidth(), getHeight(), 2);
 
     }
 }

@@ -1,10 +1,12 @@
 package de.ativelox.feo.client.view.screen;
 
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
 
 import de.ativelox.feo.client.controller.GameController;
@@ -20,6 +22,10 @@ import de.ativelox.feo.client.view.screen.editor.IMapEditorScreen;
 import de.ativelox.feo.client.view.screen.editor.IMapEditorUIScreen;
 import de.ativelox.feo.client.view.screen.editor.MapEditorScreen;
 import de.ativelox.feo.client.view.screen.editor.MapEditorUIScreen;
+import de.ativelox.feo.client.view.screen.game.GameScreen;
+import de.ativelox.feo.client.view.screen.game.GameUIScreen;
+import de.ativelox.feo.client.view.screen.game.IGameScreen;
+import de.ativelox.feo.client.view.screen.game.IGameUIScreen;
 import de.ativelox.feo.logging.ELogType;
 import de.ativelox.feo.logging.Logger;
 
@@ -37,7 +43,10 @@ public class CameraScreenManager implements IScreenManager {
 
     private final Camera mCamera;
 
-    private final DepthBufferedGraphics mGraphics;
+    private final java.util.Map<DepthBufferedGraphics, AffineTransform> mGraphicsMapping;
+    private final List<DepthBufferedGraphics> mGraphics;
+
+//    private final DepthBufferedGraphics mGraphics;
 
     private final InputManager mInputManager;
 
@@ -50,7 +59,9 @@ public class CameraScreenManager implements IScreenManager {
         mDisplay = d;
         mInputManager = im;
 
-        mGraphics = new DepthBufferedGraphics();
+        mGraphicsMapping = new HashMap<>();
+
+        mGraphics = new ArrayList<>();
 
         mCamera = camera;
 
@@ -71,27 +82,37 @@ public class CameraScreenManager implements IScreenManager {
         }
 
         Collections.reverse(tempList);
+
+        int i = 0;
         for (final IScreen screen : tempList) {
+            AffineTransform transform = Camera.IDENTITY;
+
             switch (screen.cameraApplied()) {
             case DYNAMIC:
-                g.setTransform(mCamera.getAllTransform());
+                transform = mCamera.getAllTransform();
                 break;
             case NONE:
-                g.setTransform(Camera.IDENTITY);
+                transform = Camera.IDENTITY;
                 break;
             case WINDOW_RESIZE_ONLY:
-                g.setTransform(mCamera.getResizeTransform());
+                transform = mCamera.getResizeTransform();
                 break;
             case USER_ZT:
-                g.setTransform(mCamera.getCameraTransform());
+                transform = mCamera.getCameraTransform();
                 break;
             default:
                 break;
 
             }
-            screen.render(mGraphics);
+            screen.render(mGraphics.get(i));
+            mGraphicsMapping.put(mGraphics.get(i), transform);
+
+            i++;
         }
-        mGraphics.draw(g);
+
+        for (int j = 0; j < i; j++) {
+            mGraphics.get(j).draw(g, mGraphicsMapping.get(mGraphics.get(j)));
+        }
 
     }
 
@@ -126,12 +147,14 @@ public class CameraScreenManager implements IScreenManager {
     @Override
     public void addScreen(IScreen screen) {
         mTempAdd.add(screen);
+        mGraphics.add(new DepthBufferedGraphics());
 
     }
 
     @Override
     public void removeScreen() {
         mScreenRemovalCounter++;
+        mGraphics.remove(mGraphics.size() - 1);
 
     }
 
@@ -151,9 +174,11 @@ public class CameraScreenManager implements IScreenManager {
         case GAME_SCREEN:
             Map map = new Map("ch0.map", 0, 0);
             mCamera.setBounds(map);
-            IGameScreen gameScreen = new GameScreen(map, mCamera, mInputManager);
-            new GameController(this, mInputManager, map, gameScreen, new DefaultPlayerBehavior(map));
+            IGameScreen gameScreen = new GameScreen(map, mCamera);
+            IGameUIScreen uiScreen = new GameUIScreen();
+            new GameController(this, mInputManager, map, gameScreen, uiScreen, new DefaultPlayerBehavior(map));
             this.addScreen(gameScreen);
+            this.addScreen(uiScreen);
             break;
         case MAIN_MENU_SCREEN:
             removeUntil(screen);

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -126,22 +127,23 @@ public class DepthBufferedGraphics {
     public void drawLine(Color color, int x1, int y1, int x2, int y2, int depth) {
         mToRender.add(Pair.of(EGraphicsOperation.DRAW_LINE, new Object[] { color, x1, y1, x2, y2, depth }));
     }
-    
+
     public void drawLine(int x1, int y1, int x2, int y2, int depth) {
         this.drawLine(null, x1, y1, x2, y2, depth);
     }
-    
+
     public void drawLine(Color color, int x1, int y1, int x2, int y2) {
         this.drawLine(color, x1, y1, x2, y1, 0);
     }
-    
+
     public void drawLine(int x1, int y1, int x2, int y2) {
         this.drawLine(null, x1, y1, x2, y2, 0);
     }
 
-
-    public void draw(Graphics2D g) {
+    public void draw(Graphics2D g, AffineTransform transform) {
         mToRender.sort(mComparator);
+
+        g.setTransform(transform);
 
         for (final Pair<EGraphicsOperation, Object[]> pair : mToRender) {
             Object[] args = pair.getSecond();
@@ -180,7 +182,7 @@ public class DepthBufferedGraphics {
                 break;
 
             case DRAW_LINE:
-                if(args[0] != null) {
+                if (args[0] != null) {
                     g.setColor((Color) args[0]);
                 }
                 g.drawLine((int) args[1], (int) args[2], (int) args[3], (int) args[4]);

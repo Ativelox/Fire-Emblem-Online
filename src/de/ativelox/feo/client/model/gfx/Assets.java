@@ -55,6 +55,8 @@ public class Assets {
     private static final Path SYSTEM_PATH = Paths.get("res", "fe6", "system");
     private static final Path FONT_PATH = Paths.get("res", "font");
 
+    private static final Path PORTRAIT_PATH = Paths.get("res", "fe6", "portrait");
+
     private static final String FIELDS_TILE_SET_NAME = "fields.png";
     private static final String DIALOGUE_FONT_NAME = "fe-dialogue.ttf";
     private static final String REGULAR_FONT_NAME = "regular.png";
@@ -66,6 +68,7 @@ public class Assets {
     private static final String ACTION_WINDOW_BOTTOM_NAME = "action_window_bot.png";
     private static final String ACTION_WINDOW_MIDDLE_NAME = "action_window_middle.png";
     private static final String ACTION_SELECTOR_NAME = "action_selector.png";
+    private static final String BURST_WINDOW_NAME = "burst_window.png";
 
     private static Font DIALOGUE_FONT;
 
@@ -406,6 +409,34 @@ public class Assets {
 
         case ACTION_SELECTOR:
             result = (T) SpriteSheet.load(SYSTEM_PATH.resolve(ACTION_SELECTOR_NAME)).get();
+            break;
+
+        case PORTRAIT:
+            BufferedImage portraitSheet = SpriteSheet.load(PORTRAIT_PATH.resolve(additionalInfo[0])).get();
+            result = (T) SpriteSheet.split(portraitSheet, 96, 80, 1, 0, 1)[0];
+            break;
+
+        case BURST_WINDOW:
+            BufferedImage bwImage = SpriteSheet.load(SYSTEM_PATH.resolve(BURST_WINDOW_NAME)).get();
+            boolean[] ignore = new boolean[bwImage.getWidth() * bwImage.getHeight()];
+            ignore[0] = true;
+            ignore[1] = true;
+
+            ignore[84] = true;
+            ignore[85] = true;
+
+            ignore[86 * 1 + 0] = true;
+            ignore[86 * 1 + 85] = true;
+
+            ignore[86 * 36 + 0] = true;
+            ignore[86 * 36 + 85] = true;
+
+            ignore[86 * 37 + 0] = true;
+            ignore[86 * 37 + 1] = true;
+
+            ignore[86 * 37 + 84] = true;
+            ignore[86 * 37 + 85] = true;
+            result = (T) SpriteSheet.applyTransparency(bwImage, 200, ignore);
             break;
 
         default:

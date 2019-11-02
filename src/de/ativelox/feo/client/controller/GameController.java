@@ -9,8 +9,9 @@ import de.ativelox.feo.client.model.property.callback.IMovementListener;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.view.element.game.MovementIndicator;
 import de.ativelox.feo.client.view.element.game.MovementRange;
-import de.ativelox.feo.client.view.screen.IGameScreen;
 import de.ativelox.feo.client.view.screen.IScreenManager;
+import de.ativelox.feo.client.view.screen.game.IGameScreen;
+import de.ativelox.feo.client.view.screen.game.IGameUIScreen;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
@@ -22,32 +23,44 @@ public class GameController {
 
     private final IGameScreen mScreen;
 
+    private final IGameUIScreen mUiScreen;
+
     private final IBehavior mAlliedBehavior;
 
     private final Map mMap;
 
     public GameController(final IScreenManager sm, final InputManager im, final Map map, final IGameScreen screen,
-            IBehavior alliedBehavior) {
+            final IGameUIScreen uiScreen, IBehavior alliedBehavior) {
+        uiScreen.setController(this);
         screen.setController(this);
         alliedBehavior.setController(this);
 
         mInputManager = im;
         mScreen = screen;
+        mUiScreen = uiScreen;
         mAlliedBehavior = alliedBehavior;
 
         mMap = map;
 
-        alliedBehavior.turnStart();
+        alliedBehavior.onTurnStart();
 
     }
 
+    public void blockNonUiInput() {
+        mScreen.blockInput();
+    }
+
+    public void unBlockNonUiInput() {
+        mScreen.unblockInput();
+    }
+
     public void displayUnitWindow(IUnit unit) {
-        mScreen.displayUnitWindow(unit);
+        mUiScreen.displayUnitWindow(unit);
 
     }
 
     public void removeUnitWindow(IUnit unit) {
-        mScreen.removeUnitWindow(unit);
+        mUiScreen.removeUnitWindow(unit);
 
     }
 
@@ -83,11 +96,20 @@ public class GameController {
     }
 
     public void displayActionWindow() {
-        mScreen.displayActionWindow(EActionWindowOption.ATTACK, EActionWindowOption.TRADE, EActionWindowOption.WAIT);
+        mUiScreen.displayUnitActionWindow(EActionWindowOption.ATTACK, EActionWindowOption.TRADE,
+                EActionWindowOption.WAIT);
 
     }
 
     public void removeActionWindow() {
-        mScreen.removeActionWindow();
+        mUiScreen.removeActionWindow();
+    }
+
+    public void displaySystemActionWindow() {
+        mUiScreen.displaySystemActionWindow(EActionWindowOption.END_TURN);
+    }
+
+    public InputManager getInputManager() {
+        return mInputManager;
     }
 }

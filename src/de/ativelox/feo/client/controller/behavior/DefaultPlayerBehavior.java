@@ -22,6 +22,10 @@ public class DefaultPlayerBehavior implements IBehavior {
 
     @Override
     public void onUnitSelect(IUnit unit) {
+        if (mPathRoutine.isActive()) {
+            return;
+        }
+
         mController.displayUnitWindow(unit);
 
     }
@@ -33,13 +37,13 @@ public class DefaultPlayerBehavior implements IBehavior {
     }
 
     @Override
-    public void turnStart() {
+    public void onTurnStart() {
         mController.enableUserInput();
 
     }
 
     @Override
-    public void turnEnd() {
+    public void onTurnEnd() {
         mController.blockUserInput();
 
     }
@@ -52,6 +56,9 @@ public class DefaultPlayerBehavior implements IBehavior {
 
     @Override
     public void onUnitConfirm(IUnit unit) {
+        if (unit.isWaiting() || mPathRoutine.isActive()) {
+            return;
+        }
         mPathRoutine.startCalculation(unit);
         mController.displayMovementRange(mPathRoutine.getMovementRange());
         mController.displayMovementIndicator(mPathRoutine.getMovementIndicator());
@@ -71,6 +78,11 @@ public class DefaultPlayerBehavior implements IBehavior {
             mController.removeMovementIndicator();
             mController.removeMovementRange();
 
+        } else {
+            // confirm was pressed, not on a unit and not while a unit is moving etc.
+            mController.displaySystemActionWindow();
+            mController.blockNonUiInput();
+
         }
     }
 
@@ -86,10 +98,8 @@ public class DefaultPlayerBehavior implements IBehavior {
 
     @Override
     public void onMovementFinished(IUnit unit) {
-//        mPathRoutine.stop();
-//        mController.removeMovementRange();
-
         mController.displayActionWindow();
+        mController.blockNonUiInput();
 
     }
 
@@ -102,5 +112,31 @@ public class DefaultPlayerBehavior implements IBehavior {
         mController.displayMovementIndicator(mPathRoutine.getMovementIndicator());
         mController.displayMovementRange(mPathRoutine.getMovementRange());
         mController.removeActionWindow();
+
+        mController.unBlockNonUiInput();
+
+    }
+
+    @Override
+    public void onWaitAction() {
+        if (!mPathRoutine.isActive()) {
+            return;
+        }
+
+        IUnit actor = mPathRoutine.getActor();
+        actor.finished();
+        mPathRoutine.stop();
+
+        mController.removeActionWindow();
+        mController.unBlockNonUiInput();
+        mController.displayUnitWindow(actor);
+
+    }
+
+    @Override
+    public void onSystemActionWindowCanceled() {
+        mController.removeActionWindow();
+        mController.unBlockNonUiInput();
+
     }
 }
