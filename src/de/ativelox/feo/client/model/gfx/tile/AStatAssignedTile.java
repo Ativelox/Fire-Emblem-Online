@@ -186,6 +186,10 @@ public abstract class AStatAssignedTile extends SpatialObject implements ITile {
 
     }
 
+    public ETileType getType() {
+        return mType;
+    }
+
     @Override
     public abstract int getId();
 }

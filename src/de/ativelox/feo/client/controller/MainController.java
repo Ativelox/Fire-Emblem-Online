@@ -12,6 +12,7 @@ import de.ativelox.feo.client.model.gfx.Assets;
 import de.ativelox.feo.client.model.property.IPriorityUpdateable;
 import de.ativelox.feo.client.model.property.callback.IMovementListener;
 import de.ativelox.feo.client.model.property.callback.IPanningListener;
+import de.ativelox.feo.client.model.unit.Palette;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.screen.CameraScreenManager;
@@ -50,6 +51,7 @@ public class MainController implements Runnable {
 
     public void initialize() {
         Assets.init();
+        Palette.init();
 
         mDisplay = new Display("Fire Emblem Online", Display.WIDTH, Display.HEIGHT);
         mCamera = new Camera();

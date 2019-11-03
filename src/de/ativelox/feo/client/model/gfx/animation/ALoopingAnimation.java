@@ -1,6 +1,7 @@
 package de.ativelox.feo.client.model.gfx.animation;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
@@ -11,7 +12,7 @@ import de.ativelox.feo.client.model.util.TimeSnapshot;
  */
 public abstract class ALoopingAnimation extends AAnimation {
 
-    public ALoopingAnimation(Image[] sequence, EAnimationDirection direction, long playTime, int width, int height) {
+    public ALoopingAnimation(BufferedImage[] sequence, EAnimationDirection direction, long playTime, int width, int height) {
         super(sequence, direction, true, playTime, width, height);
     }
 

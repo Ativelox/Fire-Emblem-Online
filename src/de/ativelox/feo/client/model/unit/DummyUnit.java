@@ -12,7 +12,10 @@ import de.ativelox.feo.client.model.gfx.EResource;
 import de.ativelox.feo.client.model.gfx.SpatialObject;
 import de.ativelox.feo.client.model.gfx.animation.IAnimation;
 import de.ativelox.feo.client.model.gfx.tile.Tile;
+import de.ativelox.feo.client.model.property.EAffiliation;
+import de.ativelox.feo.client.model.property.EClass;
 import de.ativelox.feo.client.model.property.EDirection;
+import de.ativelox.feo.client.model.property.EGender;
 import de.ativelox.feo.client.model.property.ICanMove;
 import de.ativelox.feo.client.model.property.IRequireResources;
 import de.ativelox.feo.client.model.property.callback.IMoveListener;
@@ -36,7 +39,6 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     private IAnimation mMoveUp;
     private IAnimation mCurrentAnimation;
 
-    private final String mPortraitName;
     private Image mPortrait;
 
     private final String mName;
@@ -48,25 +50,32 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     private final List<ISelectionListener> mSelectionListener;
     private final List<IMoveListener> mMoveListener;
 
-    private final String mDataName;
-
     private final int mMovement;
 
     private int mRange;
 
     private boolean mIsWaiting;
 
-    public DummyUnit(int x, int y, int movement, String dataName, String portraitName, String name) {
+    private EGender mGender;
+
+    private EClass mClass;
+
+    private EAffiliation mAffiliation;
+
+    public DummyUnit(int x, int y, int movement, EGender gender, EClass unitClass, String name,
+            EAffiliation affiliation) {
         super(Tile.WIDTH * x, Tile.HEIGHT * y, Tile.WIDTH, Tile.HEIGHT);
 
         mName = name;
 
+        mGender = gender;
+        mClass = unitClass;
+
+        mAffiliation = affiliation;
+
         mMoveListener = new ArrayList<>();
         mSelectionListener = new ArrayList<>();
-        mDataName = dataName;
         mMover = new SmoothMoveRoutine(this);
-
-        mPortraitName = portraitName;
 
         mMovement = movement;
 
@@ -78,11 +87,6 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     @Override
     public void render(DepthBufferedGraphics g) {
         mCurrentAnimation.render(g);
-        if (mIsWaiting) {
-            // TODO: debugging tool for now, since no palette change is supported atm.
-            g.fillRect(new Color(0, 0, 0, 150), getX(), getY(), getWidth(), getHeight(), 2);
-        }
-
     }
 
     @Override
@@ -98,12 +102,21 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
 
     @Override
     public void load() {
-        mHover = Assets.getFor(EResource.MAP_HOVER, mDataName);
-        mMoveRight = Assets.getFor(EResource.MAP_MOVE_RIGHT, mDataName);
-        mMoveLeft = Assets.getFor(EResource.MAP_MOVE_LEFT, mDataName);
-        mMoveUp = Assets.getFor(EResource.MAP_MOVE_UP, mDataName);
-        mMoveDown = Assets.getFor(EResource.MAP_MOVE_DOWN, mDataName);
-        mSelection = Assets.getFor(EResource.MAP_SELECTION, mDataName);
+        String suffix = "";
+        if (mGender == EGender.MALE) {
+            suffix = "_m.png";
+        } else {
+            suffix = "_f.png";
+        }
+
+        String dataName = mClass.toString().toLowerCase() + suffix;
+
+        mHover = Assets.getFor(EResource.MAP_HOVER, dataName);
+        mMoveRight = Assets.getFor(EResource.MAP_MOVE_RIGHT, dataName);
+        mMoveLeft = Assets.getFor(EResource.MAP_MOVE_LEFT, dataName);
+        mMoveUp = Assets.getFor(EResource.MAP_MOVE_UP, dataName);
+        mMoveDown = Assets.getFor(EResource.MAP_MOVE_DOWN, dataName);
+        mSelection = Assets.getFor(EResource.MAP_SELECTION, dataName);
 
         mCurrentAnimation = mHover;
 
@@ -112,7 +125,17 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
 
         mCurrentAnimation.start();
 
-        mPortrait = Assets.getFor(EResource.PORTRAIT, mPortraitName);
+        if (mAffiliation == EAffiliation.OPPOSED) {
+            Palette.convertTo(mHover, Palette.BLUE_RED);
+            Palette.convertTo(mMoveRight, Palette.BLUE_RED);
+            Palette.convertTo(mMoveLeft, Palette.BLUE_RED);
+            Palette.convertTo(mMoveUp, Palette.BLUE_RED);
+            Palette.convertTo(mMoveDown, Palette.BLUE_RED);
+            Palette.convertTo(mSelection, Palette.BLUE_RED);
+
+        }
+
+        mPortrait = Assets.getFor(EResource.PORTRAIT, mName.toLowerCase() + ".png");
     }
 
     @Override
@@ -250,6 +273,12 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
         mCurrentAnimation.reset();
         mCurrentAnimation.start();
 
+        if (mAffiliation == EAffiliation.ALLIED) {
+            Palette.convertTo(mCurrentAnimation, Palette.BLUE_GRAY);
+        } else {
+            Palette.convertTo(mCurrentAnimation, Palette.RED_GRAY);
+        }
+
         mIsWaiting = true;
 
     }
@@ -262,6 +291,12 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     @Override
     public void ready() {
         mIsWaiting = false;
+
+        if (mAffiliation == EAffiliation.ALLIED) {
+            Palette.convertTo(mCurrentAnimation, Palette.GRAY_BLUE);
+        } else {
+            Palette.convertTo(mCurrentAnimation, Palette.GRAY_RED);
+        }
 
     }
 
@@ -285,5 +320,10 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     public int getMaximumHP() {
         // TODO Auto-generated method stub
         return 30;
+    }
+
+    @Override
+    public EAffiliation getAffiliation() {
+        return mAffiliation;
     }
 }

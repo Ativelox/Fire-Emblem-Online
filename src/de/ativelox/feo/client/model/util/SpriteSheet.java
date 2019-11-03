@@ -72,9 +72,9 @@ public class SpriteSheet {
      *                     <tt>dimensions[0]</tt> describes the top most row.
      * @return All the tiles in the order specified.
      */
-    public static Image[] split(BufferedImage image, int tileWidth, int tileHeight, int amount, int columnOffset,
-            int... dimensions) {
-        Image[] result = new Image[amount];
+    public static BufferedImage[] split(BufferedImage image, int tileWidth, int tileHeight, int amount,
+            int columnOffset, int... dimensions) {
+        BufferedImage[] result = new BufferedImage[amount];
 
         int row = 0;
         int i = 0;
@@ -222,6 +222,11 @@ public class SpriteSheet {
             if (ignore[i]) {
                 continue;
             }
+            // the main rgb value used for complete transparency throughout the project.
+            if (pixels[i] == 10014920) {
+                continue;
+            }
+
             Color c = new Color(pixels[i]);
 
             c = new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);

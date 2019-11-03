@@ -16,6 +16,8 @@ import de.ativelox.feo.client.controller.input.InputManager;
 import de.ativelox.feo.client.model.camera.Camera;
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.map.Map;
+import de.ativelox.feo.client.model.map.TutorialMap;
+import de.ativelox.feo.client.model.property.EAffiliation;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.screen.editor.IMapEditorScreen;
@@ -85,25 +87,8 @@ public class CameraScreenManager implements IScreenManager {
 
         int i = 0;
         for (final IScreen screen : tempList) {
-            AffineTransform transform = Camera.IDENTITY;
+            AffineTransform transform = mCamera.getTransform(screen.cameraApplied());
 
-            switch (screen.cameraApplied()) {
-            case DYNAMIC:
-                transform = mCamera.getAllTransform();
-                break;
-            case NONE:
-                transform = Camera.IDENTITY;
-                break;
-            case WINDOW_RESIZE_ONLY:
-                transform = mCamera.getResizeTransform();
-                break;
-            case USER_ZT:
-                transform = mCamera.getCameraTransform();
-                break;
-            default:
-                break;
-
-            }
             screen.render(mGraphics.get(i));
             mGraphicsMapping.put(mGraphics.get(i), transform);
 
@@ -172,11 +157,13 @@ public class CameraScreenManager implements IScreenManager {
 
             break;
         case GAME_SCREEN:
-            Map map = new Map("ch0.map", 0, 0);
+            Map map = new TutorialMap(0, 0);
             mCamera.setBounds(map);
             IGameScreen gameScreen = new GameScreen(map, mCamera);
             IGameUIScreen uiScreen = new GameUIScreen();
-            new GameController(this, mInputManager, map, gameScreen, uiScreen, new DefaultPlayerBehavior(map));
+            new GameController(this, mInputManager, map, mCamera, gameScreen, uiScreen,
+                    new DefaultPlayerBehavior(map, EAffiliation.ALLIED),
+                    new DefaultPlayerBehavior(map, EAffiliation.OPPOSED));
             this.addScreen(gameScreen);
             this.addScreen(uiScreen);
             break;

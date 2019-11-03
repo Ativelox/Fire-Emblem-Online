@@ -1,6 +1,7 @@
 package de.ativelox.feo.client.model.gfx.animation;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
@@ -21,7 +22,7 @@ public class DefaultLoopingAnimation extends ALoopingAnimation {
 
     private boolean mIsSmooth;
 
-    public DefaultLoopingAnimation(Image[] sequence, EAnimationDirection animationDirection, long playTime, int width,
+    public DefaultLoopingAnimation(BufferedImage[] sequence, EAnimationDirection animationDirection, long playTime, int width,
             int height) {
         super(sequence, animationDirection, playTime, width, height);
 
@@ -102,7 +103,7 @@ public class DefaultLoopingAnimation extends ALoopingAnimation {
 
     @Override
     public IAnimation copy() {
-        Image[] sequence = new Image[mSequence.length];
+        BufferedImage[] sequence = new BufferedImage[mSequence.length];
 
         for (int i = 0; i < sequence.length; i++) {
             sequence[i] = mSequence[i];

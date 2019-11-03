@@ -2,6 +2,8 @@ package de.ativelox.feo.client.model.gfx.animation;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.util.Iterator;
 
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
@@ -31,7 +33,7 @@ public class DefaultNonLoopingAnimation extends AAnimation {
 
     private boolean mIsFinished;
 
-    public DefaultNonLoopingAnimation(Image[] sequence, EAnimationDirection direction, long playTime, int width,
+    public DefaultNonLoopingAnimation(BufferedImage[] sequence, EAnimationDirection direction, long playTime, int width,
             int height) {
         super(sequence, direction, false, playTime, width, height);
 
@@ -65,7 +67,7 @@ public class DefaultNonLoopingAnimation extends AAnimation {
 
     @Override
     public IAnimation copy() {
-        Image[] sequence = new Image[mSequence.length];
+        BufferedImage[] sequence = new BufferedImage[mSequence.length];
 
         for (int i = 0; i < sequence.length; i++) {
             sequence[i] = mSequence[i];

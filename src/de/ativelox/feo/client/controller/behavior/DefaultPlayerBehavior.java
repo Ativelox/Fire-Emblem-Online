@@ -2,6 +2,7 @@ package de.ativelox.feo.client.controller.behavior;
 
 import de.ativelox.feo.client.controller.GameController;
 import de.ativelox.feo.client.model.map.Map;
+import de.ativelox.feo.client.model.property.EAffiliation;
 import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.property.routine.PathCalculationRoutine;
 import de.ativelox.feo.client.model.unit.IUnit;
@@ -16,12 +17,22 @@ public class DefaultPlayerBehavior implements IBehavior {
 
     private PathCalculationRoutine mPathRoutine;
 
-    public DefaultPlayerBehavior(final Map map) {
+    private final EAffiliation mAffiliation;
+
+    private boolean mIsOnTurn;
+
+    public DefaultPlayerBehavior(final Map map, EAffiliation affiliation) {
         mPathRoutine = new PathCalculationRoutine(map);
+
+        mAffiliation = affiliation;
     }
 
     @Override
     public void onUnitSelect(IUnit unit) {
+        if (!mIsOnTurn) {
+            return;
+        }
+
         if (mPathRoutine.isActive()) {
             return;
         }
@@ -32,19 +43,31 @@ public class DefaultPlayerBehavior implements IBehavior {
 
     @Override
     public void onUnitDeselect(IUnit unit) {
+        if (!mIsOnTurn) {
+            return;
+        }
         mController.removeUnitWindow(unit);
 
     }
 
     @Override
     public void onTurnStart() {
-        mController.enableUserInput();
+        System.out.println("Turn start: " + getAffiliation());
+
+        mIsOnTurn = true;
+        mController.turnStart(this);
 
     }
 
     @Override
     public void onTurnEnd() {
-        mController.blockUserInput();
+        System.out.println("Turn end: " + getAffiliation());
+
+        mController.removeActionWindow();
+        mController.unBlockNonUiInput();
+
+        mIsOnTurn = false;
+        mController.turnEnd(this);
 
     }
 
@@ -56,6 +79,16 @@ public class DefaultPlayerBehavior implements IBehavior {
 
     @Override
     public void onUnitConfirm(IUnit unit) {
+        if (!mIsOnTurn) {
+            return;
+        }
+        if (unit.getAffiliation() != mAffiliation) {
+            mController.displaySystemActionWindow();
+            mController.blockNonUiInput();
+            return;
+
+        }
+
         if (unit.isWaiting() || mPathRoutine.isActive()) {
             return;
         }
@@ -67,12 +100,20 @@ public class DefaultPlayerBehavior implements IBehavior {
 
     @Override
     public void onCursorMove(ISpatial cursor) {
+        if (!mIsOnTurn) {
+            return;
+        }
+        mController.cursorMoved(cursor);
         mPathRoutine.updateCursorLocation(cursor);
+        mController.displayTileStatus(cursor.getX(), cursor.getY());
 
     }
 
     @Override
     public void onConfirm() {
+        if (!mIsOnTurn) {
+            return;
+        }
         if (mPathRoutine.isActive()) {
             mPathRoutine.executeIfValid();
             mController.removeMovementIndicator();
@@ -88,6 +129,9 @@ public class DefaultPlayerBehavior implements IBehavior {
 
     @Override
     public void onCancel() {
+        if (!mIsOnTurn) {
+            return;
+        }
         if (mPathRoutine.isActive()) {
             mPathRoutine.stop();
             mController.removeMovementIndicator();
@@ -98,13 +142,23 @@ public class DefaultPlayerBehavior implements IBehavior {
 
     @Override
     public void onMovementFinished(IUnit unit) {
-        mController.displayActionWindow();
+        if (!mIsOnTurn) {
+            return;
+        }
+        if (unit.getAffiliation() != mAffiliation) {
+            return;
+        }
+
+        mController.displayActionWindow(unit);
         mController.blockNonUiInput();
 
     }
 
     @Override
     public void onActionWindowCanceled() {
+        if (!mIsOnTurn) {
+            return;
+        }
         IUnit current = mPathRoutine.getActor();
         mPathRoutine.returnToLast();
         mPathRoutine.startCalculation(current);
@@ -119,6 +173,9 @@ public class DefaultPlayerBehavior implements IBehavior {
 
     @Override
     public void onWaitAction() {
+        if (!mIsOnTurn) {
+            return;
+        }
         if (!mPathRoutine.isActive()) {
             return;
         }
@@ -135,8 +192,16 @@ public class DefaultPlayerBehavior implements IBehavior {
 
     @Override
     public void onSystemActionWindowCanceled() {
+        if (!mIsOnTurn) {
+            return;
+        }
         mController.removeActionWindow();
         mController.unBlockNonUiInput();
 
+    }
+
+    @Override
+    public EAffiliation getAffiliation() {
+        return mAffiliation;
     }
 }

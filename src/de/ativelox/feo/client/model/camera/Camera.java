@@ -12,6 +12,7 @@ import de.ativelox.feo.client.model.property.callback.IResizeListener;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.model.util.UpdatePriority;
 import de.ativelox.feo.client.view.Display;
+import de.ativelox.feo.logging.ELogType;
 import de.ativelox.feo.logging.Logger;
 import de.ativelox.feo.util.Pair;
 
@@ -170,6 +171,25 @@ public class Camera implements IPriorityUpdateable, IMovementListener, IPanningL
     public void onPanY(double amount) {
         mScale += mScale * 1 / 100f * amount;
         mScale = Math.max(-1, mScale);
+
+    }
+
+    public AffineTransform getTransform(ECameraApplication application) {
+        switch (application) {
+        case DYNAMIC:
+            return mAll;
+        case NONE:
+            return Camera.IDENTITY;
+        case USER_ZT:
+            return mCameraTransform;
+        case WINDOW_RESIZE_ONLY:
+            return mResizeMatrix;
+        default:
+            Logger.get().log(ELogType.ERROR, "Coudln't fetch a matrix for the camera application: " + application);
+            break;
+
+        }
+        return Camera.IDENTITY;
 
     }
 

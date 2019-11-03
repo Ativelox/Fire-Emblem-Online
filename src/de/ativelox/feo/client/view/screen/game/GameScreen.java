@@ -16,9 +16,7 @@ import de.ativelox.feo.client.model.property.callback.ICancelListener;
 import de.ativelox.feo.client.model.property.callback.IMoveListener;
 import de.ativelox.feo.client.model.property.callback.ISelectionListener;
 import de.ativelox.feo.client.model.property.routine.UnitSelectionRoutine;
-import de.ativelox.feo.client.model.unit.DummyUnit;
 import de.ativelox.feo.client.model.unit.IUnit;
-import de.ativelox.feo.client.model.unit.UnitData;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.element.game.ActionWindow;
 import de.ativelox.feo.client.view.element.game.ActionWindowButton;
@@ -53,16 +51,16 @@ public class GameScreen extends InputReceiver
 
     public GameScreen(Map map, Camera camera) {
         mMap = map;
-        IUnit unit = new DummyUnit(0, 0, 5, UnitData.SWORDMASTER_F, "fir.png", "Fir");
-        unit.add(this);
-        unit.addMoveFinishedListener(this);
 
-        IUnit unit2 = new DummyUnit(5, 2, 10, UnitData.SWORDMASTER_F, "fir.png", "Teeeeest");
-        unit2.add(this);
-        unit2.addMoveFinishedListener(this);
+        map.getAlliedUnits().forEach(u -> {
+            u.add(this);
+            u.addMoveFinishedListener(this);
+        });
+        map.getOpposedUnits().forEach(u -> {
+            u.add(this);
+            u.addMoveFinishedListener(this);
+        });
 
-        map.add(unit);
-        map.add(unit2);
         map.load();
 
         mSelectionCursor = new MapSelector(0, 0, map);
@@ -75,6 +73,7 @@ public class GameScreen extends InputReceiver
     @Override
     public void setController(final GameController gc) {
         mController = gc;
+        gc.getActiveBehavior().onCursorMove(mSelectionCursor);
     }
 
     @Override

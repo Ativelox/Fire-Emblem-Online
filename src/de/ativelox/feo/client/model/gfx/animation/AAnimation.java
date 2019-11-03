@@ -1,6 +1,7 @@
 package de.ativelox.feo.client.model.gfx.animation;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.util.Iterator;
 
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.gfx.SpatialObject;
@@ -18,7 +19,7 @@ public abstract class AAnimation extends SpatialObject implements IAnimation {
 
     protected long mPlayTime;
 
-    protected final Image[] mSequence;
+    protected final BufferedImage[] mSequence;
 
     protected boolean mIsStopped;
 
@@ -26,8 +27,8 @@ public abstract class AAnimation extends SpatialObject implements IAnimation {
 
     protected boolean mHidden;
 
-    public AAnimation(Image[] sequence, EAnimationDirection direction, boolean looping, long playTime, int width,
-            int height) {
+    public AAnimation(BufferedImage[] sequence, EAnimationDirection direction, boolean looping, long playTime,
+            int width, int height) {
         super(0, 0, width, height);
 
         mAnimationDirection = direction;
@@ -81,5 +82,10 @@ public abstract class AAnimation extends SpatialObject implements IAnimation {
     @Override
     public void show() {
         mHidden = false;
+    }
+
+    @Override
+    public Iterator<BufferedImage> iterator() {
+        return new AnimationIterator(mSequence);
     }
 }

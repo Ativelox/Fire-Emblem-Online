@@ -55,6 +55,8 @@ public class Assets {
     private static final Path SYSTEM_PATH = Paths.get("res", "fe6", "system");
     private static final Path FONT_PATH = Paths.get("res", "font");
 
+    private static final Path PALETTE_PATH = Paths.get("res", "palette");
+
     private static final Path PORTRAIT_PATH = Paths.get("res", "fe6", "portrait");
 
     private static final String FIELDS_TILE_SET_NAME = "fields.png";
@@ -69,6 +71,7 @@ public class Assets {
     private static final String ACTION_WINDOW_MIDDLE_NAME = "action_window_middle.png";
     private static final String ACTION_SELECTOR_NAME = "action_selector.png";
     private static final String BURST_WINDOW_NAME = "burst_window.png";
+    private static final String TILE_STATUS_NAME = "tile_status.png";
 
     private static Font DIALOGUE_FONT;
 
@@ -287,51 +290,52 @@ public class Assets {
 
         case MAP_HOVER:
             BufferedImage hoverSheet = SpriteSheet.load(HOVER_MAP_PATH.resolve(additionalInfo[0])).get();
-            Image[] animationSequence = SpriteSheet.split(hoverSheet, 16, 16, 3, 0, 1, 1, 1);
+            BufferedImage[] animationSequence = SpriteSheet.split(hoverSheet, 16, 16, 3, 0, 1, 1, 1);
             result = (T) new DefaultLoopingAnimation(animationSequence, EAnimationDirection.FORWARD_BACKWARD, 1000,
                     16 * Display.INTERNAL_RES_FACTOR, 16 * Display.INTERNAL_RES_FACTOR);
             break;
 
         case MAP_MOVE_RIGHT:
             BufferedImage moveRightSheet = SpriteSheet.load(MOVE_MAP_PATH.resolve(additionalInfo[0])).get();
-            Image[] rightSequence = SpriteSheet.split(moveRightSheet, 32, 32, 4, 0, 1, 1, 1, 1);
+            BufferedImage[] rightSequence = SpriteSheet.split(moveRightSheet, 32, 32, 4, 0, 1, 1, 1, 1);
             result = (T) new UnitMovementAnimation(rightSequence, EAnimationDirection.FORWARD, 1000,
                     32 * Display.INTERNAL_RES_FACTOR, 32 * Display.INTERNAL_RES_FACTOR);
             break;
 
         case MAP_MOVE_LEFT:
             BufferedImage moveLeftSheet = SpriteSheet.load(MOVE_MAP_PATH.resolve(additionalInfo[0])).get();
-            Image[] sequenceLeft = SpriteSheet.split(moveLeftSheet, 32, 32, 4, 0, 0, 0, 0, 0, 1, 1, 1, 1);
+            BufferedImage[] sequenceLeft = SpriteSheet.split(moveLeftSheet, 32, 32, 4, 0, 0, 0, 0, 0, 1, 1, 1, 1);
             result = (T) new UnitMovementAnimation(sequenceLeft, EAnimationDirection.FORWARD, 1000,
                     32 * Display.INTERNAL_RES_FACTOR, 32 * Display.INTERNAL_RES_FACTOR);
             break;
 
         case MAP_MOVE_DOWN:
             BufferedImage moveDownSheet = SpriteSheet.load(MOVE_MAP_PATH.resolve(additionalInfo[0])).get();
-            Image[] downSequence = SpriteSheet.split(moveDownSheet, 32, 32, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1);
+            BufferedImage[] downSequence = SpriteSheet.split(moveDownSheet, 32, 32, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
+                    1, 1);
             result = (T) new UnitMovementAnimation(downSequence, EAnimationDirection.FORWARD, 1000,
                     32 * Display.INTERNAL_RES_FACTOR, 32 * Display.INTERNAL_RES_FACTOR);
             break;
 
         case MAP_MOVE_UP:
             BufferedImage moveUpShet = SpriteSheet.load(MOVE_MAP_PATH.resolve(additionalInfo[0])).get();
-            Image[] upSequence = SpriteSheet.split(moveUpShet, 32, 32, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
-                    1, 1);
+            BufferedImage[] upSequence = SpriteSheet.split(moveUpShet, 32, 32, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    1, 1, 1, 1);
             result = (T) new UnitMovementAnimation(upSequence, EAnimationDirection.FORWARD, 1000,
                     32 * Display.INTERNAL_RES_FACTOR, 32 * Display.INTERNAL_RES_FACTOR);
             break;
 
         case MAP_SELECTION:
             BufferedImage selectionSheet = SpriteSheet.load(MOVE_MAP_PATH.resolve(additionalInfo[0])).get();
-            Image[] selectionSequence = SpriteSheet.split(selectionSheet, 32, 32, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 1, 1, 1);
+            BufferedImage[] selectionSequence = SpriteSheet.split(selectionSheet, 32, 32, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1);
             result = (T) new UnitMovementAnimation(selectionSequence, EAnimationDirection.FORWARD_BACKWARD, 700,
                     32 * Display.INTERNAL_RES_FACTOR, 32 * Display.INTERNAL_RES_FACTOR);
             break;
 
         case MAP_SELECTOR:
             BufferedImage mapSelectionSheet = SpriteSheet.load(SYSTEM_PATH.resolve(MAP_SELECTOR_NAME)).get();
-            Image[] mapSelectionSequence = SpriteSheet.split(mapSelectionSheet, 20, 20, 5, 0, 5);
+            BufferedImage[] mapSelectionSequence = SpriteSheet.split(mapSelectionSheet, 20, 20, 5, 0, 5);
             result = (T) new OffsetLoopingAnimation(mapSelectionSequence, EAnimationDirection.FORWARD_BACKWARD, 500,
                     20 * Display.INTERNAL_RES_FACTOR, 20 * Display.INTERNAL_RES_FACTOR,
                     -2 * Display.INTERNAL_RES_FACTOR, -2 * Display.INTERNAL_RES_FACTOR);
@@ -339,7 +343,7 @@ public class Assets {
 
         case MAP_INDICATOR:
             BufferedImage mapIndicatorSheet = SpriteSheet.load(SYSTEM_PATH.resolve(MAP_INDICATOR_NAME)).get();
-            Image[] mapIndicatorSequence = SpriteSheet.split(mapIndicatorSheet, 16, 16, 16, 0, 16);
+            BufferedImage[] mapIndicatorSequence = SpriteSheet.split(mapIndicatorSheet, 16, 16, 16, 0, 16);
             EIndicatorDirection direction = EIndicatorDirection.valueOf(additionalInfo[0]);
 
             Image tempResult = null;
@@ -437,6 +441,16 @@ public class Assets {
             ignore[86 * 37 + 84] = true;
             ignore[86 * 37 + 85] = true;
             result = (T) SpriteSheet.applyTransparency(bwImage, 200, ignore);
+            break;
+
+        case TILE_STATUS:
+            BufferedImage tsImage = SpriteSheet.load(SYSTEM_PATH.resolve(TILE_STATUS_NAME)).get();
+            result = (T) SpriteSheet.applyTransparency(tsImage, 200,
+                    new boolean[tsImage.getWidth() * tsImage.getHeight()]);
+            break;
+
+        case PALETTE:
+            result = (T) SpriteSheet.load(PALETTE_PATH.resolve(additionalInfo[0])).get();
             break;
 
         default:

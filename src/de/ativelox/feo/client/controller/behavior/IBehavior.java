@@ -1,6 +1,7 @@
 package de.ativelox.feo.client.controller.behavior;
 
 import de.ativelox.feo.client.controller.GameController;
+import de.ativelox.feo.client.model.property.EAffiliation;
 import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.unit.IUnit;
 
@@ -35,5 +36,7 @@ public interface IBehavior {
     void onTurnEnd();
 
     void onWaitAction();
+    
+    EAffiliation getAffiliation();
 
 }

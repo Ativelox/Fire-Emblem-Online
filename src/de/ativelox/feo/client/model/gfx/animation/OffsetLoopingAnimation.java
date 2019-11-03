@@ -1,6 +1,6 @@
 package de.ativelox.feo.client.model.gfx.animation;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 
@@ -13,8 +13,8 @@ public class OffsetLoopingAnimation extends DefaultLoopingAnimation {
     private final int mOffsetX;
     private final int mOffsetY;
 
-    public OffsetLoopingAnimation(Image[] sequence, EAnimationDirection animationDirection, long playTime, int width,
-            int height, int offsetX, int offsetY) {
+    public OffsetLoopingAnimation(BufferedImage[] sequence, EAnimationDirection animationDirection, long playTime,
+            int width, int height, int offsetX, int offsetY) {
         super(sequence, animationDirection, playTime, width, height);
 
         mOffsetX = offsetX;

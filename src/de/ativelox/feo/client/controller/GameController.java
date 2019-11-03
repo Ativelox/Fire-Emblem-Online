@@ -1,12 +1,22 @@
 package de.ativelox.feo.client.controller;
 
+import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.ativelox.feo.client.controller.behavior.IBehavior;
 import de.ativelox.feo.client.controller.input.InputManager;
+import de.ativelox.feo.client.model.camera.Camera;
 import de.ativelox.feo.client.model.map.Map;
 import de.ativelox.feo.client.model.property.EActionWindowOption;
+import de.ativelox.feo.client.model.property.EAffiliation;
+import de.ativelox.feo.client.model.property.ESide;
+import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.property.callback.IActionListener;
 import de.ativelox.feo.client.model.property.callback.IMovementListener;
 import de.ativelox.feo.client.model.unit.IUnit;
+import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.element.game.MovementIndicator;
 import de.ativelox.feo.client.view.element.game.MovementRange;
 import de.ativelox.feo.client.view.screen.IScreenManager;
@@ -26,23 +36,37 @@ public class GameController {
     private final IGameUIScreen mUiScreen;
 
     private final IBehavior mAlliedBehavior;
+    private final IBehavior mOpposedBehavior;
+
+    private IBehavior mCurrentActiveBehavior;
 
     private final Map mMap;
 
-    public GameController(final IScreenManager sm, final InputManager im, final Map map, final IGameScreen screen,
-            final IGameUIScreen uiScreen, IBehavior alliedBehavior) {
-        uiScreen.setController(this);
-        screen.setController(this);
-        alliedBehavior.setController(this);
+    private final Camera mCamera;
 
+    public GameController(final IScreenManager sm, final InputManager im, final Map map, final Camera camera,
+            final IGameScreen screen, final IGameUIScreen uiScreen, IBehavior alliedBehavior,
+            IBehavior opposedBehavior) {
         mInputManager = im;
         mScreen = screen;
         mUiScreen = uiScreen;
         mAlliedBehavior = alliedBehavior;
+        mOpposedBehavior = opposedBehavior;
+
+        mCamera = camera;
 
         mMap = map;
 
+        alliedBehavior.setController(this);
+        opposedBehavior.setController(this);
+
         alliedBehavior.onTurnStart();
+
+        uiScreen.setController(this);
+        screen.setController(this);
+
+        im.register((IActionListener) screen);
+        im.register((IMovementListener) screen);
 
     }
 
@@ -64,19 +88,30 @@ public class GameController {
 
     }
 
-    public void blockUserInput() {
-        mInputManager.remove((IActionListener) mScreen);
-        mInputManager.remove((IMovementListener) mScreen);
+    public void turnEnd(IBehavior behavior) {
+        if (behavior.getAffiliation() == EAffiliation.ALLIED) {
+            mOpposedBehavior.onTurnStart();
 
+        } else {
+            mAlliedBehavior.onTurnStart();
+
+        }
     }
 
-    public void enableUserInput() {
-        mInputManager.register((IActionListener) mScreen);
-        mInputManager.register((IMovementListener) mScreen);
+    public void turnStart(IBehavior behavior) {
+        if (behavior.getAffiliation() == EAffiliation.ALLIED) {
+            mCurrentActiveBehavior = mAlliedBehavior;
+
+        } else {
+            mCurrentActiveBehavior = mOpposedBehavior;
+        }
+        mMap.getAlliedUnits().forEach(u -> u.ready());
+        mMap.getOpposedUnits().forEach(u -> u.ready());
+
     }
 
     public IBehavior getActiveBehavior() {
-        return mAlliedBehavior;
+        return mCurrentActiveBehavior;
     }
 
     public void displayMovementRange(MovementRange range) {
@@ -95,9 +130,24 @@ public class GameController {
         mScreen.removeMovementIndicator();
     }
 
-    public void displayActionWindow() {
-        mUiScreen.displayUnitActionWindow(EActionWindowOption.ATTACK, EActionWindowOption.TRADE,
-                EActionWindowOption.WAIT);
+    public void displayActionWindow(IUnit unit) {
+        List<EActionWindowOption> temp = new ArrayList<>();
+
+        if (mMap.opponentInRange(unit, unit.getRange())) {
+            temp.add(EActionWindowOption.ATTACK);
+        }
+        if (mMap.allyInRange(unit, 1)) {
+            temp.add(EActionWindowOption.TRADE);
+        }
+        temp.add(EActionWindowOption.WAIT);
+
+        EActionWindowOption[] result = new EActionWindowOption[temp.size()];
+
+        for (int i = 0; i < temp.size(); i++) {
+            result[i] = temp.get(i);
+
+        }
+        mUiScreen.displayUnitActionWindow(result);
 
     }
 
@@ -111,5 +161,22 @@ public class GameController {
 
     public InputManager getInputManager() {
         return mInputManager;
+    }
+
+    public void displayTileStatus(int x, int y) {
+        mUiScreen.displayTileStatus(mMap.getByPos(x, y));
+    }
+
+    public void cursorMoved(ISpatial cursor) {
+        Point2D point = mCamera.getTransform(mScreen.cameraApplied()).transform(new Point(cursor.getX(), cursor.getY()),
+                null);
+
+        if (point.getX() > Display.WIDTH / 2) {
+            mUiScreen.switchSides(ESide.LEFT);
+
+        } else {
+            mUiScreen.switchSides(ESide.RIGHT);
+
+        }
     }
 }

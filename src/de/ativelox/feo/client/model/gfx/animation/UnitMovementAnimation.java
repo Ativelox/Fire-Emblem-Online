@@ -1,6 +1,6 @@
 package de.ativelox.feo.client.model.gfx.animation;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import de.ativelox.feo.client.view.Display;
 
@@ -10,8 +10,8 @@ import de.ativelox.feo.client.view.Display;
  */
 public class UnitMovementAnimation extends OffsetLoopingAnimation {
 
-    public UnitMovementAnimation(Image[] sequence, EAnimationDirection animationDirection, long playTime, int width,
-            int height) {
+    public UnitMovementAnimation(BufferedImage[] sequence, EAnimationDirection animationDirection, long playTime,
+            int width, int height) {
         super(sequence, animationDirection, playTime, width, height, -8 * Display.INTERNAL_RES_FACTOR,
                 -16 * Display.INTERNAL_RES_FACTOR);
 

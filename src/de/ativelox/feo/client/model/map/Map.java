@@ -11,13 +11,17 @@ import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.gfx.EResource;
 import de.ativelox.feo.client.model.gfx.SpatialObject;
 import de.ativelox.feo.client.model.gfx.tile.Tile;
+import de.ativelox.feo.client.model.property.EAffiliation;
 import de.ativelox.feo.client.model.property.IRenderable;
 import de.ativelox.feo.client.model.property.IRequireResource;
 import de.ativelox.feo.client.model.property.IUpdateable;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
+import de.ativelox.feo.client.model.util.closy.ManhattanDistance;
 import de.ativelox.feo.logging.ELogType;
 import de.ativelox.feo.logging.Logger;
+import de.zabuza.closy.external.NearestNeighborComputation;
+import de.zabuza.closy.external.NearestNeighborComputations;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
@@ -31,12 +35,20 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
 
     private boolean mIsLoaded;
 
-    private final List<IUnit> mUnits;
+    protected final List<IUnit> mAlliedUnits;
+
+    protected final List<IUnit> mOpposedUnits;
+
+    private NearestNeighborComputation<IUnit> mNearestOpposed;
+    private NearestNeighborComputation<IUnit> mNearestAllied;
 
     public Map(String fileName, int x, int y) {
         super(x, y, 0, 0);
+        mNearestOpposed = NearestNeighborComputations.of(new ManhattanDistance<>());
+        mNearestAllied = NearestNeighborComputations.of(new ManhattanDistance<>());
 
-        mUnits = new ArrayList<>();
+        mAlliedUnits = new ArrayList<>();
+        mOpposedUnits = new ArrayList<>();
 
         mFileName = fileName;
 
@@ -48,17 +60,33 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
     }
 
     public void add(IUnit unit) {
-        mUnits.add(unit);
+        if (unit.getAffiliation() == EAffiliation.ALLIED) {
+            mAlliedUnits.add(unit);
 
+        } else {
+            mOpposedUnits.add(unit);
+
+        }
     }
 
     public void remove(IUnit unit) {
-        mUnits.remove(unit);
+        if (unit.getAffiliation() == EAffiliation.ALLIED) {
+            mAlliedUnits.remove(unit);
+        } else {
+            mOpposedUnits.remove(unit);
+        }
     }
 
     public void addAll(Collection<IUnit> units) {
-        mUnits.addAll(units);
+        for (final IUnit unit : units) {
+            if (unit.getAffiliation() == EAffiliation.ALLIED) {
+                mAlliedUnits.add(unit);
 
+            } else {
+                mOpposedUnits.add(unit);
+
+            }
+        }
     }
 
     public void load() {
@@ -98,9 +126,15 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
         if (!mIsLoaded) {
             return;
         }
+        mAlliedUnits.forEach(u -> u.update(ts));
+        mOpposedUnits.forEach(u -> u.update(ts));
 
-        mUnits.forEach(u -> u.update(ts));
+        // TODO: only recreate on unit movement.
+        mNearestAllied = NearestNeighborComputations.of(new ManhattanDistance<>());
+        mNearestOpposed = NearestNeighborComputations.of(new ManhattanDistance<>());
 
+        mAlliedUnits.forEach(u -> mNearestAllied.add(u));
+        mOpposedUnits.forEach(u -> mNearestOpposed.add(u));
     }
 
     public Tile getByIndex(int indexX, int indexY) {
@@ -120,8 +154,47 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
 
     }
 
+    public Collection<IUnit> getAlliesInRange(IUnit unit, int range) {
+
+        Collection<IUnit> result = new ArrayList<>();
+
+        if (unit.getAffiliation() == EAffiliation.ALLIED) {
+            result = mNearestAllied.getNeighborhood(unit, range);
+
+        } else {
+            result = mNearestOpposed.getNeighborhood(unit, range);
+        }
+        result.remove(unit);
+        return result;
+    }
+
+    public Collection<IUnit> getOpponentsInRange(IUnit unit, int range) {
+        if (unit.getAffiliation() == EAffiliation.ALLIED) {
+            return mNearestOpposed.getNeighborhood(unit, range);
+
+        } else {
+            return mNearestAllied.getNeighborhood(unit, range);
+
+        }
+    }
+
+    public boolean allyInRange(IUnit unit, int range) {
+        return getAlliesInRange(unit, range).size() > 0;
+
+    }
+
+    public boolean opponentInRange(IUnit unit, int range) {
+        return getOpponentsInRange(unit, range).size() > 0;
+
+    }
+
     public Optional<IUnit> isOccupied(int x, int y) {
-        for (final IUnit unit : mUnits) {
+        for (final IUnit unit : mAlliedUnits) {
+            if (unit.getX() == x && unit.getY() == y) {
+                return Optional.of(unit);
+            }
+        }
+        for (final IUnit unit : mOpposedUnits) {
             if (unit.getX() == x && unit.getY() == y) {
                 return Optional.of(unit);
             }
@@ -157,7 +230,17 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
 
         }
 
-        mUnits.forEach(u -> u.render(g));
+        mAlliedUnits.forEach(u -> u.render(g));
+        mOpposedUnits.forEach(u -> u.render(g));
 
+    }
+
+    public List<IUnit> getAlliedUnits() {
+        return mAlliedUnits;
+
+    }
+
+    public List<IUnit> getOpposedUnits() {
+        return mOpposedUnits;
     }
 }

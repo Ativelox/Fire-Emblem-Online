@@ -3,7 +3,9 @@ package de.ativelox.feo.client.view.screen.game;
 import de.ativelox.feo.client.controller.GameController;
 import de.ativelox.feo.client.model.camera.ECameraApplication;
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
+import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.property.EActionWindowOption;
+import de.ativelox.feo.client.model.property.ESide;
 import de.ativelox.feo.client.model.property.ICancelable;
 import de.ativelox.feo.client.model.property.IConfirmable;
 import de.ativelox.feo.client.model.property.callback.ICancelListener;
@@ -11,6 +13,7 @@ import de.ativelox.feo.client.model.property.callback.IConfirmListener;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.element.game.ActionWindow;
+import de.ativelox.feo.client.view.element.game.TileStatusWindow;
 import de.ativelox.feo.client.view.element.game.UnitBurstWindow;
 import de.ativelox.feo.client.view.element.generic.AButtonElement;
 import de.ativelox.feo.client.view.screen.EScreen;
@@ -22,13 +25,19 @@ import de.ativelox.feo.client.view.screen.EScreen;
 public class GameUIScreen implements IGameUIScreen, ICancelListener, IConfirmListener {
 
     private GameController mController;
-    private ActionWindow mActionWindow;
 
-    private UnitBurstWindow mTest;
+    private final ActionWindow mActionWindow;
+    private final TileStatusWindow mTileStatusWindow;
+    private final UnitBurstWindow mUnitBurstWindow;
 
     private boolean mIsSystemWindow;
 
     public GameUIScreen() {
+        mTileStatusWindow = new TileStatusWindow();
+        mUnitBurstWindow = new UnitBurstWindow(null);
+        mActionWindow = new ActionWindow();
+        mActionWindow.hide();
+        mUnitBurstWindow.hide();
 
     }
 
@@ -39,39 +48,44 @@ public class GameUIScreen implements IGameUIScreen, ICancelListener, IConfirmLis
 
     @Override
     public void displayUnitWindow(IUnit unit) {
-        mTest = new UnitBurstWindow(unit);
+        mUnitBurstWindow.setUnit(unit);
+        mUnitBurstWindow.show();
 
     }
 
     @Override
     public void removeUnitWindow(IUnit unit) {
-        mTest = null;
+        mUnitBurstWindow.hide();
 
     }
 
     @Override
     public void displayUnitActionWindow(EActionWindowOption... options) {
-        mActionWindow = new ActionWindow(options);
+        mActionWindow.setActions(options);
         mActionWindow.registerTo(mController.getInputManager());
         mActionWindow.addCancelListener(this);
         mActionWindow.addConfirmListener(this);
         mIsSystemWindow = false;
 
+        mActionWindow.show();
+
     }
 
     @Override
     public void displaySystemActionWindow(EActionWindowOption... options) {
-        mActionWindow = new ActionWindow(options);
+        mActionWindow.setActions(options);
         mActionWindow.registerTo(mController.getInputManager());
         mActionWindow.addCancelListener(this);
         mActionWindow.addConfirmListener(this);
         mIsSystemWindow = true;
 
+        mActionWindow.show();
+
     }
 
     @Override
     public void removeActionWindow() {
-        mActionWindow = null;
+        mActionWindow.hide();
 
     }
 
@@ -97,23 +111,16 @@ public class GameUIScreen implements IGameUIScreen, ICancelListener, IConfirmLis
 
     @Override
     public void render(DepthBufferedGraphics g) {
-        if (mActionWindow != null) {
-            mActionWindow.render(g);
-        }
-
-        if (mTest != null) {
-            mTest.render(g);
-        }
+        mActionWindow.render(g);
+        mUnitBurstWindow.render(g);
+        mTileStatusWindow.render(g);
     }
 
     @Override
     public void update(TimeSnapshot ts) {
-        if (mActionWindow != null) {
-            mActionWindow.update(ts);
-        }
-        if (mTest != null) {
-            mTest.update(ts);
-        }
+        mActionWindow.update(ts);
+        mUnitBurstWindow.update(ts);
+        mTileStatusWindow.update(ts);
 
     }
 
@@ -145,11 +152,33 @@ public class GameUIScreen implements IGameUIScreen, ICancelListener, IConfirmLis
             case WAIT:
                 mController.getActiveBehavior().onWaitAction();
                 break;
+            case END_TURN:
+                mController.getActiveBehavior().onTurnEnd();
             default:
                 break;
 
             }
 
         }
+    }
+
+    @Override
+    public void displayTileStatus(Tile tile) {
+        mTileStatusWindow.setTile(tile);
+
+    }
+
+    @Override
+    public void removeTileStatus() {
+        mTileStatusWindow.setTile(null);
+
+    }
+
+    @Override
+    public void switchSides(ESide side) {
+        mTileStatusWindow.switchTo(side);
+        mActionWindow.switchTo(side);
+        mUnitBurstWindow.switchTo(side);
+
     }
 }

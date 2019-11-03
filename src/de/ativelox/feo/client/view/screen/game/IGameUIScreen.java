@@ -1,7 +1,9 @@
 package de.ativelox.feo.client.view.screen.game;
 
 import de.ativelox.feo.client.controller.GameController;
+import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.property.EActionWindowOption;
+import de.ativelox.feo.client.model.property.ESide;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.view.screen.IScreen;
 
@@ -21,6 +23,12 @@ public interface IGameUIScreen extends IScreen {
 
     public void displaySystemActionWindow(EActionWindowOption... options);
 
+    public void displayTileStatus(Tile tile);
+
+    public void removeTileStatus();
+
     public void removeActionWindow();
+
+    public void switchSides(ESide side);
 
 }
