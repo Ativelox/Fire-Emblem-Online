@@ -3,6 +3,8 @@ package de.ativelox.feo.client.controller;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import de.ativelox.feo.client.controller.behavior.IBehavior;
@@ -16,6 +18,8 @@ import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.property.callback.IActionListener;
 import de.ativelox.feo.client.model.property.callback.IMovementListener;
 import de.ativelox.feo.client.model.unit.IUnit;
+import de.ativelox.feo.client.model.unit.IWeapon;
+import de.ativelox.feo.client.model.unit.Inventory;
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.element.game.MovementIndicator;
 import de.ativelox.feo.client.view.element.game.MovementRange;
@@ -133,7 +137,7 @@ public class GameController {
     public void displayActionWindow(IUnit unit) {
         List<EActionWindowOption> temp = new ArrayList<>();
 
-        if (mMap.opponentInRange(unit, unit.getRange())) {
+        if (unit.getInventory().getWeapons().length > 0 && mMap.opponentInRange(unit, unit.getRange())) {
             temp.add(EActionWindowOption.ATTACK);
         }
         if (mMap.allyInRange(unit, 1)) {
@@ -178,5 +182,43 @@ public class GameController {
             mUiScreen.switchSides(ESide.RIGHT);
 
         }
+    }
+
+    public void showWeaponSelection(IUnit unit) {
+        Inventory inv = unit.getInventory();
+        Collection<IWeapon> sorted = inv.getSorted(Comparator.comparing(w -> w.getRange()));
+        Collection<IWeapon> eligible = new ArrayList<>();
+
+        for (final IWeapon weapon : sorted) {
+            if (mMap.opponentInRange(unit, weapon.getRange())) {
+                eligible.addAll(inv.getWeapons(w -> w.getRange() >= weapon.getRange()));
+                break;
+
+            }
+        }
+        mUiScreen.displayWeaponSelection(unit, eligible);
+    }
+
+    public void removeWeaponSelect() {
+        mUiScreen.removeWeaponSelection();
+
+    }
+
+    public void showTargetUnitSelect(IUnit unit, IWeapon weapon) {
+        unit.equip(weapon);
+
+        Collection<IUnit> targets = mMap.getOpponentsInRange(unit, weapon.getRange());
+        mUiScreen.initializeBattlePreview(targets);
+
+    }
+
+    public void removeTargetSelect() {
+        mScreen.removeTargetSelection();
+        mUiScreen.removeBattlePreview();
+    }
+
+    public void switchTarget(IUnit attacker, IUnit target) {
+        mScreen.moveTargetSelection(target);
+        mUiScreen.switchBattlePreview(attacker, target);
     }
 }

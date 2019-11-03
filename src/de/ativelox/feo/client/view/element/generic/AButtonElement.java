@@ -44,7 +44,8 @@ public abstract class AButtonElement extends ImageElement implements ISelectable
             load();
         }
 
-        mTextWidth = (int) (getWidth() / 1.5f);
+        adjustTextWidth();
+        adjustTextHeight();
         mTextHeight = (int) (getHeight() / 2f);
     }
 
@@ -71,6 +72,27 @@ public abstract class AButtonElement extends ImageElement implements ISelectable
 //        g.drawImage(mFormattedText, getX() + (getWidth() / 2) - (mFormattedText.getWidth() / 2),
 //                getY() + (getHeight() / 2) - (mFormattedText.getHeight() / 2), mFormattedText.getWidth(),
 //                mFormattedText.getHeight());
+    }
+
+    protected void adjustTextWidth() {
+        mTextWidth = (int) (getWidth() / 1.5f);
+    }
+
+    protected void adjustTextHeight() {
+        mTextHeight = (int) (getHeight() / 2f);
+
+    }
+
+    @Override
+    public void setWidth(int width) {
+        super.setWidth(width);
+        adjustTextWidth();
+    }
+
+    @Override
+    public void setHeight(int height) {
+        super.setHeight(height);
+        adjustTextHeight();
     }
 
     protected abstract void renderSelection(DepthBufferedGraphics g);

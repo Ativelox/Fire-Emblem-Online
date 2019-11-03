@@ -1,6 +1,7 @@
 package de.ativelox.feo.client.model.manager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -14,19 +15,16 @@ import de.ativelox.feo.client.model.util.TimeSnapshot;
  * @author Ativelox ({@literal ativelox.dev@web.de})
  *
  */
-public class VerticalSelectionManager extends InputReceiver implements IUpdateable {
+public class VerticalSelectionManager<T extends ISelectable> extends InputReceiver implements IUpdateable {
 
-    private final List<ISelectable> mSelectables;
+    private List<ISelectable> mSelectables;
 
     private int mSelectionIndex;
 
     private boolean mIsCircular;
 
-    public VerticalSelectionManager(boolean circular, ISelectable... selectables) {
-        this(circular, null, selectables);
-    }
-
-    public VerticalSelectionManager(boolean circular, InputReceiver parent, ISelectable... selectables) {
+    @SafeVarargs
+    public VerticalSelectionManager(boolean circular, T... selectables) {
         mSelectables = new ArrayList<>();
 
         for (final ISelectable selectable : selectables) {
@@ -40,16 +38,26 @@ public class VerticalSelectionManager extends InputReceiver implements IUpdateab
             this.updateSelected(mSelectionIndex);
         }
 
-        if (parent != null) {
-            parent.block();
+    }
+
+    public VerticalSelectionManager(boolean circular, Collection<T> selectables) {
+        mSelectables = new ArrayList<>(selectables);
+
+        mSelectionIndex = 0;
+        mIsCircular = circular;
+
+        if (mSelectables.size() > 0) {
+            this.resort();
+            this.updateSelected(mSelectionIndex);
         }
+
     }
 
     private void resort() {
         mSelectables.sort(Comparator.comparing(ISelectable::getOrder));
     }
 
-    public void add(ISelectable selectable) {
+    public void add(T selectable) {
         mSelectables.add(selectable);
         if (selectable.getOrder() > mSelectables.get(mSelectionIndex).getOrder()) {
             mSelectionIndex++;
@@ -58,8 +66,14 @@ public class VerticalSelectionManager extends InputReceiver implements IUpdateab
 
     }
 
-    public void remove(ISelectable selectable) {
+    public void remove(T selectable) {
         mSelectables.remove(selectable);
+        selectable.deSelected();
+
+        if (mSelectables.size() <= mSelectionIndex) {
+            return;
+        }
+
         if (selectable.getOrder() < mSelectables.get(mSelectionIndex).getOrder()) {
             mSelectionIndex--;
         }

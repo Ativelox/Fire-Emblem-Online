@@ -6,6 +6,8 @@ import de.ativelox.feo.client.model.property.EAffiliation;
 import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.property.routine.PathCalculationRoutine;
 import de.ativelox.feo.client.model.unit.IUnit;
+import de.ativelox.feo.client.model.unit.IWeapon;
+import de.ativelox.feo.logging.Logger;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
@@ -52,7 +54,7 @@ public class DefaultPlayerBehavior implements IBehavior {
 
     @Override
     public void onTurnStart() {
-        System.out.println("Turn start: " + getAffiliation());
+        Logger.get().logInfo("Turn start: " + getAffiliation());
 
         mIsOnTurn = true;
         mController.turnStart(this);
@@ -61,7 +63,7 @@ public class DefaultPlayerBehavior implements IBehavior {
 
     @Override
     public void onTurnEnd() {
-        System.out.println("Turn end: " + getAffiliation());
+        Logger.get().logInfo("Turn end: " + getAffiliation());
 
         mController.removeActionWindow();
         mController.unBlockNonUiInput();
@@ -179,7 +181,6 @@ public class DefaultPlayerBehavior implements IBehavior {
         if (!mPathRoutine.isActive()) {
             return;
         }
-
         IUnit actor = mPathRoutine.getActor();
         actor.finished();
         mPathRoutine.stop();
@@ -203,5 +204,63 @@ public class DefaultPlayerBehavior implements IBehavior {
     @Override
     public EAffiliation getAffiliation() {
         return mAffiliation;
+    }
+
+    @Override
+    public void onAttackAction() {
+        if (!mIsOnTurn) {
+            return;
+        }
+        mController.showWeaponSelection(mPathRoutine.getActor());
+
+    }
+
+    @Override
+    public void onWeaponSelectCancel() {
+        if (!mIsOnTurn) {
+            return;
+        }
+        mController.removeWeaponSelect();
+
+    }
+
+    @Override
+    public void onWeaponSelection(IWeapon weapon) {
+        if (!mIsOnTurn) {
+            return;
+        }
+        mController.showTargetUnitSelect(mPathRoutine.getActor(), weapon);
+
+    }
+
+    @Override
+    public void onTargetSelectCancel() {
+        if (!mIsOnTurn) {
+            return;
+        }
+        mController.removeTargetSelect();
+
+    }
+
+    @Override
+    public void onTargetSelection(IUnit target) {
+        if (!mIsOnTurn) {
+            return;
+        }
+
+        mController.removeTargetSelect();
+        mController.removeWeaponSelect();
+
+        this.onWaitAction();
+
+    }
+
+    @Override
+    public void onTargetSwitch(IUnit target) {
+        if (!mIsOnTurn) {
+            return;
+        }
+        mController.switchTarget(mPathRoutine.getActor(), target);
+
     }
 }

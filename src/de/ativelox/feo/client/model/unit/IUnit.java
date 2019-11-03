@@ -1,6 +1,7 @@
 package de.ativelox.feo.client.model.unit;
 
 import java.awt.Image;
+import java.util.Optional;
 
 import de.ativelox.feo.client.model.property.EAffiliation;
 import de.ativelox.feo.client.model.property.ICanMove;
@@ -19,8 +20,6 @@ public interface IUnit extends IRenderable, IUpdateable, ISpatial, ISelectable, 
 
     public int getRange();
 
-    public void setRange(int range);
-
     public void moveInstantly(int x, int y);
 
     public void finished();
@@ -38,5 +37,23 @@ public interface IUnit extends IRenderable, IUpdateable, ISpatial, ISelectable, 
     public int getMaximumHP();
 
     public EAffiliation getAffiliation();
+
+    public Inventory getInventory();
+
+    public int getStr();
+
+    public int getSkill();
+
+    public int getSpd();
+
+    public int getLuck();
+
+    public int getDef();
+
+    public int getRes();
+
+    public Optional<IWeapon> getEquippedWeapon();
+
+    public void equip(IWeapon weapon);
 
 }

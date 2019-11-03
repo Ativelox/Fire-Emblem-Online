@@ -11,18 +11,22 @@ import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.map.Map;
 import de.ativelox.feo.client.model.property.ICanMove;
 import de.ativelox.feo.client.model.property.ICancelable;
+import de.ativelox.feo.client.model.property.IConfirmable;
 import de.ativelox.feo.client.model.property.ISelectable;
+import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.property.callback.ICancelListener;
+import de.ativelox.feo.client.model.property.callback.IConfirmListener;
 import de.ativelox.feo.client.model.property.callback.IMoveListener;
 import de.ativelox.feo.client.model.property.callback.ISelectionListener;
 import de.ativelox.feo.client.model.property.routine.UnitSelectionRoutine;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
-import de.ativelox.feo.client.view.element.game.ActionWindow;
 import de.ativelox.feo.client.view.element.game.ActionWindowButton;
 import de.ativelox.feo.client.view.element.game.MapSelector;
 import de.ativelox.feo.client.view.element.game.MovementIndicator;
 import de.ativelox.feo.client.view.element.game.MovementRange;
+import de.ativelox.feo.client.view.element.game.TargetSelectionWindow;
+import de.ativelox.feo.client.view.element.game.TargetSelector;
 import de.ativelox.feo.client.view.element.generic.ImageElement;
 import de.ativelox.feo.client.view.screen.EScreen;
 
@@ -31,7 +35,7 @@ import de.ativelox.feo.client.view.screen.EScreen;
  *
  */
 public class GameScreen extends InputReceiver
-        implements IGameScreen, ISelectionListener, IMoveListener, ICancelListener {
+        implements IGameScreen, ISelectionListener, IMoveListener, ICancelListener, IConfirmListener {
 
     private final Map mMap;
 
@@ -47,7 +51,7 @@ public class GameScreen extends InputReceiver
 
     private MovementIndicator mMovementIndicator;
 
-    private ActionWindow mCurrentActionWindow;
+    private TargetSelector mTargetSelector;
 
     public GameScreen(Map map, Camera camera) {
         mMap = map;
@@ -66,6 +70,8 @@ public class GameScreen extends InputReceiver
         mSelectionCursor = new MapSelector(0, 0, map);
 
         mSelectionRoutine = new UnitSelectionRoutine(mSelectionCursor, map);
+
+        mTargetSelector = new TargetSelector();
 
         camera.ensureInViewport(mSelectionCursor);
     }
@@ -94,8 +100,8 @@ public class GameScreen extends InputReceiver
             mUnitDisplayPlaceholder.render(g);
         }
 
-        if (mCurrentActionWindow != null) {
-            mCurrentActionWindow.render(g);
+        if (mTargetSelector != null) {
+            mTargetSelector.render(g);
         }
     }
 
@@ -139,16 +145,16 @@ public class GameScreen extends InputReceiver
         }
         mSelectionRoutine.update(ts);
 
+        if (mTargetSelector != null) {
+            mTargetSelector.update(ts);
+        }
+
         if (isActiveInitially(EAction.CONFIRMATION)) {
             confirm();
 
         }
         if (isActiveInitially(EAction.CANCEL)) {
             cancel();
-        }
-
-        if (mCurrentActionWindow != null) {
-            mCurrentActionWindow.update(ts);
         }
 
         this.cycleFinished();
@@ -230,6 +236,10 @@ public class GameScreen extends InputReceiver
     public void onCancel(ICancelable cancelable) {
         if (cancelable instanceof ActionWindowButton) {
             mController.getActiveBehavior().onActionWindowCanceled();
+
+        } else if (cancelable instanceof TargetSelectionWindow) {
+            mController.getActiveBehavior().onTargetSelectCancel();
+
         }
     }
 
@@ -243,5 +253,27 @@ public class GameScreen extends InputReceiver
     public void unblockInput() {
         this.unblock();
 
+    }
+
+    @Override
+    public void moveTargetSelection(ISpatial target) {
+        mTargetSelector.setX(target.getX());
+        mTargetSelector.setY(target.getY());
+        mTargetSelector.show();
+
+    }
+
+    @Override
+    public void removeTargetSelection() {
+        mTargetSelector.hide();
+
+    }
+
+    @Override
+    public void onConfirm(IConfirmable confirmable) {
+        if (confirmable instanceof TargetSelectionWindow) {
+            mController.getActiveBehavior().onUnitSelect(((TargetSelectionWindow) confirmable).getSelectedUnit());
+
+        }
     }
 }

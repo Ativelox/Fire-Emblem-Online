@@ -4,6 +4,7 @@ import de.ativelox.feo.client.controller.GameController;
 import de.ativelox.feo.client.model.property.EAffiliation;
 import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.unit.IUnit;
+import de.ativelox.feo.client.model.unit.IWeapon;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
@@ -29,6 +30,10 @@ public interface IBehavior {
 
     void onSystemActionWindowCanceled();
 
+    void onWeaponSelectCancel();
+
+    void onTargetSelectCancel();
+
     void onConfirm();
 
     void onTurnStart();
@@ -36,7 +41,15 @@ public interface IBehavior {
     void onTurnEnd();
 
     void onWaitAction();
-    
+
+    void onAttackAction();
+
+    void onWeaponSelection(IWeapon weapon);
+
+    void onTargetSelection(IUnit target);
+
+    void onTargetSwitch(IUnit target);
+
     EAffiliation getAffiliation();
 
 }

@@ -29,6 +29,8 @@ public class TileStatusWindow extends AScreenElement implements IRequireResource
     private Image mTileHealing;
     private Image mTileAvo;
 
+    private boolean mIsHidden;
+
     public TileStatusWindow() {
         super(0, 0, 48 * Display.INTERNAL_RES_FACTOR, 53 * Display.INTERNAL_RES_FACTOR, false);
         load();
@@ -36,8 +38,20 @@ public class TileStatusWindow extends AScreenElement implements IRequireResource
         this.setY(Display.HEIGHT - this.getHeight() - 6 * Display.INTERNAL_RES_FACTOR);
     }
 
+    public void hide() {
+        mIsHidden = true;
+    }
+
+    public void show() {
+        mIsHidden = false;
+    }
+
     @Override
     public void render(DepthBufferedGraphics g) {
+        if (mIsHidden) {
+            return;
+        }
+
         g.drawImage(mBackground, getX(), getY(), this.getWidth(), this.getHeight());
 
         if (mTileName != null) {

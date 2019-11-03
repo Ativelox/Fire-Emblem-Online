@@ -1,10 +1,13 @@
 package de.ativelox.feo.client.view.screen.game;
 
+import java.util.Collection;
+
 import de.ativelox.feo.client.controller.GameController;
 import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.property.EActionWindowOption;
 import de.ativelox.feo.client.model.property.ESide;
 import de.ativelox.feo.client.model.unit.IUnit;
+import de.ativelox.feo.client.model.unit.IWeapon;
 import de.ativelox.feo.client.view.screen.IScreen;
 
 /**
@@ -30,5 +33,15 @@ public interface IGameUIScreen extends IScreen {
     public void removeActionWindow();
 
     public void switchSides(ESide side);
+
+    public void displayWeaponSelection(IUnit unit, Collection<IWeapon> eligible);
+
+    public void removeWeaponSelection();
+
+    public void initializeBattlePreview(Collection<IUnit> targets);
+
+    public void removeBattlePreview();
+
+    public void switchBattlePreview(IUnit attacker, IUnit target);
 
 }

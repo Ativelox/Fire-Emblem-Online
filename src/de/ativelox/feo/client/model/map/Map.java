@@ -12,9 +12,11 @@ import de.ativelox.feo.client.model.gfx.EResource;
 import de.ativelox.feo.client.model.gfx.SpatialObject;
 import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.property.EAffiliation;
+import de.ativelox.feo.client.model.property.ICanMove;
 import de.ativelox.feo.client.model.property.IRenderable;
 import de.ativelox.feo.client.model.property.IRequireResource;
 import de.ativelox.feo.client.model.property.IUpdateable;
+import de.ativelox.feo.client.model.property.callback.IMoveListener;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.model.util.closy.ManhattanDistance;
@@ -27,7 +29,7 @@ import de.zabuza.closy.external.NearestNeighborComputations;
  * @author Ativelox ({@literal ativelox.dev@web.de})
  *
  */
-public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IRenderable, IUpdateable {
+public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IRenderable, IUpdateable, IMoveListener {
 
     public final String mFileName;
 
@@ -60,6 +62,8 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
     }
 
     public void add(IUnit unit) {
+        unit.addMoveFinishedListener(this);
+
         if (unit.getAffiliation() == EAffiliation.ALLIED) {
             mAlliedUnits.add(unit);
 
@@ -70,6 +74,8 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
     }
 
     public void remove(IUnit unit) {
+        unit.removeMoveFinishedListener(this);
+
         if (unit.getAffiliation() == EAffiliation.ALLIED) {
             mAlliedUnits.remove(unit);
         } else {
@@ -128,13 +134,6 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
         }
         mAlliedUnits.forEach(u -> u.update(ts));
         mOpposedUnits.forEach(u -> u.update(ts));
-
-        // TODO: only recreate on unit movement.
-        mNearestAllied = NearestNeighborComputations.of(new ManhattanDistance<>());
-        mNearestOpposed = NearestNeighborComputations.of(new ManhattanDistance<>());
-
-        mAlliedUnits.forEach(u -> mNearestAllied.add(u));
-        mOpposedUnits.forEach(u -> mNearestOpposed.add(u));
     }
 
     public Tile getByIndex(int indexX, int indexY) {
@@ -242,5 +241,23 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
 
     public List<IUnit> getOpposedUnits() {
         return mOpposedUnits;
+    }
+
+    @Override
+    public void onMoveFinished(ICanMove mover) {
+        Logger.get().logInfo("Reconstructing Nearest Neighbor Compurations.");
+
+        mNearestAllied = NearestNeighborComputations.of(new ManhattanDistance<>());
+        mNearestOpposed = NearestNeighborComputations.of(new ManhattanDistance<>());
+
+        mAlliedUnits.forEach(u -> mNearestAllied.add(u));
+        mOpposedUnits.forEach(u -> mNearestOpposed.add(u));
+
+    }
+
+    @Override
+    public void onMoveStarted(ICanMove mover) {
+        // TODO Auto-generated method stub
+
     }
 }

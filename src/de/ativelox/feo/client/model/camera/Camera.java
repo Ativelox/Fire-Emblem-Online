@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 
+import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.property.IPriorityUpdateable;
 import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.property.callback.IMovementListener;
@@ -85,6 +86,25 @@ public class Camera implements IPriorityUpdateable, IMovementListener, IPanningL
             return;
         }
 
+        if (mFollow != null) {
+            if ((mFollow.getX() + mFollow.getWidth()) * (mScale - 1) + mTranslationX > Display.WIDTH - Tile.WIDTH * 4) {
+                mTranslationX -= mFollow.getWidth();
+            }
+            if ((mFollow.getX() + mFollow.getWidth()) * (mScale - 1) + mTranslationX <= Tile.WIDTH * 4) {
+                mTranslationX += mFollow.getWidth();
+            }
+
+            if ((mFollow.getY() + mFollow.getHeight()) * (mScale - 1) + mTranslationY > Display.HEIGHT
+                    - Tile.HEIGHT * 4) {
+                mTranslationY -= mFollow.getHeight();
+            }
+
+            if ((mFollow.getY() + mFollow.getHeight()) * (mScale - 1) + mTranslationY <= Tile.HEIGHT * 4) {
+                mTranslationY += mFollow.getWidth();
+            }
+
+        }
+
         if (mTranslationX > 0) {
             mTranslationX = 0;
         }
@@ -110,24 +130,6 @@ public class Camera implements IPriorityUpdateable, IMovementListener, IPanningL
 
         if (mTranslationY > 0) {
             mTranslationY = 0;
-        }
-
-        if (mFollow != null) {
-            if ((mFollow.getX() + mFollow.getWidth()) * (mScale - 1) + mTranslationX > Display.WIDTH) {
-                mTranslationX -= mFollow.getWidth();
-            }
-            if ((mFollow.getX() + mFollow.getWidth()) * (mScale - 1) + mTranslationX <= 0) {
-                mTranslationX += mFollow.getWidth();
-            }
-
-            if ((mFollow.getY() + mFollow.getHeight()) * (mScale - 1) + mTranslationY > Display.HEIGHT) {
-                mTranslationY -= mFollow.getHeight();
-            }
-
-            if ((mFollow.getY() + mFollow.getHeight()) * (mScale - 1) + mTranslationY <= 0) {
-                mTranslationY += mFollow.getWidth();
-            }
-
         }
 
     }

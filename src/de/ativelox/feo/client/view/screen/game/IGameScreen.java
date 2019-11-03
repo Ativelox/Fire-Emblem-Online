@@ -1,6 +1,7 @@
 package de.ativelox.feo.client.view.screen.game;
 
 import de.ativelox.feo.client.controller.GameController;
+import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.property.callback.IActionListener;
 import de.ativelox.feo.client.model.property.callback.IMovementListener;
 import de.ativelox.feo.client.view.element.game.MovementIndicator;
@@ -26,5 +27,9 @@ public interface IGameScreen extends IScreen, IActionListener, IMovementListener
     public void blockInput();
 
     public void unblockInput();
+
+    public void moveTargetSelection(ISpatial spatial);
+
+    public void removeTargetSelection();
 
 }

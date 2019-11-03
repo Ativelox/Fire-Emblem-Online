@@ -72,6 +72,8 @@ public class Assets {
     private static final String ACTION_SELECTOR_NAME = "action_selector.png";
     private static final String BURST_WINDOW_NAME = "burst_window.png";
     private static final String TILE_STATUS_NAME = "tile_status.png";
+    private static final String TARGET_SELECTOR_NAME = "target_selection.png";
+    private static final String BATTLE_PREVIEW_NAME = "battle_preview.png";
 
     private static Font DIALOGUE_FONT;
 
@@ -273,7 +275,10 @@ public class Assets {
 
             for (final char c : additionalInfo[0].toCharArray()) {
                 String asString = Character.toString(c);
-                relevant.add(loaded[INDEX_MAPPING.get(asString)]);
+                if (INDEX_MAPPING.containsKey(asString)) {
+                    relevant.add(loaded[INDEX_MAPPING.get(asString)]);
+
+                }
 
             }
             result = (T) SpriteSheet.stitchHorizontally(relevant);
@@ -337,6 +342,14 @@ public class Assets {
             BufferedImage mapSelectionSheet = SpriteSheet.load(SYSTEM_PATH.resolve(MAP_SELECTOR_NAME)).get();
             BufferedImage[] mapSelectionSequence = SpriteSheet.split(mapSelectionSheet, 20, 20, 5, 0, 5);
             result = (T) new OffsetLoopingAnimation(mapSelectionSequence, EAnimationDirection.FORWARD_BACKWARD, 500,
+                    20 * Display.INTERNAL_RES_FACTOR, 20 * Display.INTERNAL_RES_FACTOR,
+                    -2 * Display.INTERNAL_RES_FACTOR, -2 * Display.INTERNAL_RES_FACTOR);
+            break;
+
+        case TARGET_SELECTOR:
+            BufferedImage targetSelectionSheet = SpriteSheet.load(SYSTEM_PATH.resolve(TARGET_SELECTOR_NAME)).get();
+            BufferedImage[] targetSelectionSequence = SpriteSheet.split(targetSelectionSheet, 20, 20, 5, 0, 5);
+            result = (T) new OffsetLoopingAnimation(targetSelectionSequence, EAnimationDirection.FORWARD_BACKWARD, 500,
                     20 * Display.INTERNAL_RES_FACTOR, 20 * Display.INTERNAL_RES_FACTOR,
                     -2 * Display.INTERNAL_RES_FACTOR, -2 * Display.INTERNAL_RES_FACTOR);
             break;
@@ -451,6 +464,10 @@ public class Assets {
 
         case PALETTE:
             result = (T) SpriteSheet.load(PALETTE_PATH.resolve(additionalInfo[0])).get();
+            break;
+
+        case BATTLE_PREVIEW:
+            result = (T) SpriteSheet.load(SYSTEM_PATH.resolve(BATTLE_PREVIEW_NAME)).get();
             break;
 
         default:

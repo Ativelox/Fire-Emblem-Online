@@ -5,6 +5,7 @@ import java.awt.Image;
 import de.ativelox.feo.client.model.gfx.Assets;
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.gfx.EResource;
+import de.ativelox.feo.client.model.property.EActionWindowType;
 import de.ativelox.feo.client.model.property.IRequireResources;
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.element.generic.ACancelableButton;
@@ -17,9 +18,13 @@ public class ActionWindowButton extends ACancelableButton implements IRequireRes
 
     private Image mSelector;
 
-    public ActionWindowButton(int x, int y, int order, String text) {
+    private EActionWindowType mType;
+
+    public ActionWindowButton(int x, int y, int order, String text, EActionWindowType type) {
         super(x, y, 49 * Display.INTERNAL_RES_FACTOR, 16 * Display.INTERNAL_RES_FACTOR, false,
                 EResource.ACTION_WINDOW_MIDDLE, order, text.replaceAll("_", " "));
+
+        mType = type;
     }
 
     @Override
@@ -35,5 +40,9 @@ public class ActionWindowButton extends ACancelableButton implements IRequireRes
         super.load();
 
         mSelector = Assets.getFor(EResource.ACTION_SELECTOR);
+    }
+
+    public EActionWindowType getType() {
+        return mType;
     }
 }

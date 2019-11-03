@@ -1,10 +1,10 @@
 package de.ativelox.feo.client.model.unit;
 
-import java.awt.Color;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Optional;
 
 import de.ativelox.feo.client.model.gfx.Assets;
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
@@ -52,8 +52,6 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
 
     private final int mMovement;
 
-    private int mRange;
-
     private boolean mIsWaiting;
 
     private EGender mGender;
@@ -62,9 +60,15 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
 
     private EAffiliation mAffiliation;
 
+    private final Inventory mInventory;
+
+    private IWeapon mCurrentlyEquipped;
+
     public DummyUnit(int x, int y, int movement, EGender gender, EClass unitClass, String name,
             EAffiliation affiliation) {
         super(Tile.WIDTH * x, Tile.HEIGHT * y, Tile.WIDTH, Tile.HEIGHT);
+
+        mInventory = new Inventory();
 
         mName = name;
 
@@ -78,8 +82,6 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
         mMover = new SmoothMoveRoutine(this);
 
         mMovement = movement;
-
-        mRange = 1;
 
         load();
     }
@@ -249,13 +251,14 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
 
     @Override
     public int getRange() {
-        return mRange;
-    }
+        int maxRange = 0;
 
-    @Override
-    public void setRange(int range) {
-        mRange = range;
-
+        for (final IWeapon weapon : getInventory().getWeapons()) {
+            if (weapon.getRange() > maxRange) {
+                maxRange = weapon.getRange();
+            }
+        }
+        return maxRange;
     }
 
     @Override
@@ -325,5 +328,55 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     @Override
     public EAffiliation getAffiliation() {
         return mAffiliation;
+    }
+
+    @Override
+    public Inventory getInventory() {
+        return mInventory;
+    }
+
+    @Override
+    public int getStr() {
+        return 10;
+    }
+
+    @Override
+    public int getSkill() {
+        return 10;
+    }
+
+    @Override
+    public int getSpd() {
+        return 10;
+    }
+
+    @Override
+    public int getLuck() {
+        return 10;
+    }
+
+    @Override
+    public int getDef() {
+        return 10;
+    }
+
+    @Override
+    public int getRes() {
+        return 10;
+    }
+
+    @Override
+    public Optional<IWeapon> getEquippedWeapon() {
+        if (mCurrentlyEquipped == null) {
+            return Optional.empty();
+        }
+        return Optional.of(mCurrentlyEquipped);
+    }
+
+    @Override
+    public void equip(IWeapon weapon) {
+        if (getInventory().getWeapons(w -> w == weapon).size() > 0) {
+            mCurrentlyEquipped = weapon;
+        }
     }
 }

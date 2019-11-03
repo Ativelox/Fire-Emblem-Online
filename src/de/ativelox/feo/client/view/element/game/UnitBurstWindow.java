@@ -67,13 +67,13 @@ public class UnitBurstWindow extends AScreenElement implements IRequireResources
         }
 
         g.drawImage(mBackground, getX(), getY(), getWidth(), getHeight());
-        g.drawImage(mPortrait, getX() - 4 * Display.INTERNAL_RES_FACTOR, getY() - 1 * Display.INTERNAL_RES_FACTOR,
+        g.drawImage(mPortrait, getX() - 1 * Display.INTERNAL_RES_FACTOR, getY() - 1 * Display.INTERNAL_RES_FACTOR,
                 (int) (5 * getWidth() / 10f), (int) ((5 * getWidth() / 10f) * mPortraitRatio));
-        g.drawString(mNameFont, new Color(60, 60, 60), mUnit.getName(), (int) (getX() + getWidth() / 2f),
+        g.drawString(mNameFont, new Color(60, 60, 60), mUnit.getName(), (int) (getX() + getWidth() / 1.8f),
                 (int) (getY() + getHeight() / 2.5f));
 
         if (mHpImage != null) {
-            g.drawImage(mHpImage, (int) (getX() + getWidth() / 2.7f), (int) (getY() + getHeight() / 2f),
+            g.drawImage(mHpImage, (int) (getX() + getWidth() / 2.45f), (int) (getY() + getHeight() / 2f),
                     (int) (mHpImage.getWidth(null) / 1.2f), (int) (mHpImage.getHeight(null) / 1.2f));
         }
 

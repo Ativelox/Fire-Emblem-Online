@@ -100,7 +100,7 @@ public class InputReceiver implements IMovementListener, IPanningListener, IActi
      * @return <tt>True</tt> if the action is initially active, <tt>false</tt>
      *         otherwise.
      */
-    protected boolean isActiveInitially(EAction... actions) {
+    public boolean isActiveInitially(EAction... actions) {
         if (mBlockInput) {
             return false;
         }
@@ -114,7 +114,7 @@ public class InputReceiver implements IMovementListener, IPanningListener, IActi
 
     }
 
-    protected double getMovement(EAxis axis) {
+    public double getMovement(EAxis axis) {
         if (mBlockInput) {
             return 0;
         }
@@ -132,7 +132,7 @@ public class InputReceiver implements IMovementListener, IPanningListener, IActi
 
     }
 
-    protected double getPanning(EAxis axis) {
+    public double getPanning(EAxis axis) {
         if (mBlockInput) {
             return 0;
         }
@@ -157,7 +157,7 @@ public class InputReceiver implements IMovementListener, IPanningListener, IActi
      * @return <tt>True</tt> if the action is initially active, <tt>false</tt>
      *         otherwise.
      */
-    protected boolean isActive(EAction... actions) {
+    public boolean isActive(EAction... actions) {
         if (mBlockInput) {
             return false;
         }
@@ -220,7 +220,7 @@ public class InputReceiver implements IMovementListener, IPanningListener, IActi
      * Signifies that a cycle has been finished, and cycle dependent inputs are
      * being reset.
      */
-    protected void cycleFinished() {
+    public void cycleFinished() {
         mInitialPressedActions.clear();
         mMovementX = 0;
         mMovementY = 0;
