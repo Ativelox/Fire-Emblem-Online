@@ -11,7 +11,7 @@ This game features a wide variety of play styles, some of which aren't present i
 - Offline Play (co-op, vs. AI)
 - Campaign (relive some of the original story)
 
-Additionally it features a Map Editor and the ability to customize your own team using characters present throughout FE6 - FE8 and even more.
+Additionally it features a Map Editor and the ability to customize your own team using characters present throughout FE6 - FE8 and even more. For some looks at the game itself be sure to check the [wiki](https://github.com/Ativelox/Fire-Emblem-Online/wiki).
 
 ## Requirements
 
