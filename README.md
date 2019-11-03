@@ -1,6 +1,6 @@
 # Fire Emblem Online
 
-Fire Emblem Online (FEO) is a fantasy tactical role-playing game which, as the name suggests, is based off of the game franchise [Fire Emblem](https://de.wikipedia.org/wiki/Fire_Emblem). More specifically it is based off of the GBA Titles of the franchise, featuring mechanics from:
+Fire Emblem Online (FEO) is a fantasy tactical role-playing game which, as the name suggests, is based off of the game franchise [Fire Emblem](https://en.wikipedia.org/wiki/Fire_Emblem). More specifically it is based off of the GBA Titles of the franchise, featuring mechanics from:
 - Fire Emblem: The Binding Blade (FE6)
 - Fire Emblem: The Blazing Blade (FE7)
 - Fire Emblem: The Sacred Stones (FE8)
