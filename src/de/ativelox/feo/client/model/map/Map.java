@@ -3,8 +3,10 @@ package de.ativelox.feo.client.model.map;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import de.ativelox.feo.client.model.gfx.Assets;
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
@@ -20,10 +22,19 @@ import de.ativelox.feo.client.model.property.callback.IMoveListener;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.model.util.closy.ManhattanDistance;
+import de.ativelox.feo.client.model.util.maglev.MapGraph;
+import de.ativelox.feo.client.model.util.maglev.UniformEdgeWeightModule;
+import de.ativelox.feo.client.model.util.maglev.UnitEdgeIgnoring;
 import de.ativelox.feo.logging.ELogType;
 import de.ativelox.feo.logging.Logger;
 import de.zabuza.closy.external.NearestNeighborComputation;
 import de.zabuza.closy.external.NearestNeighborComputations;
+import de.zabuza.maglev.external.algorithms.HasPathCost;
+import de.zabuza.maglev.external.algorithms.Path;
+import de.zabuza.maglev.external.algorithms.ShortestPathComputation;
+import de.zabuza.maglev.external.algorithms.ShortestPathComputationBuilder;
+import de.zabuza.maglev.external.graph.Edge;
+import de.zabuza.maglev.external.graph.Graph;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
@@ -44,6 +55,8 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
     private NearestNeighborComputation<IUnit> mNearestOpposed;
     private NearestNeighborComputation<IUnit> mNearestAllied;
 
+    private Graph<Tile, Edge<Tile>> mGraphRepresentation;
+
     public Map(String fileName, int x, int y) {
         super(x, y, 0, 0);
         mNearestOpposed = NearestNeighborComputations.of(new ManhattanDistance<>());
@@ -53,6 +66,40 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
         mOpposedUnits = new ArrayList<>();
 
         mFileName = fileName;
+
+        this.load();
+
+        mGraphRepresentation = new MapGraph(this);
+
+    }
+
+    public Optional<Path<Tile, Edge<Tile>>> getPath(IUnit unit, Tile tile, int range) {
+        ShortestPathComputation<Tile, Edge<Tile>> algo = new ShortestPathComputationBuilder<>(mGraphRepresentation)
+                .resetOrdinaryDijkstra().addModuleAbortAfterRange(range)
+                .addModuleIgnoreEdgeIf(new UnitEdgeIgnoring(unit, this)).build();
+
+        return algo.shortestPath(this.getByPos(unit.getX(), unit.getY()), tile);
+
+    }
+
+    public Set<Tile> getTilesInRange(IUnit unit, int range) {
+        ShortestPathComputation<Tile, Edge<Tile>> algo = new ShortestPathComputationBuilder<>(mGraphRepresentation)
+                .resetOrdinaryDijkstra().addModuleAbortAfterRange(range)
+                .addModuleIgnoreEdgeIf(new UnitEdgeIgnoring(unit, this)).build();
+
+        return algo.shortestPathCostsReachable(this.getByPos(unit.getX(), unit.getY())).keySet();
+
+    }
+
+    public Set<Tile> getAttackableTilesInRange(Set<Tile> movementSet, int range) {
+        ShortestPathComputation<Tile, Edge<Tile>> algo = new ShortestPathComputationBuilder<>(mGraphRepresentation)
+                .resetOrdinaryDijkstra().addModuleAbortAfterRange(range).addModule(new UniformEdgeWeightModule<>(1))
+                .build();
+
+        Set<Tile> reachable = algo.shortestPathCostsReachable(movementSet).keySet();
+        reachable.removeAll(movementSet);
+
+        return reachable;
 
     }
 

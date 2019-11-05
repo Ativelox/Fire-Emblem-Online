@@ -23,6 +23,8 @@ import de.ativelox.feo.client.model.property.callback.ISelectionListener;
 import de.ativelox.feo.client.model.util.IMoveRoutine;
 import de.ativelox.feo.client.model.util.SmoothMoveRoutine;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
+import de.zabuza.maglev.external.algorithms.Path;
+import de.zabuza.maglev.external.graph.Edge;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
@@ -141,7 +143,7 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     }
 
     @Override
-    public void move(Deque<Tile> path) {
+    public void move(Path<Tile, Edge<Tile>> path) {
         mMoveListener.forEach(l -> l.onMoveStarted(this));
         mMover.move(path);
 

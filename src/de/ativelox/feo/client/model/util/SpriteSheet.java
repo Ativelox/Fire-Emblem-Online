@@ -332,6 +332,16 @@ public class SpriteSheet {
         return dest;
     }
 
+    public static BufferedImage[] flipHorizontally(BufferedImage[] src) {
+        BufferedImage[] result = new BufferedImage[src.length];
+
+        for (int i = 0; i < src.length; i++) {
+            result[i] = flipHorizontally(src[i]);
+
+        }
+        return result;
+    }
+
     public static BufferedImage[] splitAndThen(BufferedImage image, int tileWidth, int tileHeight, int amount,
             int columnOffset, Function<BufferedImage, BufferedImage> directProcessing,
             Consumer<BufferedImage> postProcessing, int... dimensions) {

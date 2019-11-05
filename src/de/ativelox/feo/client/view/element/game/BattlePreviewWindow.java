@@ -73,11 +73,19 @@ public class BattlePreviewWindow extends ImageElement implements ICanSwitchSides
         }
         super.render(g);
 
-        g.drawImage(mNameAttacker, getX() + 24 * Display.INTERNAL_RES_FACTOR, getY() + 5 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(mNameAttacker,
+                getX() + 24 * Display.INTERNAL_RES_FACTOR
+                        + (20 * Display.INTERNAL_RES_FACTOR - mNameAttacker.getWidth(null) / 2),
+                getY() + 5 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mNameTarget, getX() + 9 * Display.INTERNAL_RES_FACTOR, getY() + 85 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(mNameTarget,
+                getX() + 9 * Display.INTERNAL_RES_FACTOR
+                        + (20 * Display.INTERNAL_RES_FACTOR - mNameTarget.getWidth(null) / 2),
+                getY() + 85 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mWeaponNameTarget, getX() + 9 * Display.INTERNAL_RES_FACTOR,
+        g.drawImage(mWeaponNameTarget,
+                getX() + 9 * Display.INTERNAL_RES_FACTOR
+                        + (23 * Display.INTERNAL_RES_FACTOR - mWeaponNameTarget.getWidth(null) / 2),
                 getY() + 101 * Display.INTERNAL_RES_FACTOR);
 
         g.drawImage(mHpAttacker, 16 * Display.INTERNAL_RES_FACTOR - mHpAttacker.getWidth(null) + getX()

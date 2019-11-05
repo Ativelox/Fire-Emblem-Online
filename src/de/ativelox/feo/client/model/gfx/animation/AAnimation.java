@@ -1,7 +1,12 @@
 package de.ativelox.feo.client.model.gfx.animation;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.gfx.SpatialObject;
@@ -12,6 +17,8 @@ import de.ativelox.feo.client.model.util.TimeSnapshot;
  *
  */
 public abstract class AAnimation extends SpatialObject implements IAnimation {
+
+    protected final Map<Integer, List<Function<TimeSnapshot, Boolean>>> mHookMapping;
 
     protected final boolean mIsLooping;
 
@@ -31,6 +38,8 @@ public abstract class AAnimation extends SpatialObject implements IAnimation {
             int width, int height) {
         super(0, 0, width, height);
 
+        mHookMapping = new HashMap<>();
+
         mAnimationDirection = direction;
         mIsLooping = looping;
         mPlayTime = playTime;
@@ -49,8 +58,19 @@ public abstract class AAnimation extends SpatialObject implements IAnimation {
     @Override
     public abstract boolean isFinished();
 
-    @Override
     public abstract void update(TimeSnapshot ts);
+
+    protected boolean hookRoutine(TimeSnapshot ts) {
+        boolean isContinuing = true;
+
+        if (mHookMapping.containsKey(mNext + 1)) {
+
+            for (final Function<TimeSnapshot, Boolean> hook : mHookMapping.get(mNext + 1)) {
+                isContinuing = isContinuing && hook.apply(ts);
+            }
+        }
+        return isContinuing;
+    }
 
     @Override
     public abstract void render(DepthBufferedGraphics g);
@@ -87,5 +107,14 @@ public abstract class AAnimation extends SpatialObject implements IAnimation {
     @Override
     public Iterator<BufferedImage> iterator() {
         return new AnimationIterator(mSequence);
+    }
+
+    @Override
+    public void addHook(int frame, Function<TimeSnapshot, Boolean> hook) {
+        if (!mHookMapping.containsKey(frame)) {
+            mHookMapping.put(frame, new ArrayList<>());
+        }
+        mHookMapping.get(frame).add(hook);
+
     }
 }

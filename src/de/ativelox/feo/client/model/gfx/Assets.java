@@ -33,10 +33,14 @@ import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.gfx.tile.TileSet;
 import de.ativelox.feo.client.model.gfx.tile.editor.EditorTile;
 import de.ativelox.feo.client.model.gfx.tile.editor.EditorTileSet;
+import de.ativelox.feo.client.model.property.EBattleAnimType;
+import de.ativelox.feo.client.model.property.EClass;
+import de.ativelox.feo.client.model.property.EGender;
 import de.ativelox.feo.client.model.property.EIndicatorDirection;
 import de.ativelox.feo.client.model.property.EPlatformDistance;
 import de.ativelox.feo.client.model.property.ESide;
 import de.ativelox.feo.client.model.property.IRequireResource;
+import de.ativelox.feo.client.model.util.SplitBuilder;
 import de.ativelox.feo.client.model.util.SpriteSheet;
 import de.ativelox.feo.client.model.util.TightWidthFit;
 import de.ativelox.feo.client.view.Display;
@@ -64,6 +68,14 @@ public class Assets {
     private static final Path PORTRAIT_PATH = Paths.get("res", "fe6", "portrait");
 
     private static final Path BATTLE_PATH = Paths.get("res", "fe6", "battle");
+
+    private static final Path DODGE_PATH = Paths.get("res", "fe6", "dodge");
+
+    private static final Path MELEE_ATTACK_PATH = Paths.get("res", "fe6", "melee_attack");
+    private static final Path MELEE_CRIT_PATH = Paths.get("res", "fe6", "melee_crit");
+
+    private static final Path RANGED_ATTACK_PATH = Paths.get("res", "fe6", "ranged_attack");
+    private static final Path RANGED_CRIT_PATH = Paths.get("res", "fe6", "ranged_crit");
 
     private static final String FIELDS_TILE_SET_NAME = "fields.png";
     private static final String DIALOGUE_FONT_NAME = "fe-dialogue.ttf";
@@ -277,8 +289,8 @@ public class Assets {
             }
 
             BufferedImage sheet = SpriteSheet.load(FONT_PATH.resolve(REGULAR_FONT_NAME)).get();
-            BufferedImage[] loaded = SpriteSheet.splitAndThen(sheet, 8, 13, 71, 0, new TightWidthFit(11063456), null,
-                    15, 15, 15, 15, 11);
+            BufferedImage[] loaded = new SplitBuilder().setTileDimensions(8, 13).setAmount(71)
+                    .setDirectProcessing(new TightWidthFit(11063456)).setDimensions(15, 15, 15, 15, 11).apply(sheet);
             List<Image> relevant = new ArrayList<>();
 
             for (final char c : additionalInfo[0].toCharArray()) {
@@ -504,6 +516,41 @@ public class Assets {
         case BATTLE_BACKGROUND:
             result = (T) SpriteSheet.load(SYSTEM_PATH.resolve(BATTLE_BACKGROUND_NAME)).get();
             break;
+
+        case BATTLE_ANIMATION:
+            // 0: class
+            // 1. gender
+            // 2: animation type (dodge, crit, normal, ranged, ...)
+            // 3: side (left, right)
+            EClass unitClass = EClass.valueOf(additionalInfo[0]);
+            EGender gender = EGender.valueOf(additionalInfo[1]);
+            EBattleAnimType animType = EBattleAnimType.valueOf(additionalInfo[2]);
+            ESide side = ESide.valueOf(additionalInfo[3]);
+
+            Path path = null;
+
+            switch (animType) {
+            case DODGE:
+                path = DODGE_PATH;
+                break;
+            case MELEE_ATTACK:
+                path = MELEE_ATTACK_PATH;
+                break;
+            case MELEE_CRIT:
+                path = MELEE_CRIT_PATH;
+                break;
+            case RANGED_ATTACK:
+                path = RANGED_ATTACK_PATH;
+                break;
+            case RANGED_CRIT:
+                path = RANGED_CRIT_PATH;
+                break;
+            case STALE:
+                break;
+            default:
+                break;
+
+            }
 
         default:
             Logger.get().log(ELogType.ERROR,

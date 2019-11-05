@@ -65,8 +65,6 @@ public class GameScreen extends InputReceiver
             u.addMoveFinishedListener(this);
         });
 
-        map.load();
-
         mSelectionCursor = new MapSelector(0, 0, map);
 
         mSelectionRoutine = new UnitSelectionRoutine(mSelectionCursor, map);

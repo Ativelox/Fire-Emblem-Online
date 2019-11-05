@@ -1,11 +1,10 @@
 package de.ativelox.feo.client.model.property.routine;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import de.ativelox.feo.client.model.gfx.tile.Tile;
@@ -13,12 +12,14 @@ import de.ativelox.feo.client.model.map.Map;
 import de.ativelox.feo.client.model.property.EIndicatorDirection;
 import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.unit.IUnit;
-import de.ativelox.feo.client.model.util.graph.GraphUtils;
 import de.ativelox.feo.client.view.element.game.MovementIndicator;
 import de.ativelox.feo.client.view.element.game.MovementRange;
 import de.ativelox.feo.logging.ELogType;
 import de.ativelox.feo.logging.Logger;
 import de.ativelox.feo.util.Pair;
+import de.zabuza.maglev.external.algorithms.EdgeCost;
+import de.zabuza.maglev.external.algorithms.Path;
+import de.zabuza.maglev.external.graph.Edge;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
@@ -26,7 +27,7 @@ import de.ativelox.feo.util.Pair;
  */
 public class PathCalculationRoutine {
 
-    private java.util.Map<Tile, Deque<Tile>> mPaths;
+    private Set<Tile> mInRange;
 
     private MovementRange mMovementRange;
 
@@ -34,9 +35,9 @@ public class PathCalculationRoutine {
 
     private final Map mMap;
 
-    private Deque<Tile> mLast;
+    private Path<Tile, Edge<Tile>> mLast;
 
-    private Deque<Tile> mCurrentPath;
+    private Path<Tile, Edge<Tile>> mCurrentPath;
 
     private IUnit mActor;
 
@@ -50,7 +51,6 @@ public class PathCalculationRoutine {
 
     public PathCalculationRoutine(final Map map) {
         mMap = map;
-        mLast = new ArrayDeque<>();
 
         mMovementIndicator = new MovementIndicator();
 
@@ -67,24 +67,20 @@ public class PathCalculationRoutine {
 
         mActor = unit;
 
-        mPaths = GraphUtils.dijsktra(mMap, mMap.getByPos(unit.getX(), unit.getY()), unit.getMovement());
+        mInRange = mMap.getTilesInRange(unit, unit.getMovement());
 
-        Set<Tile> ranged = GraphUtils
-                .dijsktra(mMap, mMap.getByPos(unit.getX(), unit.getY()), unit.getMovement() + unit.getRange()).keySet();
+        Set<Tile> ranged = mMap.getTilesInRange(unit, unit.getMovement() + unit.getRange());
 
-        ranged.removeAll(mPaths.keySet());
-
-        Set<Tile> move = new HashSet<>(mPaths.keySet());
-        move.add(mMap.getByPos(unit.getX(), unit.getY()));
+        ranged.removeAll(mInRange);
 
         mIsActive = true;
 
-        mMovementRange = new MovementRange(move, ranged);
+        mMovementRange = new MovementRange(mInRange, mMap.getAttackableTilesInRange(mInRange, unit.getRange()));
 
     }
 
     public void stop() {
-        mPaths = null;
+        mInRange = null;
         mCurrentPath = null;
         mIsActive = false;
         mActor = null;
@@ -106,11 +102,11 @@ public class PathCalculationRoutine {
 
     }
 
-    public Deque<Tile> get(Tile tile) {
-        if (mPaths == null) {
-            return new ArrayDeque<>();
+    public Optional<Path<Tile, Edge<Tile>>> get(Tile tile) {
+        if (mInRange == null) {
+            return Optional.empty();
         }
-        return mPaths.get(tile);
+        return mMap.getPath(mActor, tile, mActor.getMovement());
 
     }
 
@@ -118,7 +114,6 @@ public class PathCalculationRoutine {
         if (mStart == null) {
             return;
         }
-
         mActor.moveInstantly(mStart.getFirst(), mStart.getSecond());
 
     }
@@ -132,25 +127,26 @@ public class PathCalculationRoutine {
         mCursorX = cursor.getX();
         mCursorY = cursor.getY();
 
-        if (mPaths == null) {
+        if (mInRange == null) {
             return;
         }
-        Deque<Tile> tiles = mPaths.get(mMap.getByPos(mCursorX, mCursorY));
+        Optional<Path<Tile, Edge<Tile>>> tiles = mMap.getPath(mActor, mMap.getByPos(cursor.getX(), cursor.getY()),
+                mActor.getMovement());
 
-        if (tiles == null && mLast == null) {
+        if (tiles.isEmpty() && mLast == null) {
             return;
         }
 
-        if (tiles == null) {
+        if (tiles.isEmpty()) {
             mCurrentPath = mLast;
 
         } else {
-            mCurrentPath = tiles;
-            mLast = tiles;
+            mCurrentPath = tiles.get();
+            mLast = tiles.get();
 
         }
 
-        Iterator<Tile> pathIterator = mCurrentPath.iterator();
+        Iterator<EdgeCost<Tile, Edge<Tile>>> pathIterator = mCurrentPath.iterator();
 
         if (!pathIterator.hasNext()) {
             return;
@@ -160,14 +156,14 @@ public class PathCalculationRoutine {
 
         ISpatial last = null;
         ISpatial current = mActor;
-        ISpatial next = pathIterator.next();
+        ISpatial next = pathIterator.next().getEdge().getDestination();
 
         result.add(Pair.of(current, getDirection(last, current, next)));
 
         while (pathIterator.hasNext()) {
             last = current;
             current = next;
-            next = pathIterator.next();
+            next = pathIterator.next().getEdge().getDestination();
 
             result.add(Pair.of(current, getDirection(last, current, next)));
 
@@ -257,7 +253,7 @@ public class PathCalculationRoutine {
 
     public void executeIfValid() {
         if (isActive() && mCurrentPath != null) {
-            mActor.move(new ArrayDeque<>(mCurrentPath));
+            mActor.move(mCurrentPath);
         }
     }
 }

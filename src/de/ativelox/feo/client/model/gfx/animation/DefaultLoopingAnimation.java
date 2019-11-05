@@ -1,6 +1,7 @@
 package de.ativelox.feo.client.model.gfx.animation;
 
 import java.awt.image.BufferedImage;
+import java.util.function.Function;
 
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
@@ -63,6 +64,8 @@ public class DefaultLoopingAnimation extends ALoopingAnimation {
         if (mIsStopped) {
             return;
         }
+        hookRoutine(ts);
+
         if (mTimePassed >= mFrameSpacing * mFrameCounter) {
             if (mNext >= mSequence.length - 1 && mDirection > 0) {
                 // at the back of the animation
@@ -101,13 +104,8 @@ public class DefaultLoopingAnimation extends ALoopingAnimation {
     }
 
     @Override
-    public IAnimation copy() {
-        BufferedImage[] sequence = new BufferedImage[mSequence.length];
+    public void addHook(int frame, Function<TimeSnapshot, Boolean> hook) {
+        // TODO Auto-generated method stub
 
-        for (int i = 0; i < sequence.length; i++) {
-            sequence[i] = mSequence[i];
-
-        }
-        return new DefaultLoopingAnimation(sequence, mAnimationDirection, mPlayTime, mWidth, mHeight);
     }
 }
