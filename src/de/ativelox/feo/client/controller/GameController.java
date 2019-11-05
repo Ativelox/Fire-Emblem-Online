@@ -13,6 +13,7 @@ import de.ativelox.feo.client.model.camera.Camera;
 import de.ativelox.feo.client.model.map.Map;
 import de.ativelox.feo.client.model.property.EActionWindowOption;
 import de.ativelox.feo.client.model.property.EAffiliation;
+import de.ativelox.feo.client.model.property.EPlatformDistance;
 import de.ativelox.feo.client.model.property.ESide;
 import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.property.callback.IActionListener;
@@ -228,6 +229,9 @@ public class GameController {
     }
 
     public void initiateAttack(IUnit attacker, IUnit target) {
+
+        mBattleScreen.setParticipants(attacker, target, mMap.getByPos(attacker.getX(), attacker.getY()).getType(),
+                attacker.getEquippedWeapon().get().getRange());
         mScreenManager.addScreen(mBattleScreen);
 
     }

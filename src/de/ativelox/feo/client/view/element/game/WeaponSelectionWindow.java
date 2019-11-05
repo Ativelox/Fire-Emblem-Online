@@ -52,7 +52,7 @@ public class WeaponSelectionWindow extends AActionWindow {
         }
         setHeight((16 * weapons.length + 5 + 4) * Display.INTERNAL_RES_FACTOR);
 
-        mSelectionManager = new VerticalSelectionManager(true, mButtons);
+        mSelectionManager = new VerticalSelectionManager<>(true, mButtons);
         mButtonConfirmManager = new ConfirmCancelWhenSelectedManager<>(mButtons);
     }
 

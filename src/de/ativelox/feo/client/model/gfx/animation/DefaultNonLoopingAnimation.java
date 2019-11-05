@@ -1,9 +1,7 @@
 package de.ativelox.feo.client.model.gfx.animation;
 
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.util.Iterator;
 
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.util.TimeSnapshot;

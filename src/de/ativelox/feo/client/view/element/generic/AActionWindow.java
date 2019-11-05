@@ -21,7 +21,7 @@ import de.ativelox.feo.client.model.util.TimeSnapshot;
  */
 public abstract class AActionWindow extends AScreenElement implements IRequireResources, IUpdateable, ICanSwitchSides {
 
-    protected VerticalSelectionManager mSelectionManager;
+    protected VerticalSelectionManager<ACancelableButton> mSelectionManager;
     protected ConfirmWhenSelectedManager<ACancelableButton> mButtonConfirmManager;
 
     protected ACancelableButton[] mButtons;

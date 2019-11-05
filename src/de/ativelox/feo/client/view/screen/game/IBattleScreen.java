@@ -1,6 +1,7 @@
 package de.ativelox.feo.client.view.screen.game;
 
 import de.ativelox.feo.client.controller.GameController;
+import de.ativelox.feo.client.model.gfx.tile.ETileType;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.view.screen.IScreen;
 
@@ -12,6 +13,6 @@ public interface IBattleScreen extends IScreen {
 
     void setController(final GameController gc);
 
-    void setParticipants(IUnit attacker, IUnit target);
+    void setParticipants(IUnit attacker, IUnit target, ETileType type, int range);
 
 }

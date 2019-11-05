@@ -22,7 +22,6 @@ public class UnitFactory {
         switch (unit) {
         case FIR:
             return new DummyUnit(x, y, 5, EGender.FEMALE, EClass.SWORDMASTER, "Fir", affiliation);
-
         case ROY:
             return new DummyUnit(x, y, 5, EGender.MALE, EClass.LORD_ROY, "Roy", affiliation);
         default:

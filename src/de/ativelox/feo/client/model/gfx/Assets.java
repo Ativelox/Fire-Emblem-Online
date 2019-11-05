@@ -22,9 +22,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import de.ativelox.feo.client.model.gfx.animation.DefaultLoopingAnimation;
-import de.ativelox.feo.client.model.gfx.animation.DefaultNonLoopingAnimation;
 import de.ativelox.feo.client.model.gfx.animation.EAnimationDirection;
-import de.ativelox.feo.client.model.gfx.animation.IAnimation;
 import de.ativelox.feo.client.model.gfx.animation.OffsetLoopingAnimation;
 import de.ativelox.feo.client.model.gfx.animation.UnitMovementAnimation;
 import de.ativelox.feo.client.model.gfx.tile.ATileSet;

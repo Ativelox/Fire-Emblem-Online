@@ -14,7 +14,7 @@ public class TutorialMap extends Map {
 
     public TutorialMap(int x, int y) {
         super("ch0.map", x, y);
-        IUnit roy = UnitFactory.get(EUnit.ROY, EAffiliation.ALLIED, 5, 5);
+        IUnit roy = UnitFactory.get(EUnit.ROY, EAffiliation.ALLIED, 0, 0);
         roy.getInventory().add(new DummyWeapon("1 Range", 1));
         roy.getInventory().add(new DummyWeapon("2 Range", 2));
 
@@ -22,11 +22,11 @@ public class TutorialMap extends Map {
         evilRoy.getInventory().add(new DummyWeapon("Durandel", 2));
         evilRoy.equip(evilRoy.getInventory().getWeapons()[0]);
 
-        IUnit evilFir = UnitFactory.get(EUnit.FIR, EAffiliation.OPPOSED, 9, 5);
+        IUnit evilFir = UnitFactory.get(EUnit.FIR, EAffiliation.OPPOSED, 1, 0);
 
         evilRoy.getInventory().add(new DummyWeapon("1 Range", 1));
 
-        this.add(UnitFactory.get(EUnit.FIR, EAffiliation.ALLIED, 0, 0));
+//        this.add(UnitFactory.get(EUnit.FIR, EAffiliation.ALLIED, 0, 0));
         this.add(roy);
 
         this.add(evilRoy);
