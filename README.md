@@ -17,5 +17,6 @@ Additionally it features a Map Editor and the ability to customize your own team
 
 **Fire Emblem Online** is written in Java 13 and uses the following Libraries:
 - [Closy](https://github.com/ZabuzaW/Closy) (Used for Nearest Neighbor Search)
+- [Maglev](https://github.com/ZabuzaW/Maglev) (Used for Shortest Path Computation)
 
 All the textures, sound, etc. from the original franchise will (of course) not be provided.
