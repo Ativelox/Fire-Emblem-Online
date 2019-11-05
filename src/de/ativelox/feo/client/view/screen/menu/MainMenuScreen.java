@@ -28,7 +28,7 @@ public class MainMenuScreen implements IScreen, IConfirmListener {
     private final ImageElement mBackground;
     private final AButtonElement[] mButtons;
 
-    private final VerticalSelectionManager mSelectionManager;
+    private final VerticalSelectionManager<AButtonElement> mSelectionManager;
     private final ConfirmWhenSelectedManager<AButtonElement> mButtonConfirmManager;
 
     private static final String NEW_GAME = "New Game";
@@ -47,7 +47,7 @@ public class MainMenuScreen implements IScreen, IConfirmListener {
 
         mBackground = new ImageElement(0, 0, 100, 100, true, EResource.MENU_BACKGROUND);
 
-        mSelectionManager = new VerticalSelectionManager(false, mButtons);
+        mSelectionManager = new VerticalSelectionManager<>(false, mButtons);
         mButtonConfirmManager = new ConfirmWhenSelectedManager<>(mButtons);
 
         mButtons[0].add(this);

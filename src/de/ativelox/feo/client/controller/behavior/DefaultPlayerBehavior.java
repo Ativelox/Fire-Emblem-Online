@@ -251,7 +251,7 @@ public class DefaultPlayerBehavior implements IBehavior {
         mController.removeTargetSelect();
         mController.removeWeaponSelect();
 
-        this.onWaitAction();
+        mController.initiateAttack(mPathRoutine.getActor(), target);
 
     }
 

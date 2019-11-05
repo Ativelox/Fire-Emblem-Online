@@ -22,7 +22,7 @@ public class TutorialMap extends Map {
         evilRoy.getInventory().add(new DummyWeapon("Durandel", 2));
         evilRoy.equip(evilRoy.getInventory().getWeapons()[0]);
 
-        IUnit evilFir = UnitFactory.get(EUnit.FIR, EAffiliation.OPPOSED, 10, 5);
+        IUnit evilFir = UnitFactory.get(EUnit.FIR, EAffiliation.OPPOSED, 9, 5);
 
         evilRoy.getInventory().add(new DummyWeapon("1 Range", 1));
 

@@ -1,6 +1,7 @@
 package de.ativelox.feo.client.model.util;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -14,9 +15,12 @@ import java.nio.file.StandardOpenOption;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import javax.imageio.ImageIO;
 
+import de.ativelox.feo.client.model.property.EPlatformDistance;
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.logging.ELogType;
 import de.ativelox.feo.logging.Logger;
@@ -159,19 +163,28 @@ public class SpriteSheet {
             Logger.get().log(ELogType.ERROR, "There were no images to stitch...");
             return null;
         }
-        Image sample = toStich.get(0);
 
-        int newWidth = sample.getWidth(null) * toStich.size();
-        int newHeight = sample.getHeight(null);
+        int newWidth = 0;
+        int newHeight = 0;
+
+        for (final Image image : toStich) {
+            newWidth += image.getWidth(null);
+            newHeight = Math.max(newHeight, image.getHeight(null));
+        }
 
         BufferedImage result = new BufferedImage(newWidth * Display.INTERNAL_RES_FACTOR,
                 newHeight * Display.INTERNAL_RES_FACTOR, BufferedImage.TYPE_4BYTE_ABGR);
+
         Graphics2D g = result.createGraphics();
 
         int i = 0;
+        int lastWidth = 0;
         for (final Image image : toStich) {
-            g.drawImage(image, i * image.getWidth(null) * Display.INTERNAL_RES_FACTOR, 0,
-                    image.getWidth(null) * Display.INTERNAL_RES_FACTOR,
+            if (i > 0) {
+                lastWidth += toStich.get(i - 1).getWidth(null) * Display.INTERNAL_RES_FACTOR;
+            }
+
+            g.drawImage(image, lastWidth, 0, image.getWidth(null) * Display.INTERNAL_RES_FACTOR,
                     image.getHeight(null) * Display.INTERNAL_RES_FACTOR, null);
             i++;
         }
@@ -204,7 +217,6 @@ public class SpriteSheet {
             if (i > 0) {
                 lastHeight += toStitch.get(i - 1).getHeight(null) * Display.INTERNAL_RES_FACTOR;
             }
-            System.out.println(lastHeight);
 
             g.drawImage(image, 0, lastHeight, image.getWidth(null) * Display.INTERNAL_RES_FACTOR,
                     image.getHeight(null) * Display.INTERNAL_RES_FACTOR, null);
@@ -236,6 +248,107 @@ public class SpriteSheet {
         image.setRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
 
         return image;
+
+    }
+
+    public static BufferedImage generatePlatform(BufferedImage textureSrc, EPlatformDistance distance) {
+        if (distance == EPlatformDistance.CLOSE) {
+            BufferedImage result = new BufferedImage(176, 40, BufferedImage.TYPE_4BYTE_ABGR);
+
+            // bottom layer of close platform, directed to the right.
+            BufferedImage bottomRight = textureSrc.getSubimage(0, 0, 88, 16);
+            BufferedImage bottomLeft = flipHorizontally(bottomRight);
+
+            BufferedImage middleRight = textureSrc.getSubimage(88, 0, 80, 16);
+            BufferedImage middleLeft = flipHorizontally(middleRight);
+
+            BufferedImage topRight = textureSrc.getSubimage(168, 0, 63, 8);
+            BufferedImage topLeft = flipHorizontally(topRight);
+            Graphics g = result.createGraphics();
+
+            g.drawImage(topLeft, 25, 0, null);
+            g.drawImage(topRight, 25 + topLeft.getWidth(), 0, null);
+
+            g.drawImage(middleLeft, 8, 8, null);
+            g.drawImage(middleRight, 8 + middleLeft.getWidth(), 8, null);
+
+            g.drawImage(bottomLeft, 0, 24, null);
+            g.drawImage(bottomRight, bottomRight.getWidth(), 24, null);
+
+            g.dispose();
+
+            makeTransparent(result, result.getRGB(0, result.getHeight() - 1));
+
+            return result;
+        }
+        BufferedImage result = new BufferedImage(100, 40, BufferedImage.TYPE_4BYTE_ABGR);
+
+        BufferedImage bottom = textureSrc.getSubimage(6, 16, 97, 16);
+        BufferedImage middle = textureSrc.getSubimage(107, 16, 92, 16);
+
+        BufferedImage topLeft = textureSrc.getSubimage(205, 16, 43, 8);
+        BufferedImage topRight = textureSrc.getSubimage(200, 24, 26, 8);
+
+        Graphics g = result.createGraphics();
+
+        g.drawImage(topLeft, 2, 0, null);
+        g.drawImage(topRight, 2 + topLeft.getWidth(), 0, null);
+
+        g.drawImage(middle, 0, 8, null);
+
+        g.drawImage(bottom, 3, 8 + 16, null);
+
+        g.dispose();
+
+        makeTransparent(result, result.getRGB(result.getWidth() - 1, result.getHeight() - 4));
+
+        if (distance == EPlatformDistance.WIDE_LEFT) {
+            result = flipHorizontally(result);
+        }
+        return result;
+    }
+
+    private static void makeTransparent(BufferedImage src, int rgb) {
+        for (int i = 0; i < src.getWidth(); i++) {
+            for (int j = 0; j < src.getHeight(); j++) {
+                if (src.getRGB(i, j) == rgb) {
+                    src.setRGB(i, j, 0x00FFFFFF);
+                }
+
+            }
+        }
+    }
+
+    private static BufferedImage flipHorizontally(BufferedImage src) {
+        BufferedImage dest = new BufferedImage(src.getColorModel(), src.getRaster().createCompatibleWritableRaster(),
+                false, null);
+
+        for (int i = 0; i < src.getWidth(); i++) {
+            for (int j = 0; j < src.getHeight(); j++) {
+                dest.setRGB(src.getWidth() - i - 1, j, src.getRGB(i, j));
+
+            }
+        }
+        return dest;
+    }
+
+    public static BufferedImage[] splitAndThen(BufferedImage image, int tileWidth, int tileHeight, int amount,
+            int columnOffset, Function<BufferedImage, BufferedImage> directProcessing,
+            Consumer<BufferedImage> postProcessing, int... dimensions) {
+        BufferedImage[] result = new BufferedImage[amount];
+
+        int row = 0;
+        int i = 0;
+        for (int columnAmount : dimensions) {
+            for (int column = columnOffset; column < columnOffset + columnAmount; column++) {
+                result[i] = directProcessing
+                        .apply(image.getSubimage(tileWidth * column, tileHeight * row, tileWidth, tileHeight));
+                i++;
+
+            }
+            row++;
+        }
+        return result;
 
     }
 }

@@ -73,52 +73,52 @@ public class BattlePreviewWindow extends ImageElement implements ICanSwitchSides
         }
         super.render(g);
 
-        g.drawImage(mNameAttacker, getX() + 25 * Display.INTERNAL_RES_FACTOR, getY() + 7 * Display.INTERNAL_RES_FACTOR,
-                35 * Display.INTERNAL_RES_FACTOR, 10 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(mNameAttacker, getX() + 24 * Display.INTERNAL_RES_FACTOR, getY() + 5 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mNameTarget, getX() + 9 * Display.INTERNAL_RES_FACTOR, getY() + 86 * Display.INTERNAL_RES_FACTOR,
-                35 * Display.INTERNAL_RES_FACTOR, 10 * Display.INTERNAL_RES_FACTOR);
-        
-        g.drawImage(mWeaponNameTarget, getX() + 9 * Display.INTERNAL_RES_FACTOR, getY() + 103 * Display.INTERNAL_RES_FACTOR,
-                45 * Display.INTERNAL_RES_FACTOR, 10 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(mNameTarget, getX() + 9 * Display.INTERNAL_RES_FACTOR, getY() + 85 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mHpAttacker, getX() + 52 * Display.INTERNAL_RES_FACTOR, getY() + 25 * Display.INTERNAL_RES_FACTOR,
-                15 * Display.INTERNAL_RES_FACTOR, 10 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(mWeaponNameTarget, getX() + 9 * Display.INTERNAL_RES_FACTOR,
+                getY() + 101 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mHpIdentifier, getX() + 29 * Display.INTERNAL_RES_FACTOR, getY() + 25 * Display.INTERNAL_RES_FACTOR,
-                15 * Display.INTERNAL_RES_FACTOR, 10 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(mHpAttacker, 16 * Display.INTERNAL_RES_FACTOR - mHpAttacker.getWidth(null) + getX()
+                + 51 * Display.INTERNAL_RES_FACTOR, getY() + 23 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mHpTarget, getX() + 5 * Display.INTERNAL_RES_FACTOR, getY() + 25 * Display.INTERNAL_RES_FACTOR,
-                15 * Display.INTERNAL_RES_FACTOR, 10 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(mHpIdentifier, getX() + 31 * Display.INTERNAL_RES_FACTOR,
+                getY() + 23 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mMtTarget, getX() + 5 * Display.INTERNAL_RES_FACTOR, getY() + 41 * Display.INTERNAL_RES_FACTOR,
-                15 * Display.INTERNAL_RES_FACTOR, 10 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(mHpTarget,
+                16 * Display.INTERNAL_RES_FACTOR - mHpTarget.getWidth(null) + getX() + 5 * Display.INTERNAL_RES_FACTOR,
+                getY() + 23 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mMtIdentifier, getX() + 30 * Display.INTERNAL_RES_FACTOR, getY() + 41 * Display.INTERNAL_RES_FACTOR,
-                15 * Display.INTERNAL_RES_FACTOR, 10 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(mMtTarget,
+                16 * Display.INTERNAL_RES_FACTOR - mMtTarget.getWidth(null) + getX() + 5 * Display.INTERNAL_RES_FACTOR,
+                getY() + 39 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mMtAttacker, getX() + 52 * Display.INTERNAL_RES_FACTOR, getY() + 41 * Display.INTERNAL_RES_FACTOR,
-                15 * Display.INTERNAL_RES_FACTOR, 10 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(mMtIdentifier, getX() + 30 * Display.INTERNAL_RES_FACTOR,
+                getY() + 39 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mHitTarget, getX() + 5 * Display.INTERNAL_RES_FACTOR, getY() + 57 * Display.INTERNAL_RES_FACTOR,
-                15 * Display.INTERNAL_RES_FACTOR, 10 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(mMtAttacker, 16 * Display.INTERNAL_RES_FACTOR - mMtAttacker.getWidth(null) + getX()
+                + 51 * Display.INTERNAL_RES_FACTOR, getY() + 39 * Display.INTERNAL_RES_FACTOR);
+
+        g.drawImage(mHitTarget,
+                16 * Display.INTERNAL_RES_FACTOR - mHitTarget.getWidth(null) + getX() + 5 * Display.INTERNAL_RES_FACTOR,
+                getY() + 55 * Display.INTERNAL_RES_FACTOR);
 
         g.drawImage(mHitIdentifier, getX() + 29 * Display.INTERNAL_RES_FACTOR,
-                getY() + 57 * Display.INTERNAL_RES_FACTOR, 15 * Display.INTERNAL_RES_FACTOR,
-                10 * Display.INTERNAL_RES_FACTOR);
+                getY() + 55 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mHitAttacker, getX() + 52 * Display.INTERNAL_RES_FACTOR, getY() + 57 * Display.INTERNAL_RES_FACTOR,
-                15 * Display.INTERNAL_RES_FACTOR, 10 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(mHitAttacker, 16 * Display.INTERNAL_RES_FACTOR - mHitAttacker.getWidth(null) + getX()
+                + 51 * Display.INTERNAL_RES_FACTOR, getY() + 55 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mCritTarget, getX() + 5 * Display.INTERNAL_RES_FACTOR, getY() + 73 * Display.INTERNAL_RES_FACTOR,
-                15 * Display.INTERNAL_RES_FACTOR, 10 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(mCritTarget, 16 * Display.INTERNAL_RES_FACTOR - mCritTarget.getWidth(null) + getX()
+                + 5 * Display.INTERNAL_RES_FACTOR, getY() + 71 * Display.INTERNAL_RES_FACTOR);
 
         g.drawImage(mCritIdentifier, getX() + 29 * Display.INTERNAL_RES_FACTOR,
-                getY() + 73 * Display.INTERNAL_RES_FACTOR, 15 * Display.INTERNAL_RES_FACTOR,
-                10 * Display.INTERNAL_RES_FACTOR);
+                getY() + 71 * Display.INTERNAL_RES_FACTOR, 15 * Display.INTERNAL_RES_FACTOR,
+                mCritIdentifier.getHeight(null));
 
-        g.drawImage(mCritAttacker, getX() + 52 * Display.INTERNAL_RES_FACTOR, getY() + 73 * Display.INTERNAL_RES_FACTOR,
-                15 * Display.INTERNAL_RES_FACTOR, 10 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(mCritAttacker, 16 * Display.INTERNAL_RES_FACTOR - mCritAttacker.getWidth(null) + getX()
+                + 51 * Display.INTERNAL_RES_FACTOR, getY() + 71 * Display.INTERNAL_RES_FACTOR);
 
     }
 

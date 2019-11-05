@@ -354,7 +354,6 @@ public class MapEditorScreen implements IMapEditorScreen, IRequireResources {
                 mController.previousTileSet();
 
             } else if (((Button) clickable).getText().equals(EXPORT_BUTTON_TEXT)) {
-                System.out.println("now");
                 mController.exportMap();
 
             } else if (((Button) clickable).getText().equals(IMPORT_BUTTON_TEXT)) {

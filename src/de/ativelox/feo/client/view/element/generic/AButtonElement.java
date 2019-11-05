@@ -44,9 +44,8 @@ public abstract class AButtonElement extends ImageElement implements ISelectable
             load();
         }
 
-        adjustTextWidth();
-        adjustTextHeight();
-        mTextHeight = (int) (getHeight() / 2f);
+        adjustTextWidth(mFormattedText.getWidth());
+        adjustTextHeight(mFormattedText.getHeight());
     }
 
     public AButtonElement(int x, int y, int width, int height, boolean isPercent, EResource background, int order) {
@@ -69,30 +68,30 @@ public abstract class AButtonElement extends ImageElement implements ISelectable
         g.drawImage(mFormattedText, getX() + (getWidth() / 2) - (mTextWidth / 2),
                 getY() + (getHeight() / 2) - (mTextHeight / 2), mTextWidth, mTextHeight);
 
+//        g.drawImage(mFormattedText, getX(), getY());
+
 //        g.drawImage(mFormattedText, getX() + (getWidth() / 2) - (mFormattedText.getWidth() / 2),
 //                getY() + (getHeight() / 2) - (mFormattedText.getHeight() / 2), mFormattedText.getWidth(),
 //                mFormattedText.getHeight());
     }
 
-    protected void adjustTextWidth() {
-        mTextWidth = (int) (getWidth() / 1.5f);
+    public void adjustTextWidth(int width) {
+        mTextWidth = width;
     }
 
-    protected void adjustTextHeight() {
-        mTextHeight = (int) (getHeight() / 2f);
+    public void adjustTextHeight(int height) {
+        mTextHeight = height;
 
     }
 
     @Override
     public void setWidth(int width) {
         super.setWidth(width);
-        adjustTextWidth();
     }
 
     @Override
     public void setHeight(int height) {
         super.setHeight(height);
-        adjustTextHeight();
     }
 
     protected abstract void renderSelection(DepthBufferedGraphics g);

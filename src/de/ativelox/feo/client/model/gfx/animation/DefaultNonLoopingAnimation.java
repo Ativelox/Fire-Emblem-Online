@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
+import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.logging.ELogType;
 import de.ativelox.feo.logging.Logger;
 
@@ -33,9 +34,9 @@ public class DefaultNonLoopingAnimation extends AAnimation {
 
     private boolean mIsFinished;
 
-    public DefaultNonLoopingAnimation(BufferedImage[] sequence, EAnimationDirection direction, long playTime, int width,
-            int height) {
-        super(sequence, direction, false, playTime, width, height);
+    public DefaultNonLoopingAnimation(BufferedImage[] sequence, EAnimationDirection direction, long playTime) {
+        super(sequence, direction, false, playTime, sequence[0].getWidth() * Display.INTERNAL_RES_FACTOR,
+                sequence[0].getHeight() * Display.INTERNAL_RES_FACTOR);
 
         if (direction == EAnimationDirection.FORWARD_BACKWARD || direction == EAnimationDirection.BACKWARD_FORWARD) {
             Logger.get().log(ELogType.ERROR, direction + " isn't supported for non-looping animations.");
@@ -73,7 +74,7 @@ public class DefaultNonLoopingAnimation extends AAnimation {
             sequence[i] = mSequence[i];
 
         }
-        return new DefaultNonLoopingAnimation(sequence, mAnimationDirection, mPlayTime, mWidth, mHeight);
+        return new DefaultNonLoopingAnimation(sequence, mAnimationDirection, mPlayTime);
     }
 
     @Override

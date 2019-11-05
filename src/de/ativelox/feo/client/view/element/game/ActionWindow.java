@@ -46,7 +46,7 @@ public class ActionWindow extends AActionWindow {
         }
         setHeight((16 * options.length + 5 + 4) * Display.INTERNAL_RES_FACTOR);
 
-        mSelectionManager = new VerticalSelectionManager(true, mButtons);
+        mSelectionManager = new VerticalSelectionManager<>(true, mButtons);
         mButtonConfirmManager = new ConfirmCancelWhenSelectedManager<>(mButtons);
     }
 
@@ -79,7 +79,11 @@ public class ActionWindow extends AActionWindow {
             button.setX(getX());
             button.setY(4 * Display.INTERNAL_RES_FACTOR + getY() + (i * 16 * Display.INTERNAL_RES_FACTOR));
             i++;
+
+            button.adjustTextWidth((int) (getWidth() / 1.5f));
+            button.adjustTextHeight((int) (button.getHeight() / 1.5f));
         }
+
     }
 
     @Override

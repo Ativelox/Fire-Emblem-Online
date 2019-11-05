@@ -24,6 +24,8 @@ import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.element.game.MovementIndicator;
 import de.ativelox.feo.client.view.element.game.MovementRange;
 import de.ativelox.feo.client.view.screen.IScreenManager;
+import de.ativelox.feo.client.view.screen.ScreenFactory;
+import de.ativelox.feo.client.view.screen.game.IBattleScreen;
 import de.ativelox.feo.client.view.screen.game.IGameScreen;
 import de.ativelox.feo.client.view.screen.game.IGameUIScreen;
 
@@ -36,8 +38,10 @@ public class GameController {
     private final InputManager mInputManager;
 
     private final IGameScreen mScreen;
-
     private final IGameUIScreen mUiScreen;
+    private final IBattleScreen mBattleScreen;
+
+    private final IScreenManager mScreenManager;
 
     private final IBehavior mAlliedBehavior;
     private final IBehavior mOpposedBehavior;
@@ -54,11 +58,12 @@ public class GameController {
         mInputManager = im;
         mScreen = screen;
         mUiScreen = uiScreen;
+        mBattleScreen = ScreenFactory.createBattleScreen();
         mAlliedBehavior = alliedBehavior;
         mOpposedBehavior = opposedBehavior;
+        mScreenManager = sm;
 
         mCamera = camera;
-
         mMap = map;
 
         alliedBehavior.setController(this);
@@ -220,5 +225,14 @@ public class GameController {
     public void switchTarget(IUnit attacker, IUnit target) {
         mScreen.moveTargetSelection(target);
         mUiScreen.switchBattlePreview(attacker, target);
+    }
+
+    public void initiateAttack(IUnit attacker, IUnit target) {
+        mScreenManager.addScreen(mBattleScreen);
+
+    }
+
+    public void attackFinished() {
+        mScreenManager.removeScreen();
     }
 }

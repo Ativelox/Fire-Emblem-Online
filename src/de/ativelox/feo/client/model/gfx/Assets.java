@@ -22,19 +22,25 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import de.ativelox.feo.client.model.gfx.animation.DefaultLoopingAnimation;
+import de.ativelox.feo.client.model.gfx.animation.DefaultNonLoopingAnimation;
 import de.ativelox.feo.client.model.gfx.animation.EAnimationDirection;
+import de.ativelox.feo.client.model.gfx.animation.IAnimation;
 import de.ativelox.feo.client.model.gfx.animation.OffsetLoopingAnimation;
 import de.ativelox.feo.client.model.gfx.animation.UnitMovementAnimation;
 import de.ativelox.feo.client.model.gfx.tile.ATileSet;
 import de.ativelox.feo.client.model.gfx.tile.ETileSet;
+import de.ativelox.feo.client.model.gfx.tile.ETileType;
 import de.ativelox.feo.client.model.gfx.tile.ITile;
 import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.gfx.tile.TileSet;
 import de.ativelox.feo.client.model.gfx.tile.editor.EditorTile;
 import de.ativelox.feo.client.model.gfx.tile.editor.EditorTileSet;
 import de.ativelox.feo.client.model.property.EIndicatorDirection;
+import de.ativelox.feo.client.model.property.EPlatformDistance;
+import de.ativelox.feo.client.model.property.ESide;
 import de.ativelox.feo.client.model.property.IRequireResource;
 import de.ativelox.feo.client.model.util.SpriteSheet;
+import de.ativelox.feo.client.model.util.TightWidthFit;
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.logging.ELogType;
 import de.ativelox.feo.logging.Logger;
@@ -59,6 +65,8 @@ public class Assets {
 
     private static final Path PORTRAIT_PATH = Paths.get("res", "fe6", "portrait");
 
+    private static final Path BATTLE_PATH = Paths.get("res", "fe6", "battle");
+
     private static final String FIELDS_TILE_SET_NAME = "fields.png";
     private static final String DIALOGUE_FONT_NAME = "fe-dialogue.ttf";
     private static final String REGULAR_FONT_NAME = "regular.png";
@@ -74,6 +82,7 @@ public class Assets {
     private static final String TILE_STATUS_NAME = "tile_status.png";
     private static final String TARGET_SELECTOR_NAME = "target_selection.png";
     private static final String BATTLE_PREVIEW_NAME = "battle_preview.png";
+    private static final String BATTLE_BACKGROUND_NAME = "battle_screen.png";
 
     private static Font DIALOGUE_FONT;
 
@@ -270,7 +279,8 @@ public class Assets {
             }
 
             BufferedImage sheet = SpriteSheet.load(FONT_PATH.resolve(REGULAR_FONT_NAME)).get();
-            Image[] loaded = SpriteSheet.split(sheet, 8, 13, 71, 0, 15, 15, 15, 15, 11);
+            BufferedImage[] loaded = SpriteSheet.splitAndThen(sheet, 8, 13, 71, 0, new TightWidthFit(11063456), null,
+                    15, 15, 15, 15, 11);
             List<Image> relevant = new ArrayList<>();
 
             for (final char c : additionalInfo[0].toCharArray()) {
@@ -281,6 +291,7 @@ public class Assets {
                 }
 
             }
+
             result = (T) SpriteSheet.stitchHorizontally(relevant);
             REGULAR_FONT_CACHE.put(additionalInfo[0], (Image) result);
             break;
@@ -470,6 +481,32 @@ public class Assets {
             result = (T) SpriteSheet.load(SYSTEM_PATH.resolve(BATTLE_PREVIEW_NAME)).get();
             break;
 
+        case BATTLE_PLATFORM_WIDE:
+            BufferedImage widePlatformTexture = getBattlePlatformTexture(ETileType.valueOf(additionalInfo[0])).get();
+
+            switch (ESide.valueOf(additionalInfo[1])) {
+            case LEFT:
+                result = (T) SpriteSheet.generatePlatform(widePlatformTexture, EPlatformDistance.WIDE_LEFT);
+                break;
+            case RIGHT:
+                result = (T) SpriteSheet.generatePlatform(widePlatformTexture, EPlatformDistance.WIDE_RIGHT);
+                break;
+            default:
+                break;
+
+            }
+
+            break;
+
+        case BATTLE_PLATFORM_CLOSE:
+            BufferedImage closePlatformTexture = getBattlePlatformTexture(ETileType.valueOf(additionalInfo[0])).get();
+            result = (T) SpriteSheet.generatePlatform(closePlatformTexture, EPlatformDistance.CLOSE);
+            break;
+
+        case BATTLE_BACKGROUND:
+            result = (T) SpriteSheet.load(SYSTEM_PATH.resolve(BATTLE_BACKGROUND_NAME)).get();
+            break;
+
         default:
             Logger.get().log(ELogType.ERROR,
                     "Couldn't parse: " + resource + " with " + Arrays.toString(additionalInfo));
@@ -477,6 +514,100 @@ public class Assets {
 
         }
         return result;
+    }
+
+    private static Optional<BufferedImage> getBattlePlatformTexture(ETileType type) {
+        Path path = BATTLE_PATH;
+
+        switch (type) {
+        case ARCH:
+            break;
+        case ARENA:
+            break;
+        case ARMORY:
+            break;
+        case BRIDGE:
+            break;
+        case BROKEN:
+            break;
+        case CHEST:
+            break;
+        case CLIFF:
+            break;
+        case CLOSED:
+            break;
+        case CURCH:
+            break;
+        case DESERT:
+            break;
+        case DOOR:
+            break;
+        case FLOOR:
+            break;
+        case FOREST:
+            break;
+        case FORT:
+            break;
+        case GATE:
+            break;
+        case GLACIER:
+            break;
+        case HOUSE:
+            break;
+        case KILLER:
+            break;
+        case LAKE:
+            break;
+        case LAND:
+            break;
+        case LONG:
+            break;
+        case MOUNTAIN:
+            break;
+        case PEAK:
+            break;
+        case PILLAR:
+            break;
+        case PLACEHOLDER:
+            break;
+        case PLAINS:
+            path = path.resolve("plains.png");
+            break;
+        case RIVER:
+            break;
+        case ROAD:
+            break;
+        case ROOF:
+            break;
+        case RUINS:
+            break;
+        case SAND:
+            break;
+        case SEA:
+            break;
+        case STAIRS:
+            break;
+        case STORAGE:
+            break;
+        case THRONE:
+            break;
+        case VALLEY:
+            break;
+        case VENDOR:
+            break;
+        case VILLAGE:
+            break;
+        case WALL:
+            break;
+        case WOODS:
+            break;
+        default:
+            break;
+
+        }
+
+        return SpriteSheet.load(path).flatMap(p -> Optional.of(p));
+
     }
 
     @SuppressWarnings("unchecked")
