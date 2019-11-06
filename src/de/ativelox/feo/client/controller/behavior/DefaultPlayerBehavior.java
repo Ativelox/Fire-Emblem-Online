@@ -5,6 +5,8 @@ import de.ativelox.feo.client.model.map.Map;
 import de.ativelox.feo.client.model.property.EAffiliation;
 import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.property.routine.PathCalculationRoutine;
+import de.ativelox.feo.client.model.sound.ESoundEffect;
+import de.ativelox.feo.client.model.sound.SoundPlayer;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.unit.IWeapon;
 import de.ativelox.feo.logging.Logger;
@@ -85,6 +87,7 @@ public class DefaultPlayerBehavior implements IBehavior {
             return;
         }
         if (unit.getAffiliation() != mAffiliation) {
+            SoundPlayer.get().play(ESoundEffect.WINDOW_POPUP);
             mController.displaySystemActionWindow();
             mController.blockNonUiInput();
             return;
@@ -94,6 +97,7 @@ public class DefaultPlayerBehavior implements IBehavior {
         if (unit.isWaiting() || mPathRoutine.isActive()) {
             return;
         }
+        SoundPlayer.get().play(ESoundEffect.MOVEMENT_RANGE);
         mPathRoutine.startCalculation(unit);
         mController.displayMovementRange(mPathRoutine.getMovementRange());
         mController.displayMovementIndicator(mPathRoutine.getMovementIndicator());
@@ -105,6 +109,7 @@ public class DefaultPlayerBehavior implements IBehavior {
         if (!mIsOnTurn) {
             return;
         }
+        SoundPlayer.get().play(ESoundEffect.CURSOR_MOVE);
         mController.cursorMoved(cursor);
         mPathRoutine.updateCursorLocation(cursor);
         mController.displayTileStatus(cursor.getX(), cursor.getY());
@@ -122,6 +127,7 @@ public class DefaultPlayerBehavior implements IBehavior {
             mController.removeMovementRange();
 
         } else {
+            SoundPlayer.get().play(ESoundEffect.WINDOW_POPUP);
             // confirm was pressed, not on a unit and not while a unit is moving etc.
             mController.displaySystemActionWindow();
             mController.blockNonUiInput();
@@ -134,6 +140,7 @@ public class DefaultPlayerBehavior implements IBehavior {
         if (!mIsOnTurn) {
             return;
         }
+        SoundPlayer.get().play(ESoundEffect.WINDOW_CANCELED);
         if (mPathRoutine.isActive()) {
             mPathRoutine.stop();
             mController.removeMovementIndicator();
@@ -150,7 +157,7 @@ public class DefaultPlayerBehavior implements IBehavior {
         if (unit.getAffiliation() != mAffiliation) {
             return;
         }
-
+        SoundPlayer.get().play(ESoundEffect.WINDOW_POPUP);
         mController.displayActionWindow(unit);
         mController.blockNonUiInput();
 
@@ -161,6 +168,8 @@ public class DefaultPlayerBehavior implements IBehavior {
         if (!mIsOnTurn) {
             return;
         }
+        SoundPlayer.get().play(ESoundEffect.WINDOW_CANCELED);
+
         IUnit current = mPathRoutine.getActor();
         mPathRoutine.returnToLast();
         mPathRoutine.startCalculation(current);
@@ -181,6 +190,7 @@ public class DefaultPlayerBehavior implements IBehavior {
         if (!mPathRoutine.isActive()) {
             return;
         }
+
         IUnit actor = mPathRoutine.getActor();
         actor.finished();
         mPathRoutine.stop();
@@ -196,6 +206,8 @@ public class DefaultPlayerBehavior implements IBehavior {
         if (!mIsOnTurn) {
             return;
         }
+        SoundPlayer.get().play(ESoundEffect.WINDOW_CANCELED);
+
         mController.removeActionWindow();
         mController.unBlockNonUiInput();
 
@@ -211,6 +223,8 @@ public class DefaultPlayerBehavior implements IBehavior {
         if (!mIsOnTurn) {
             return;
         }
+        SoundPlayer.get().play(ESoundEffect.WINDOW_ACCEPT);
+
         mController.showWeaponSelection(mPathRoutine.getActor());
 
     }
@@ -220,6 +234,9 @@ public class DefaultPlayerBehavior implements IBehavior {
         if (!mIsOnTurn) {
             return;
         }
+
+        SoundPlayer.get().play(ESoundEffect.WINDOW_CANCELED);
+
         mController.removeWeaponSelect();
 
     }
@@ -229,6 +246,8 @@ public class DefaultPlayerBehavior implements IBehavior {
         if (!mIsOnTurn) {
             return;
         }
+        SoundPlayer.get().play(ESoundEffect.WINDOW_ACCEPT);
+
         mController.showTargetUnitSelect(mPathRoutine.getActor(), weapon);
 
     }
@@ -238,6 +257,8 @@ public class DefaultPlayerBehavior implements IBehavior {
         if (!mIsOnTurn) {
             return;
         }
+        SoundPlayer.get().play(ESoundEffect.WINDOW_CANCELED);
+
         mController.removeTargetSelect();
 
     }
@@ -247,6 +268,7 @@ public class DefaultPlayerBehavior implements IBehavior {
         if (!mIsOnTurn) {
             return;
         }
+        SoundPlayer.get().play(ESoundEffect.WINDOW_ACCEPT);
 
         mController.removeTargetSelect();
         mController.removeWeaponSelect();

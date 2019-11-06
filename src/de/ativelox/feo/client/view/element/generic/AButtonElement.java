@@ -68,11 +68,6 @@ public abstract class AButtonElement extends ImageElement implements ISelectable
         g.drawImage(mFormattedText, getX() + (getWidth() / 2) - (mTextWidth / 2),
                 getY() + (getHeight() / 2) - (mTextHeight / 2), mTextWidth, mTextHeight);
 
-//        g.drawImage(mFormattedText, getX(), getY());
-
-//        g.drawImage(mFormattedText, getX() + (getWidth() / 2) - (mFormattedText.getWidth() / 2),
-//                getY() + (getHeight() / 2) - (mFormattedText.getHeight() / 2), mFormattedText.getWidth(),
-//                mFormattedText.getHeight());
     }
 
     public void adjustTextWidth(int width) {

@@ -5,6 +5,8 @@ import java.util.List;
 
 import de.ativelox.feo.client.model.property.IConfirmable;
 import de.ativelox.feo.client.model.property.callback.IConfirmListener;
+import de.ativelox.feo.client.model.sound.ESoundEffect;
+import de.ativelox.feo.client.model.sound.IProduceSound;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})

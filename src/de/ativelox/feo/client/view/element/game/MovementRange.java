@@ -6,6 +6,8 @@ import java.util.Set;
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.property.IRenderable;
+import de.ativelox.feo.client.model.sound.ESoundEffect;
+import de.ativelox.feo.client.model.sound.SoundPlayer;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})

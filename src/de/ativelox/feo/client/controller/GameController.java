@@ -17,6 +17,8 @@ import de.ativelox.feo.client.model.property.ESide;
 import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.property.callback.IActionListener;
 import de.ativelox.feo.client.model.property.callback.IMovementListener;
+import de.ativelox.feo.client.model.sound.EMusic;
+import de.ativelox.feo.client.model.sound.SoundPlayer;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.unit.IWeapon;
 import de.ativelox.feo.client.model.unit.Inventory;
@@ -77,6 +79,8 @@ public class GameController {
 
         im.register((IActionListener) screen);
         im.register((IMovementListener) screen);
+
+        SoundPlayer.get().play(EMusic.BEYOND_THE_SKY);
 
     }
 
@@ -238,5 +242,6 @@ public class GameController {
 
     public void attackFinished() {
         mScreenManager.removeScreen();
+        SoundPlayer.get().play(EMusic.BEYOND_THE_SKY);
     }
 }

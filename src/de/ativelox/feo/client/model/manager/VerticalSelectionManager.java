@@ -9,13 +9,16 @@ import de.ativelox.feo.client.controller.input.EAxis;
 import de.ativelox.feo.client.controller.input.InputReceiver;
 import de.ativelox.feo.client.model.property.ISelectable;
 import de.ativelox.feo.client.model.property.IUpdateable;
+import de.ativelox.feo.client.model.sound.ESoundEffect;
+import de.ativelox.feo.client.model.sound.IProduceSound;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
  *
  */
-public class VerticalSelectionManager<T extends ISelectable> extends InputReceiver implements IUpdateable {
+public class VerticalSelectionManager<T extends ISelectable> extends InputReceiver
+        implements IUpdateable, IProduceSound {
 
     private List<ISelectable> mSelectables;
 
@@ -35,7 +38,7 @@ public class VerticalSelectionManager<T extends ISelectable> extends InputReceiv
 
         if (mSelectables.size() > 0) {
             this.resort();
-            this.updateSelected(mSelectionIndex);
+            this.updateSelected(mSelectionIndex, true);
         }
 
     }
@@ -48,7 +51,7 @@ public class VerticalSelectionManager<T extends ISelectable> extends InputReceiv
 
         if (mSelectables.size() > 0) {
             this.resort();
-            this.updateSelected(mSelectionIndex);
+            this.updateSelected(mSelectionIndex, false);
         }
 
     }
@@ -79,7 +82,11 @@ public class VerticalSelectionManager<T extends ISelectable> extends InputReceiv
         }
     }
 
-    public void updateSelected(int lastIndex) {
+    public void updateSelected(int lastIndex, boolean initial) {
+        if (!initial) {
+            play();
+        }
+
         mSelectables.get(lastIndex).deSelected();
         mSelectables.get(mSelectionIndex).selected();
 
@@ -109,9 +116,14 @@ public class VerticalSelectionManager<T extends ISelectable> extends InputReceiv
                 mSelectionIndex += getMovement(EAxis.Y);
 
             }
-            this.updateSelected(lastIndex);
+            this.updateSelected(lastIndex, false);
 
         }
         cycleFinished();
+    }
+
+    @Override
+    public ESoundEffect getSoundEffect() {
+        return ESoundEffect.WINDOW_SELECTION_MOVED;
     }
 }

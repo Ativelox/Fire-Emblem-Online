@@ -78,6 +78,9 @@ public class Assets {
     private static final Path RANGED_ATTACK_PATH = Paths.get("res", "fe6", "ranged_attack");
     private static final Path RANGED_CRIT_PATH = Paths.get("res", "fe6", "ranged_crit");
 
+    private static final Path SFX_PATH = Paths.get("res", "fe6", "sound", "sfx");
+    private static final Path MUSIC_PATH = Paths.get("res", "fe6", "sound", "music");
+
     private static final String FIELDS_TILE_SET_NAME = "fields.png";
     private static final String DIALOGUE_FONT_NAME = "fe-dialogue.ttf";
     private static final String REGULAR_FONT_NAME = "regular.png";
@@ -565,7 +568,7 @@ public class Assets {
                 splitAnimation = SpriteSheet.flipHorizontally(splitAnimation);
             }
             result = (T) new DefaultNonLoopingAnimation(splitAnimation, EAnimationDirection.FORWARD,
-                    (int) (1000 / 13f * splitAnimation.length));
+                    (int) (1000 / 18f * splitAnimation.length));
 
             break;
 
@@ -579,6 +582,14 @@ public class Assets {
 
         case HP_BAR_TRAILING:
             result = (T) SpriteSheet.smartSplit(SpriteSheet.load(SYSTEM_PATH.resolve(HP_BAR_NAME)).get(), 2, 6)[2];
+            break;
+
+        case MUSIC:
+            result = (T) MUSIC_PATH.resolve(additionalInfo[0] + ".wav");
+            break;
+
+        case SFX:
+            result = (T) SFX_PATH.resolve(additionalInfo[0] + ".wav");
             break;
 
         default:

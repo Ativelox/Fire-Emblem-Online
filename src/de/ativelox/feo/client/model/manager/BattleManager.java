@@ -12,11 +12,15 @@ import de.ativelox.feo.client.model.gfx.animation.HpBarDepletionAnimation;
 import de.ativelox.feo.client.model.gfx.animation.HpDepletionAnimation;
 import de.ativelox.feo.client.model.gfx.animation.IAnimation;
 import de.ativelox.feo.client.model.gfx.animation.hook.AnimationHook;
+import de.ativelox.feo.client.model.gfx.animation.hook.NonBlockingSoundHook;
 import de.ativelox.feo.client.model.gfx.tile.ETileType;
 import de.ativelox.feo.client.model.property.EBattleAnimType;
 import de.ativelox.feo.client.model.property.EClass;
 import de.ativelox.feo.client.model.property.EGender;
 import de.ativelox.feo.client.model.property.ESide;
+import de.ativelox.feo.client.model.sound.EMusic;
+import de.ativelox.feo.client.model.sound.ESoundEffect;
+import de.ativelox.feo.client.model.sound.SoundPlayer;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.Display;
@@ -111,9 +115,17 @@ public class BattleManager implements IBattleManager {
 
         attackerAnim.addHook(15, barHook);
         attackerAnim.addHook(15, hook);
+        attackerAnim.addHook(14, new NonBlockingSoundHook(ESoundEffect.SWORD_SLASHING_AIR));
+        attackerAnim.addHook(15, new NonBlockingSoundHook(ESoundEffect.NORMAL_HIT));
+        attackerAnim.addHook(34, new NonBlockingSoundHook(ESoundEffect.HEAVY_STEPPING));
 
         targetAnim.addHook(15, hook2);
         targetAnim.addHook(15, barHook2);
+        targetAnim.addHook(14, new NonBlockingSoundHook(ESoundEffect.SWORD_SLASHING_AIR));
+        targetAnim.addHook(15, new NonBlockingSoundHook(ESoundEffect.NORMAL_HIT));
+        targetAnim.addHook(34, new NonBlockingSoundHook(ESoundEffect.HEAVY_STEPPING));
+
+        SoundPlayer.get().play(EMusic.ARENA_BATTLE);
 
     }
 
@@ -155,7 +167,7 @@ public class BattleManager implements IBattleManager {
         mHpBarDepletionTarget.render(g);
         mHpDepletionAttacker.render(g);
         mHpBarDepletionAttacker.render(g);
-        
+
         mAnimation.render(g);
 
     }
