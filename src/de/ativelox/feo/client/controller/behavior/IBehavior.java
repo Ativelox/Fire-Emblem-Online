@@ -50,6 +50,8 @@ public interface IBehavior {
 
     void onTargetSwitch(IUnit target);
 
+    void onBattleFinished();
+
     EAffiliation getAffiliation();
 
 }

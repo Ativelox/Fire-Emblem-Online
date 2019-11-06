@@ -6,11 +6,13 @@ import de.ativelox.feo.client.controller.GameController;
 import de.ativelox.feo.client.model.camera.ECameraApplication;
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.gfx.tile.ETileType;
+import de.ativelox.feo.client.model.manager.BattleManager;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.element.game.BattleOverlay;
 import de.ativelox.feo.client.view.screen.EScreen;
+import de.ativelox.feo.client.view.screen.IScreenManager;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
@@ -23,9 +25,11 @@ public class BattleScreen implements IBattleScreen {
     private GameController mController;
 
     private final BattleOverlay mBattleOverlay;
+    private final BattleManager mBattleManager;
 
     public BattleScreen() {
         mBattleOverlay = new BattleOverlay();
+        mBattleManager = new BattleManager(this);
 
     }
 
@@ -57,19 +61,28 @@ public class BattleScreen implements IBattleScreen {
 
     @Override
     public void render(DepthBufferedGraphics g) {
-        g.fillRect(BACKGROUND_FILTER, 0, 0, Display.WIDTH, Display.HEIGHT);
+        g.fillRect(BACKGROUND_FILTER, 0, 0, Display.WIDTH, Display.HEIGHT, -2);
         mBattleOverlay.render(g);
+        mBattleManager.render(g);
 
     }
 
     @Override
     public void update(TimeSnapshot ts) {
+        mBattleManager.update(ts);
 
     }
 
     @Override
     public void setParticipants(IUnit attacker, IUnit target, ETileType type, int range) {
         mBattleOverlay.setParticipants(attacker, target);
+        mBattleManager.attack(attacker, target, type, range);
+
+    }
+
+    @Override
+    public void onBattleFinished() {
+        mController.getActiveBehavior().onBattleFinished();
 
     }
 

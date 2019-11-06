@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -360,5 +361,46 @@ public class SpriteSheet {
         }
         return result;
 
+    }
+
+    public static BufferedImage[] smartSplit(BufferedImage image, int tileWidth, int tileHeight) {
+        BufferedImage[] result = new BufferedImage[(image.getWidth() / tileWidth) * (image.getHeight() / tileHeight)];
+
+        int x = 0;
+        for (int j = 0; j < (image.getHeight() / tileHeight); j++) {
+            for (int i = 0; i < (image.getWidth() / tileWidth); i++) {
+                result[x] = image.getSubimage(tileWidth * i, tileHeight * j, tileWidth, tileHeight);
+                x++;
+            }
+        }
+        return removeEmptyFromBack(result);
+
+    }
+
+    private static BufferedImage[] removeEmptyFromBack(BufferedImage[] images) {
+        int removalCounter = 0;
+
+        for (int i = images.length - 1; i >= 0; i--) {
+            int sample = images[i].getRGB(0, 0);
+
+            for (int x = 0; x < images[i].getWidth(); x++) {
+                for (int y = 0; y < images[i].getHeight(); y++) {
+                    if (sample != images[i].getRGB(x, y)) {
+                        List<BufferedImage> list = Arrays.asList(images);
+                        list = list.subList(0, images.length - removalCounter);
+                        BufferedImage[] result = new BufferedImage[list.size()];
+
+                        for (int k = 0; k < result.length; k++) {
+                            result[k] = list.get(k);
+                        }
+                        return result;
+
+                    }
+                }
+            }
+            removalCounter++;
+
+        }
+        return images;
     }
 }

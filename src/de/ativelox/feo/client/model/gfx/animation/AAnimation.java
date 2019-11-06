@@ -61,15 +61,16 @@ public abstract class AAnimation extends SpatialObject implements IAnimation {
     public abstract void update(TimeSnapshot ts);
 
     protected boolean hookRoutine(TimeSnapshot ts) {
-        boolean isContinuing = true;
-
         if (mHookMapping.containsKey(mNext + 1)) {
+            boolean isContinuing = true;
 
             for (final Function<TimeSnapshot, Boolean> hook : mHookMapping.get(mNext + 1)) {
-                isContinuing = isContinuing && hook.apply(ts);
+                boolean hookResult = hook.apply(ts);
+                isContinuing = isContinuing && hookResult;
             }
+            return isContinuing;
         }
-        return isContinuing;
+        return true;
     }
 
     @Override

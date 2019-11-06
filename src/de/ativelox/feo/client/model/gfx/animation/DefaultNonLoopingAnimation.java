@@ -2,10 +2,6 @@ package de.ativelox.feo.client.model.gfx.animation;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
@@ -26,8 +22,6 @@ import de.ativelox.feo.logging.Logger;
  */
 public class DefaultNonLoopingAnimation extends AAnimation {
 
-    private final Map<Integer, List<Function<TimeSnapshot, Boolean>>> mHookMapping;
-
     private long mTimePassed;
 
     private long mFrameCounter;
@@ -38,6 +32,8 @@ public class DefaultNonLoopingAnimation extends AAnimation {
 
     private boolean mIsFinished;
 
+    private int mScaling;
+
     public DefaultNonLoopingAnimation(BufferedImage[] sequence, EAnimationDirection direction, long playTime) {
         super(sequence, direction, false, playTime, sequence[0].getWidth() * Display.INTERNAL_RES_FACTOR,
                 sequence[0].getHeight() * Display.INTERNAL_RES_FACTOR);
@@ -47,8 +43,7 @@ public class DefaultNonLoopingAnimation extends AAnimation {
             throw new IllegalArgumentException();
 
         }
-
-        mHookMapping = new HashMap<>();
+        mScaling = Display.INTERNAL_RES_FACTOR;
 
         mTimePassed = 0;
         mFrameCounter = 1;
@@ -83,7 +78,9 @@ public class DefaultNonLoopingAnimation extends AAnimation {
         if (mIsStopped || isFinished()) {
             return;
         }
-        hookRoutine(ts);
+        if (!hookRoutine(ts)) {
+            return;
+        }
 
         if (mTimePassed >= mFrameSpacing * mFrameCounter) {
             if (mNext >= mSequence.length - 1 && mDirection > 0) {
@@ -104,13 +101,17 @@ public class DefaultNonLoopingAnimation extends AAnimation {
 
     }
 
+    public void setScaling(int scaling) {
+        mScaling = scaling;
+    }
+
     @Override
     public void render(DepthBufferedGraphics g) {
         if (mHidden) {
             return;
         }
-
-        g.drawImage(mSequence[mNext], getX(), getY(), getWidth(), getHeight());
+        g.drawImage(mSequence[mNext], getX(), getY(), mSequence[mNext].getWidth() * mScaling,
+                mSequence[mNext].getHeight() * mScaling);
 
     }
 

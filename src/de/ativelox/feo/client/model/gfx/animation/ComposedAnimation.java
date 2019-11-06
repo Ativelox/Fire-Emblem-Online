@@ -1,8 +1,7 @@
 package de.ativelox.feo.client.model.gfx.animation;
 
-import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Deque;
+import java.util.List;
 
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.property.IRenderable;
@@ -15,43 +14,59 @@ import de.ativelox.feo.client.model.util.TimeSnapshot;
  */
 public class ComposedAnimation implements IUpdateable, IRenderable {
 
-    private IAnimation mCurrent;
-    private Deque<IAnimation> mAnimations;
+    private List<IAnimation> mAnimations;
+    private int mCurrent;
 
-    public ComposedAnimation(Deque<IAnimation> animations) {
+    private boolean mIsFinished;
+
+    public ComposedAnimation(List<IAnimation> animations) {
         mAnimations = animations;
-        mCurrent = animations.removeFirst();
-        mCurrent.start();
+        animations.get(0).start();
+        mCurrent = 0;
+
+        mIsFinished = false;
 
     }
 
     public ComposedAnimation(IAnimation... animations) {
-        this(new ArrayDeque<>(Arrays.asList(animations)));
+        this(Arrays.asList(animations));
 
     }
 
     @Override
     public void render(DepthBufferedGraphics g) {
-        mCurrent.render(g);
+        mAnimations.forEach(c -> c.render(g));
     }
 
     @Override
     public void update(TimeSnapshot ts) {
-        if (mCurrent.isFinished()) {
-            mCurrent = mAnimations.removeFirst();
-            mCurrent.start();
+        if (mIsFinished) {
+            return;
         }
-        mCurrent.update(ts);
+
+        if (mAnimations.get(mCurrent).isFinished()) {
+            if (mCurrent >= mAnimations.size() - 1) {
+                mIsFinished = true;
+                return;
+            }
+            mCurrent++;
+            mAnimations.get(mCurrent).start();
+        }
+        mAnimations.forEach(c -> c.update(ts));
 
     }
 
+    public boolean isFinished() {
+        return mIsFinished;
+    }
+
     public void addLast(final IAnimation e) {
-        mAnimations.addLast(e);
+        mAnimations.add(mAnimations.size() - 1, e);
 
     }
 
     public void addFirst(final IAnimation e) {
-        mAnimations.addFirst(e);
+        mAnimations.add(0, e);
 
     }
 

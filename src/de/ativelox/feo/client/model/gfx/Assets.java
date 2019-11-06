@@ -22,6 +22,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import de.ativelox.feo.client.model.gfx.animation.DefaultLoopingAnimation;
+import de.ativelox.feo.client.model.gfx.animation.DefaultNonLoopingAnimation;
 import de.ativelox.feo.client.model.gfx.animation.EAnimationDirection;
 import de.ativelox.feo.client.model.gfx.animation.OffsetLoopingAnimation;
 import de.ativelox.feo.client.model.gfx.animation.UnitMovementAnimation;
@@ -93,6 +94,7 @@ public class Assets {
     private static final String TARGET_SELECTOR_NAME = "target_selection.png";
     private static final String BATTLE_PREVIEW_NAME = "battle_preview.png";
     private static final String BATTLE_BACKGROUND_NAME = "battle_screen.png";
+    private static final String HP_BAR_NAME = "hp_bar.png";
 
     private static Font DIALOGUE_FONT;
 
@@ -546,11 +548,38 @@ public class Assets {
                 path = RANGED_CRIT_PATH;
                 break;
             case STALE:
+                path = MELEE_ATTACK_PATH;
                 break;
             default:
+                Logger.get().log(ELogType.ERROR, "Couldn't parse the following animation type: " + animType);
                 break;
 
             }
+            path = path.resolve(unitClass.toString().toLowerCase() + "_"
+                    + gender.toString().toLowerCase().substring(0, 1) + ".png");
+
+            BufferedImage animationSheet = SpriteSheet.load(path).get();
+            BufferedImage[] splitAnimation = SpriteSheet.smartSplit(animationSheet, 240, 160);
+
+            if (side == ESide.LEFT) {
+                splitAnimation = SpriteSheet.flipHorizontally(splitAnimation);
+            }
+            result = (T) new DefaultNonLoopingAnimation(splitAnimation, EAnimationDirection.FORWARD,
+                    (int) (1000 / 13f * splitAnimation.length));
+
+            break;
+
+        case HP_BAR_EMPTY:
+            result = (T) SpriteSheet.smartSplit(SpriteSheet.load(SYSTEM_PATH.resolve(HP_BAR_NAME)).get(), 2, 6)[1];
+            break;
+
+        case HP_BAR_FULL:
+            result = (T) SpriteSheet.smartSplit(SpriteSheet.load(SYSTEM_PATH.resolve(HP_BAR_NAME)).get(), 2, 6)[0];
+            break;
+
+        case HP_BAR_TRAILING:
+            result = (T) SpriteSheet.smartSplit(SpriteSheet.load(SYSTEM_PATH.resolve(HP_BAR_NAME)).get(), 2, 6)[2];
+            break;
 
         default:
             Logger.get().log(ELogType.ERROR,
@@ -562,94 +591,7 @@ public class Assets {
     }
 
     private static Optional<BufferedImage> getBattlePlatformTexture(ETileType type) {
-        Path path = BATTLE_PATH;
-
-        switch (type) {
-        case ARCH:
-            break;
-        case ARENA:
-            break;
-        case ARMORY:
-            break;
-        case BRIDGE:
-            break;
-        case BROKEN:
-            break;
-        case CHEST:
-            break;
-        case CLIFF:
-            break;
-        case CLOSED:
-            break;
-        case CURCH:
-            break;
-        case DESERT:
-            break;
-        case DOOR:
-            break;
-        case FLOOR:
-            break;
-        case FOREST:
-            break;
-        case FORT:
-            break;
-        case GATE:
-            break;
-        case GLACIER:
-            break;
-        case HOUSE:
-            break;
-        case KILLER:
-            break;
-        case LAKE:
-            break;
-        case LAND:
-            break;
-        case LONG:
-            break;
-        case MOUNTAIN:
-            break;
-        case PEAK:
-            break;
-        case PILLAR:
-            break;
-        case PLACEHOLDER:
-            break;
-        case PLAINS:
-            path = path.resolve("plains.png");
-            break;
-        case RIVER:
-            break;
-        case ROAD:
-            break;
-        case ROOF:
-            break;
-        case RUINS:
-            break;
-        case SAND:
-            break;
-        case SEA:
-            break;
-        case STAIRS:
-            break;
-        case STORAGE:
-            break;
-        case THRONE:
-            break;
-        case VALLEY:
-            break;
-        case VENDOR:
-            break;
-        case VILLAGE:
-            break;
-        case WALL:
-            break;
-        case WOODS:
-            break;
-        default:
-            break;
-
-        }
+        Path path = BATTLE_PATH.resolve(type.toString().toLowerCase() + ".png");
 
         return SpriteSheet.load(path).flatMap(p -> Optional.of(p));
 

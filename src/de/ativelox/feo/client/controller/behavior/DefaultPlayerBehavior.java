@@ -263,4 +263,14 @@ public class DefaultPlayerBehavior implements IBehavior {
         mController.switchTarget(mPathRoutine.getActor(), target);
 
     }
+
+    @Override
+    public void onBattleFinished() {
+        if (!mIsOnTurn) {
+            return;
+        }
+        mController.attackFinished();
+        this.onWaitAction();
+
+    }
 }

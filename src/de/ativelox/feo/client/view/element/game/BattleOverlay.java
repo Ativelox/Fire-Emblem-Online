@@ -44,7 +44,6 @@ public class BattleOverlay extends AScreenElement implements IRequireResources {
     private Image mCrtAttacker;
 
     private Image mTargetWeapon;
-
     private Image mAttackerWeapon;
 
     private static final int BATTLE_OVERLAY_LAYER = 5;

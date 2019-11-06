@@ -15,4 +15,6 @@ public interface IBattleScreen extends IScreen {
 
     void setParticipants(IUnit attacker, IUnit target, ETileType type, int range);
 
+    void onBattleFinished();
+
 }
