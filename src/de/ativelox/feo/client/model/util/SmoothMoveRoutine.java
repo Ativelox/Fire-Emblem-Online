@@ -6,7 +6,6 @@ import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.property.EDirection;
 import de.ativelox.feo.client.model.property.ICanMove;
 import de.zabuza.maglev.external.algorithms.EdgeCost;
-import de.zabuza.maglev.external.algorithms.Path;
 import de.zabuza.maglev.external.graph.Edge;
 
 /**
@@ -27,18 +26,37 @@ public class SmoothMoveRoutine implements IMoveRoutine {
 
     private EDirection mLastDirection;
 
+    private boolean mReversed;
+
+    private int mLimit;
+
+    private int mMovedTiles;
+
     public SmoothMoveRoutine(ICanMove caller) {
         mToMove = caller;
     }
 
     @Override
-    public void move(Path<Tile, Edge<Tile>> path) {
+    public void move(Iterator<EdgeCost<Tile, Edge<Tile>>> path, boolean reversed, int limit) {
         mLastDirection = EDirection.RIGHT;
-        mPath = path.iterator();
+        mPath = path;
         mLastX = mToMove.getX();
         mLastY = mToMove.getY();
+        mReversed = reversed;
+        mLimit = limit;
 
-        mCurrent = mPath.next().getEdge().getDestination();
+        if (!mPath.hasNext()) {
+            mPath = null;
+            mToMove.onMoveFinished();
+            return;
+        }
+
+        if (reversed) {
+            mCurrent = mPath.next().getEdge().getSource();
+        } else {
+
+            mCurrent = mPath.next().getEdge().getDestination();
+        }
 
         mToMove.onDirectionChange(mLastDirection);
 
@@ -107,12 +125,20 @@ public class SmoothMoveRoutine implements IMoveRoutine {
         }
 
         if (reachedTempGoal) {
-            if (!mPath.hasNext()) {
+            mMovedTiles++;
+
+            if (!mPath.hasNext() || mMovedTiles >= mLimit) {
                 mPath = null;
                 mToMove.onMoveFinished();
+                mMovedTiles = 0;
                 return;
             }
-            mCurrent = mPath.next().getEdge().getDestination();
+            if (mReversed) {
+
+                mCurrent = mPath.next().getEdge().getSource();
+            } else {
+                mCurrent = mPath.next().getEdge().getDestination();
+            }
             mLastX = mToMove.getX();
             mLastY = mToMove.getY();
 

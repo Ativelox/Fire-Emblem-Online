@@ -30,8 +30,7 @@ public class HpBarDepletionAnimation implements IAnimation, IRequireResources {
 
     private final DefaultNonLoopingAnimation mUnderlyingAnimation;
 
-    public HpBarDepletionAnimation(int maxHp, int currentHp, int afterHp, EAnimationDirection direction,
-            long playTime) {
+    public HpBarDepletionAnimation(int maxHp, int currentHp, int afterHp, EAnimationDirection direction) {
         mMaxHp = maxHp;
         mCurrentHp = currentHp;
         mAfterHp = afterHp;
@@ -39,7 +38,7 @@ public class HpBarDepletionAnimation implements IAnimation, IRequireResources {
         mSequence = new BufferedImage[currentHp - afterHp + 1];
         this.load();
 
-        mUnderlyingAnimation = new DefaultNonLoopingAnimation(mSequence, direction, playTime);
+        mUnderlyingAnimation = new DefaultNonLoopingAnimation(mSequence, direction, mSequence.length * 40);
 
         mUnderlyingAnimation.setScaling(1);
     }
@@ -172,6 +171,11 @@ public class HpBarDepletionAnimation implements IAnimation, IRequireResources {
     public void addHook(int frame, Function<TimeSnapshot, Boolean> hook) {
         mUnderlyingAnimation.addHook(frame, hook);
 
+    }
+
+    @Override
+    public boolean isHidden() {
+        return mUnderlyingAnimation.isHidden();
     }
 
 }

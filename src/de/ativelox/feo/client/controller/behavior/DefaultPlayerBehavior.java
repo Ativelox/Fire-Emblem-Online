@@ -8,7 +8,7 @@ import de.ativelox.feo.client.model.property.routine.PathCalculationRoutine;
 import de.ativelox.feo.client.model.sound.ESoundEffect;
 import de.ativelox.feo.client.model.sound.SoundPlayer;
 import de.ativelox.feo.client.model.unit.IUnit;
-import de.ativelox.feo.client.model.unit.IWeapon;
+import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 import de.ativelox.feo.logging.Logger;
 
 /**

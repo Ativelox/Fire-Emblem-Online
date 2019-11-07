@@ -1,10 +1,12 @@
-package de.ativelox.feo.client.model.unit;
+package de.ativelox.feo.client.model.unit.item;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
+
+import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})

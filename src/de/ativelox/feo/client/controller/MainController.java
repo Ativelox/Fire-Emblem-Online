@@ -16,6 +16,7 @@ import de.ativelox.feo.client.model.sound.EMusic;
 import de.ativelox.feo.client.model.sound.SoundMapping;
 import de.ativelox.feo.client.model.sound.SoundPlayer;
 import de.ativelox.feo.client.model.unit.Palette;
+import de.ativelox.feo.client.model.unit.item.weapon.WeaponFactory;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.screen.CameraScreenManager;
@@ -56,6 +57,7 @@ public class MainController implements Runnable {
         Assets.init();
         Palette.init();
         SoundMapping.init();
+        WeaponFactory.init();
 
         SoundPlayer.get().play(EMusic.FIRE_EMBLEM_THEME);
 

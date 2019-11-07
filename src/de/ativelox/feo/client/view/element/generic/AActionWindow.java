@@ -13,9 +13,6 @@ import de.ativelox.feo.client.model.property.callback.IActionListener;
 import de.ativelox.feo.client.model.property.callback.ICancelListener;
 import de.ativelox.feo.client.model.property.callback.IConfirmListener;
 import de.ativelox.feo.client.model.property.callback.IMovementListener;
-import de.ativelox.feo.client.model.sound.ESoundEffect;
-import de.ativelox.feo.client.model.sound.IProduceSound;
-import de.ativelox.feo.client.model.sound.SoundPlayer;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 
 /**

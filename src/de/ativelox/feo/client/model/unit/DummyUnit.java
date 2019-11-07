@@ -2,7 +2,7 @@ package de.ativelox.feo.client.model.unit;
 
 import java.awt.Image;
 import java.util.ArrayList;
-import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,10 +21,12 @@ import de.ativelox.feo.client.model.property.ICanMove;
 import de.ativelox.feo.client.model.property.IRequireResources;
 import de.ativelox.feo.client.model.property.callback.IMoveListener;
 import de.ativelox.feo.client.model.property.callback.ISelectionListener;
+import de.ativelox.feo.client.model.unit.item.Inventory;
+import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 import de.ativelox.feo.client.model.util.IMoveRoutine;
 import de.ativelox.feo.client.model.util.SmoothMoveRoutine;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
-import de.zabuza.maglev.external.algorithms.Path;
+import de.zabuza.maglev.external.algorithms.EdgeCost;
 import de.zabuza.maglev.external.graph.Edge;
 
 /**
@@ -53,8 +55,6 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     private final List<ISelectionListener> mSelectionListener;
     private final List<IMoveListener> mMoveListener;
 
-    private final int mMovement;
-
     private boolean mIsWaiting;
 
     private EGender mGender;
@@ -69,9 +69,45 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
 
     private EUnit mUnit;
 
-    public DummyUnit(int x, int y, int movement, EUnit unit, EGender gender, EClass unitClass, String name,
-            EAffiliation affiliation) {
+    private int mCurrentHp;
+
+    private int mMov;
+    private int mHp;
+    private int mStr;
+    private int mSkl;
+    private int mSpd;
+    private int mLck;
+    private int mDef;
+    private int mRes;
+    private double mGrowthHp;
+    private double mGrowthStr;
+    private double mGrowthSkl;
+    private double mGrowthSpd;
+    private double mGrowthLck;
+    private double mGrowthDef;
+    private double mGrowthRes;
+
+    public DummyUnit(int x, int y, EUnit unit, EGender gender, EClass unitClass, String name, EAffiliation affiliation,
+            int mov, int hp, int str, int skl, int spd, int lck, int def, int res, double growthHp, double growthStr,
+            double growthSkl, double growthSpd, double growthLck, double growthDef, double growthRes) {
         super(Tile.WIDTH * x, Tile.HEIGHT * y, Tile.WIDTH, Tile.HEIGHT);
+
+        mMov = mov;
+        mCurrentHp = hp;
+        mHp = hp;
+        mStr = str;
+        mSkl = skl;
+        mSpd = spd;
+        mLck = lck;
+        mDef = def;
+        mRes = res;
+        mGrowthHp = growthHp;
+        mGrowthStr = growthStr;
+        mGrowthSkl = growthSkl;
+        mGrowthSpd = growthSpd;
+        mGrowthLck = growthLck;
+        mGrowthDef = growthDef;
+        mGrowthRes = growthRes;
 
         mInventory = new Inventory();
 
@@ -87,8 +123,6 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
         mMoveListener = new ArrayList<>();
         mSelectionListener = new ArrayList<>();
         mMover = new SmoothMoveRoutine(this);
-
-        mMovement = movement;
 
         load();
     }
@@ -148,9 +182,9 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     }
 
     @Override
-    public void move(Path<Tile, Edge<Tile>> path) {
+    public void move(Iterator<EdgeCost<Tile, Edge<Tile>>> path, boolean reversed) {
         mMoveListener.forEach(l -> l.onMoveStarted(this));
-        mMover.move(path);
+        mMover.move(path, reversed, getMov());
 
     }
 
@@ -251,8 +285,8 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     }
 
     @Override
-    public int getMovement() {
-        return mMovement;
+    public int getMov() {
+        return mMov;
 
     }
 
@@ -322,14 +356,12 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
 
     @Override
     public int getCurrentHP() {
-        // TODO Auto-generated method stub
-        return 20;
+        return mCurrentHp;
     }
 
     @Override
     public int getMaximumHP() {
-        // TODO Auto-generated method stub
-        return 30;
+        return mHp;
     }
 
     @Override
@@ -344,32 +376,32 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
 
     @Override
     public int getStr() {
-        return 10;
+        return mStr;
     }
 
     @Override
     public int getSkill() {
-        return 10;
+        return mSkl;
     }
 
     @Override
     public int getSpd() {
-        return 10;
+        return mSpd;
     }
 
     @Override
     public int getLuck() {
-        return 10;
+        return mLck;
     }
 
     @Override
     public int getDef() {
-        return 10;
+        return mDef;
     }
 
     @Override
     public int getRes() {
-        return 10;
+        return mRes;
     }
 
     @Override
@@ -400,5 +432,11 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     @Override
     public EUnit getUnit() {
         return mUnit;
+    }
+
+    @Override
+    public void removeHp(int hp) {
+        mCurrentHp -= hp;
+
     }
 }

@@ -12,6 +12,7 @@ import java.util.List;
 import de.ativelox.feo.client.controller.GameController;
 import de.ativelox.feo.client.controller.MapEditorController;
 import de.ativelox.feo.client.controller.behavior.DefaultPlayerBehavior;
+import de.ativelox.feo.client.controller.behavior.SimpleAIBehavior;
 import de.ativelox.feo.client.controller.input.InputManager;
 import de.ativelox.feo.client.model.camera.Camera;
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
@@ -163,7 +164,7 @@ public class CameraScreenManager implements IScreenManager {
             IGameUIScreen uiScreen = new GameUIScreen();
             new GameController(this, mInputManager, map, mCamera, gameScreen, uiScreen,
                     new DefaultPlayerBehavior(map, EAffiliation.ALLIED),
-                    new DefaultPlayerBehavior(map, EAffiliation.OPPOSED));
+                    new SimpleAIBehavior(map, EAffiliation.OPPOSED));
             this.addScreen(gameScreen);
             this.addScreen(uiScreen);
             break;

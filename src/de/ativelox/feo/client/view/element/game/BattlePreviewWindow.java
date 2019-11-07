@@ -42,6 +42,9 @@ public class BattlePreviewWindow extends ImageElement implements ICanSwitchSides
     private Image mNameAttacker;
     private Image mNameTarget;
 
+    private Image mAttackCountAttacker;
+    private Image mAttackCountTarget;
+
     private Image mWeaponNameTarget;
 
     /**
@@ -61,6 +64,9 @@ public class BattlePreviewWindow extends ImageElement implements ICanSwitchSides
     public void switchParticipants(final IUnit attacker, final IUnit target) {
         mAttacker = attacker;
         mTarget = target;
+
+        mAttackCountAttacker = null;
+        mAttackCountTarget = null;
 
         this.load();
 
@@ -108,15 +114,25 @@ public class BattlePreviewWindow extends ImageElement implements ICanSwitchSides
         g.drawImage(mMtAttacker, 16 * Display.INTERNAL_RES_FACTOR - mMtAttacker.getWidth(null) + getX()
                 + 51 * Display.INTERNAL_RES_FACTOR, getY() + 39 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mHitTarget,
-                16 * Display.INTERNAL_RES_FACTOR - mHitTarget.getWidth(null) + getX() + 5 * Display.INTERNAL_RES_FACTOR,
-                getY() + 55 * Display.INTERNAL_RES_FACTOR);
+        if (mHitTarget.getWidth(null) >= 16 * Display.INTERNAL_RES_FACTOR) {
+            g.drawImage(mHitTarget, getX() + 5 * Display.INTERNAL_RES_FACTOR, getY() + 55 * Display.INTERNAL_RES_FACTOR,
+                    16 * Display.INTERNAL_RES_FACTOR, mHitTarget.getHeight(null));
+        } else {
+            g.drawImage(mHitTarget, 16 * Display.INTERNAL_RES_FACTOR - mHitAttacker.getWidth(null) + getX()
+                    + 5 * Display.INTERNAL_RES_FACTOR, getY() + 55 * Display.INTERNAL_RES_FACTOR);
+        }
 
         g.drawImage(mHitIdentifier, getX() + 29 * Display.INTERNAL_RES_FACTOR,
                 getY() + 55 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mHitAttacker, 16 * Display.INTERNAL_RES_FACTOR - mHitAttacker.getWidth(null) + getX()
-                + 51 * Display.INTERNAL_RES_FACTOR, getY() + 55 * Display.INTERNAL_RES_FACTOR);
+        if (mHitAttacker.getWidth(null) >= 16 * Display.INTERNAL_RES_FACTOR) {
+            g.drawImage(mHitAttacker, getX() + 51 * Display.INTERNAL_RES_FACTOR,
+                    getY() + 55 * Display.INTERNAL_RES_FACTOR, 16 * Display.INTERNAL_RES_FACTOR,
+                    mHitAttacker.getHeight(null));
+        } else {
+            g.drawImage(mHitAttacker, 16 * Display.INTERNAL_RES_FACTOR - mHitAttacker.getWidth(null) + getX()
+                    + 51 * Display.INTERNAL_RES_FACTOR, getY() + 55 * Display.INTERNAL_RES_FACTOR);
+        }
 
         g.drawImage(mCritTarget, 16 * Display.INTERNAL_RES_FACTOR - mCritTarget.getWidth(null) + getX()
                 + 5 * Display.INTERNAL_RES_FACTOR, getY() + 71 * Display.INTERNAL_RES_FACTOR);
@@ -128,6 +144,17 @@ public class BattlePreviewWindow extends ImageElement implements ICanSwitchSides
         g.drawImage(mCritAttacker, 16 * Display.INTERNAL_RES_FACTOR - mCritAttacker.getWidth(null) + getX()
                 + 51 * Display.INTERNAL_RES_FACTOR, getY() + 71 * Display.INTERNAL_RES_FACTOR);
 
+        if (mAttackCountAttacker != null) {
+            g.drawImage(mAttackCountAttacker, getX() + 42 * Display.INTERNAL_RES_FACTOR,
+                    getY() + 39 * Display.INTERNAL_RES_FACTOR);
+        }
+
+        if (mAttackCountTarget != null) {
+            g.drawImage(mAttackCountAttacker, getX() + -4 * Display.INTERNAL_RES_FACTOR,
+                    getY() + 39 * Display.INTERNAL_RES_FACTOR);
+
+        }
+
     }
 
     @Override
@@ -138,7 +165,7 @@ public class BattlePreviewWindow extends ImageElement implements ICanSwitchSides
             setY(3 * Display.INTERNAL_RES_FACTOR);
             break;
         case RIGHT:
-            setX(Display.WIDTH - getWidth() - 5 * Display.INTERNAL_RES_FACTOR);
+            setX(Display.WIDTH - getWidth() - 10 * Display.INTERNAL_RES_FACTOR);
             setY(3 * Display.INTERNAL_RES_FACTOR);
             break;
         default:
@@ -177,6 +204,16 @@ public class BattlePreviewWindow extends ImageElement implements ICanSwitchSides
 
         mCritAttacker = Assets.getFor(EResource.REGULAR_FONT, CombatRule.getCriticalChance(mAttacker, mTarget) + "");
         mCritTarget = Assets.getFor(EResource.REGULAR_FONT, CombatRule.getCriticalChance(mTarget, mAttacker) + "");
+
+        if (CombatRule.hasRepeatedAttack(mAttacker, mTarget)) {
+            mAttackCountAttacker = Assets.getFor(EResource.REGULAR_FONT, "2x");
+
+        }
+
+        if (CombatRule.hasRepeatedAttack(mTarget, mAttacker)) {
+            mAttackCountTarget = Assets.getFor(EResource.REGULAR_FONT, "2x");
+
+        }
 
         String weaponName = "--";
 

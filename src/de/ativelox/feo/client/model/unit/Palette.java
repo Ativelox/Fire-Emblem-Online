@@ -1,18 +1,30 @@
 package de.ativelox.feo.client.model.unit;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.ativelox.feo.client.model.gfx.Assets;
 import de.ativelox.feo.client.model.gfx.EResource;
 import de.ativelox.feo.client.model.gfx.animation.IAnimation;
+import de.ativelox.feo.client.model.property.EClass;
+import de.ativelox.feo.client.model.property.EUnit;
+import de.ativelox.feo.logging.ELogType;
+import de.ativelox.feo.logging.Logger;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
  *
  */
 public class Palette {
+
+    private static final Path UNIT_PALETTE_PATH = Paths.get("res", "fe6", "unit_palette");
 
     public static Map<Integer, Integer> BLUE_GRAY;
     public static Map<Integer, Integer> BLUE_RED;
@@ -29,6 +41,8 @@ public class Palette {
     public static Map<Integer, Integer> VIOLET_GRAY;
     public static Map<Integer, Integer> GRAY_VIOLET;
 
+    private static Map<EUnit, Map<EClass, Map<Integer, Integer>>> UNIT_PALETTE;
+
     public static void init() {
         BLUE_RED = new HashMap<>();
         BLUE_GRAY = new HashMap<>();
@@ -41,6 +55,7 @@ public class Palette {
         GRAY_GREEN = new HashMap<>();
         VIOLET_GRAY = new HashMap<>();
         GRAY_VIOLET = new HashMap<>();
+        UNIT_PALETTE = new HashMap<>();
 
         BufferedImage blue = Assets.getFor(EResource.PALETTE, "blue.png");
         BufferedImage red = Assets.getFor(EResource.PALETTE, "red.png");
@@ -99,6 +114,62 @@ public class Palette {
             }
             image.setRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
         }
+    }
+
+    private static boolean ensurePaletteExistence(EUnit unit, EClass unitClass) {
+        if (UNIT_PALETTE.containsKey(unit) && UNIT_PALETTE.get(unit).containsKey(unitClass)) {
+            return true;
+        }
+
+        if (!UNIT_PALETTE.containsKey(unit)) {
+            UNIT_PALETTE.put(unit, new HashMap<>());
+        }
+        if (!UNIT_PALETTE.get(unit).containsKey(unitClass)) {
+            UNIT_PALETTE.get(unit).put(unitClass, new HashMap<>());
+        }
+
+        Path path = UNIT_PALETTE_PATH
+                .resolve(unit.toString().toLowerCase() + "_" + unitClass.toString().toLowerCase() + ".up");
+
+        if (!Files.exists(path)) {
+            return false;
+        }
+
+        try {
+            List<String> lines = Files.readAllLines(path);
+
+            int i = 1;
+            for (final String line : lines) {
+                String[] colorSplit = line.split("\t");
+
+                String[] genericColor = colorSplit[0].split("\\s");
+                String[] newColor = colorSplit[1].split("\\s");
+
+                if (genericColor.length != 3 || newColor.length != 3) {
+                    Logger.get().log(ELogType.ERROR, "Unsupported format in the file: " + path + " in line " + i);
+                }
+                Color generic = new Color(Integer.parseInt(genericColor[0]), Integer.parseInt(genericColor[1]),
+                        Integer.parseInt(genericColor[2]));
+                Color newOne = new Color(Integer.parseInt(newColor[0]), Integer.parseInt(newColor[1]),
+                        Integer.parseInt(newColor[2]));
+                UNIT_PALETTE.get(unit).get(unitClass).put(generic.getRGB(), newOne.getRGB());
+                i++;
+
+            }
+
+        } catch (IOException e) {
+            Logger.get().logError(e);
+        }
+        return true;
+
+    }
+
+    public static Map<Integer, Integer> getUnitPalette(EUnit unit, EClass unitClass) {
+        if (!ensurePaletteExistence(unit, unitClass)) {
+            return new HashMap<>();
+        }
+
+        return UNIT_PALETTE.get(unit).get(unitClass);
     }
 
     private Palette() {

@@ -12,14 +12,18 @@ import de.ativelox.feo.client.model.property.IRenderable;
 import de.ativelox.feo.client.model.property.ISelectable;
 import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.property.IUpdateable;
+import de.ativelox.feo.client.model.unit.item.Inventory;
+import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
  *
  */
 public interface IUnit extends IRenderable, IUpdateable, ISpatial, ISelectable, ICanMove {
+    
+    public void removeHp(int hp);
 
-    public int getMovement();
+    public int getMov();
 
     public int getRange();
 

@@ -12,7 +12,6 @@ import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.element.game.BattleOverlay;
 import de.ativelox.feo.client.view.screen.EScreen;
-import de.ativelox.feo.client.view.screen.IScreenManager;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})

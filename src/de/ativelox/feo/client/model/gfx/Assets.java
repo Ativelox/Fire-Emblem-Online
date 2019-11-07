@@ -40,7 +40,9 @@ import de.ativelox.feo.client.model.property.EGender;
 import de.ativelox.feo.client.model.property.EIndicatorDirection;
 import de.ativelox.feo.client.model.property.EPlatformDistance;
 import de.ativelox.feo.client.model.property.ESide;
+import de.ativelox.feo.client.model.property.EUnit;
 import de.ativelox.feo.client.model.property.IRequireResource;
+import de.ativelox.feo.client.model.unit.Palette;
 import de.ativelox.feo.client.model.util.SplitBuilder;
 import de.ativelox.feo.client.model.util.SpriteSheet;
 import de.ativelox.feo.client.model.util.TightWidthFit;
@@ -71,6 +73,8 @@ public class Assets {
     private static final Path BATTLE_PATH = Paths.get("res", "fe6", "battle");
 
     private static final Path DODGE_PATH = Paths.get("res", "fe6", "dodge");
+
+    private static final Path WEAPON_PATH = Paths.get("res", "fe6", "weapons");
 
     private static final Path MELEE_ATTACK_PATH = Paths.get("res", "fe6", "melee_attack");
     private static final Path MELEE_CRIT_PATH = Paths.get("res", "fe6", "melee_crit");
@@ -531,6 +535,7 @@ public class Assets {
             EGender gender = EGender.valueOf(additionalInfo[1]);
             EBattleAnimType animType = EBattleAnimType.valueOf(additionalInfo[2]);
             ESide side = ESide.valueOf(additionalInfo[3]);
+            EUnit unit = EUnit.valueOf(additionalInfo[4]);
 
             Path path = null;
 
@@ -562,7 +567,15 @@ public class Assets {
                     + gender.toString().toLowerCase().substring(0, 1) + ".png");
 
             BufferedImage animationSheet = SpriteSheet.load(path).get();
-            BufferedImage[] splitAnimation = SpriteSheet.smartSplit(animationSheet, 240, 160);
+            SpriteSheet.convertAll(animationSheet, Palette.getUnitPalette(unit, unitClass));
+            BufferedImage[] splitAnimation = null;
+
+            if (animType == EBattleAnimType.STALE) {
+                splitAnimation = SpriteSheet.split(animationSheet, 240, 160, 1, 0, 1);
+
+            } else {
+                splitAnimation = SpriteSheet.smartSplit(animationSheet, 240, 160);
+            }
 
             if (side == ESide.LEFT) {
                 splitAnimation = SpriteSheet.flipHorizontally(splitAnimation);
@@ -590,6 +603,10 @@ public class Assets {
 
         case SFX:
             result = (T) SFX_PATH.resolve(additionalInfo[0] + ".wav");
+            break;
+
+        case WEAPON_IMAGE:
+            result = (T) SpriteSheet.load(WEAPON_PATH.resolve(additionalInfo[0])).get();
             break;
 
         default:

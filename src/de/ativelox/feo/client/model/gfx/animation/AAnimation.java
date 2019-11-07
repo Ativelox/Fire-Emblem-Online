@@ -118,4 +118,9 @@ public abstract class AAnimation extends SpatialObject implements IAnimation {
         mHookMapping.get(frame).add(hook);
 
     }
+
+    @Override
+    public boolean isHidden() {
+        return mHidden;
+    }
 }

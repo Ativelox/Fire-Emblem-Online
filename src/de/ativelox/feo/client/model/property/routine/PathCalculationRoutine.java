@@ -43,10 +43,6 @@ public class PathCalculationRoutine {
 
     private boolean mIsActive;
 
-    private int mCursorX;
-
-    private int mCursorY;
-
     private Pair<Integer, Integer> mStart;
 
     public PathCalculationRoutine(final Map map) {
@@ -67,9 +63,9 @@ public class PathCalculationRoutine {
 
         mActor = unit;
 
-        mInRange = mMap.getTilesInRange(unit, unit.getMovement());
+        mInRange = mMap.getTilesInRange(unit, unit.getMov());
 
-        Set<Tile> ranged = mMap.getTilesInRange(unit, unit.getMovement() + unit.getRange());
+        Set<Tile> ranged = mMap.getTilesInRange(unit, unit.getMov() + unit.getRange());
 
         ranged.removeAll(mInRange);
 
@@ -106,7 +102,7 @@ public class PathCalculationRoutine {
         if (mInRange == null) {
             return Optional.empty();
         }
-        return mMap.getPath(mActor, tile, mActor.getMovement());
+        return mMap.getPath(mActor, tile, mActor.getMov());
 
     }
 
@@ -123,15 +119,11 @@ public class PathCalculationRoutine {
     }
 
     public void updateCursorLocation(ISpatial cursor) {
-
-        mCursorX = cursor.getX();
-        mCursorY = cursor.getY();
-
         if (mInRange == null) {
             return;
         }
         Optional<Path<Tile, Edge<Tile>>> tiles = mMap.getPath(mActor, mMap.getByPos(cursor.getX(), cursor.getY()),
-                mActor.getMovement());
+                mActor.getMov());
 
         if (tiles.isEmpty() && mLast == null) {
             return;
@@ -253,7 +245,7 @@ public class PathCalculationRoutine {
 
     public void executeIfValid() {
         if (isActive() && mCurrentPath != null) {
-            mActor.move(mCurrentPath);
+            mActor.move(mCurrentPath.iterator(), false);
         }
     }
 }

@@ -6,6 +6,6 @@ package de.ativelox.feo.client.model.property;
  */
 public enum EClass {
 
-    SWORDMASTER, LORD_ROY;
+    SWORDMASTER, LORD_ROY, THIEF, MYRMIDON;
 
 }

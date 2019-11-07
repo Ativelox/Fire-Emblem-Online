@@ -1,7 +1,5 @@
 package de.ativelox.feo.client.model.gfx.animation.hook;
 
-import java.util.function.Function;
-
 import de.ativelox.feo.client.model.sound.ESoundEffect;
 import de.ativelox.feo.client.model.sound.SoundPlayer;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
@@ -10,7 +8,7 @@ import de.ativelox.feo.client.model.util.TimeSnapshot;
  * @author Ativelox ({@literal ativelox.dev@web.de})
  *
  */
-public class NonBlockingSoundHook implements Function<TimeSnapshot, Boolean> {
+public class NonBlockingSoundHook implements IHook {
 
     private final ESoundEffect mEffect;
 

@@ -4,7 +4,7 @@ import de.ativelox.feo.client.controller.GameController;
 import de.ativelox.feo.client.model.property.EAffiliation;
 import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.unit.IUnit;
-import de.ativelox.feo.client.model.unit.IWeapon;
+import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})

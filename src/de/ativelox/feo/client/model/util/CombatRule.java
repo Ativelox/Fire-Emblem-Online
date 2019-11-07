@@ -2,7 +2,8 @@ package de.ativelox.feo.client.model.util;
 
 import de.ativelox.feo.client.model.property.EDamageType;
 import de.ativelox.feo.client.model.unit.IUnit;
-import de.ativelox.feo.client.model.unit.IWeapon;
+import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
+import de.ativelox.feo.util.MathUtils;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
@@ -11,6 +12,11 @@ import de.ativelox.feo.client.model.unit.IWeapon;
 public class CombatRule {
 
     private CombatRule() {
+
+    }
+
+    public static boolean hasRepeatedAttack(final IUnit attacker, final IUnit target) {
+        return getAttackSpeed(attacker) - 4 >= getAttackSpeed(target);
 
     }
 
@@ -28,7 +34,7 @@ public class CombatRule {
             return 0;
         }
 
-        return getCriticalRate(attacker) - getCriticalEvade(target);
+        return MathUtils.clamp(100, getCriticalRate(attacker) - getCriticalEvade(target), 0);
 
     }
 
@@ -49,7 +55,7 @@ public class CombatRule {
             defense = target.getRes();
         }
 
-        return getAttack(attacker) - defense;
+        return Math.max(getAttack(attacker) - defense, 0);
 
     }
 
@@ -75,7 +81,7 @@ public class CombatRule {
     }
 
     public static int getAccuracy(IUnit attacker, IUnit target) {
-        return getHitRate(attacker) - getEvade(target);
+        return MathUtils.clamp(100, getHitRate(attacker) - getEvade(target), 0);
 
     }
 }

@@ -31,7 +31,6 @@ public class UnitSelectionRoutine implements IUpdateable {
         if (mIsBlocked) {
             return;
         }
-
         Optional<IUnit> unit = mMap.isOccupied(mSelector.getX(), mSelector.getY());
 
         if (unit.isPresent()) {

@@ -16,7 +16,7 @@ import de.ativelox.feo.client.model.property.callback.ICancelListener;
 import de.ativelox.feo.client.model.property.callback.IConfirmListener;
 import de.ativelox.feo.client.model.property.callback.ISelectionListener;
 import de.ativelox.feo.client.model.unit.IUnit;
-import de.ativelox.feo.client.model.unit.IWeapon;
+import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.element.game.ActionWindow;
 import de.ativelox.feo.client.view.element.game.ActionWindowButton;

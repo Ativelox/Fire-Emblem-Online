@@ -31,6 +31,10 @@ public abstract class AButtonElement extends ImageElement implements ISelectable
 
     private int mTextHeight;
 
+    protected int mXOffset;
+
+    protected int mYOffset;
+
     public AButtonElement(int x, int y, int width, int height, boolean isPercent, EResource background, int order,
             String text) {
         super(x, y, width, height, isPercent, background);
@@ -65,8 +69,8 @@ public abstract class AButtonElement extends ImageElement implements ISelectable
             return;
         }
 
-        g.drawImage(mFormattedText, getX() + (getWidth() / 2) - (mTextWidth / 2),
-                getY() + (getHeight() / 2) - (mTextHeight / 2), mTextWidth, mTextHeight);
+        g.drawImage(mFormattedText, mXOffset + getX() + (getWidth() / 2) - (mTextWidth / 2),
+                mYOffset + getY() + (getHeight() / 2) - (mTextHeight / 2), mTextWidth, mTextHeight);
 
     }
 

@@ -1,6 +1,9 @@
-package de.ativelox.feo.client.model.unit;
+package de.ativelox.feo.client.model.unit.item.weapon;
+
+import java.awt.Image;
 
 import de.ativelox.feo.client.model.property.EDamageType;
+import de.ativelox.feo.client.model.unit.item.IItem;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
@@ -23,5 +26,7 @@ public interface IWeapon extends IItem {
     int getWeight();
 
     EDamageType getDamageType();
+
+    Image getImage();
 
 }

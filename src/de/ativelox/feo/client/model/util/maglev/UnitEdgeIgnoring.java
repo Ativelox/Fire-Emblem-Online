@@ -36,7 +36,7 @@ public class UnitEdgeIgnoring implements Predicate<Edge<Tile>> {
             if (unitSource == mActor) {
                 ignore = false;
 
-            } else if (unitSource.getAffiliation() != mActor.getAffiliation()) {
+            } else {
                 ignore = true;
             }
 

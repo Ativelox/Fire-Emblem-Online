@@ -18,6 +18,8 @@ public interface IAnimation extends IUpdateable, IRenderable, ISpatial, Iterable
 
     boolean isFinished();
 
+    boolean isHidden();
+
     void start();
 
     void stop();

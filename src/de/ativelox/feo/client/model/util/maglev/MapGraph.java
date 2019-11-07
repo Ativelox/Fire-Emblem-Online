@@ -145,7 +145,7 @@ public class MapGraph implements Graph<Tile, Edge<Tile>> {
 
     @Override
     public void reverse() {
-        throw new IllegalArgumentException();
+        mEdgeSet.forEach(e -> ((TileEdge) e).reverse());
 
     }
 

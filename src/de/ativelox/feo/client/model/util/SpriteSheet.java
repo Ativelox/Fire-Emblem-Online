@@ -15,6 +15,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -379,6 +380,18 @@ public class SpriteSheet {
         }
         return removeEmptyFromBack(result);
 
+    }
+
+    public static void convertAll(BufferedImage src, Map<Integer, Integer> mapping) {
+        for (int i = 0; i < src.getWidth(); i++) {
+            for (int j = 0; j < src.getHeight(); j++) {
+                if (!mapping.containsKey(src.getRGB(i, j))) {
+                    continue;
+                }
+
+                src.setRGB(i, j, mapping.get(src.getRGB(i, j)));
+            }
+        }
     }
 
     private static BufferedImage[] removeEmptyFromBack(BufferedImage[] images) {

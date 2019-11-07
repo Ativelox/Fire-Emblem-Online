@@ -1,4 +1,4 @@
-package de.ativelox.feo.client.model.unit;
+package de.ativelox.feo.client.model.gfx.animation;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,8 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.ativelox.feo.client.model.gfx.animation.IAnimation;
-import de.ativelox.feo.client.model.gfx.animation.hook.AnimationHook;
+import de.ativelox.feo.client.model.gfx.animation.hook.IHook;
 import de.ativelox.feo.client.model.gfx.animation.hook.NonBlockingSoundHook;
 import de.ativelox.feo.client.model.property.EBattleAnimType;
 import de.ativelox.feo.client.model.property.EClass;
@@ -44,11 +43,14 @@ public class UnitHookInserter {
         }
     }
 
-    public static void insert(IAnimation source, EClass unitClass, EBattleAnimType type, IAnimation... insertOnHit) {
+    public static void insert(IAnimation source, EClass unitClass, EBattleAnimType type, IHook... insertOnHit) {
         ensureAvailability(unitClass);
 
-        for (final IAnimation animation : insertOnHit) {
-            source.addHook(HIT_MAPPING.get(unitClass).get(type), new AnimationHook(animation));
+        for (final IHook hook : insertOnHit) {
+            if (!HIT_MAPPING.get(unitClass).containsKey(type)) {
+                break;
+            }
+            source.addHook(HIT_MAPPING.get(unitClass).get(type), hook);
 
         }
     }

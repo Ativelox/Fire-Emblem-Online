@@ -10,6 +10,7 @@ import java.util.List;
 import de.ativelox.feo.client.controller.behavior.IBehavior;
 import de.ativelox.feo.client.controller.input.InputManager;
 import de.ativelox.feo.client.model.camera.Camera;
+import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.map.Map;
 import de.ativelox.feo.client.model.property.EActionWindowOption;
 import de.ativelox.feo.client.model.property.EAffiliation;
@@ -20,8 +21,8 @@ import de.ativelox.feo.client.model.property.callback.IMovementListener;
 import de.ativelox.feo.client.model.sound.EMusic;
 import de.ativelox.feo.client.model.sound.SoundPlayer;
 import de.ativelox.feo.client.model.unit.IUnit;
-import de.ativelox.feo.client.model.unit.IWeapon;
-import de.ativelox.feo.client.model.unit.Inventory;
+import de.ativelox.feo.client.model.unit.item.Inventory;
+import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.element.game.MovementIndicator;
 import de.ativelox.feo.client.view.element.game.MovementRange;
@@ -54,6 +55,8 @@ public class GameController {
 
     private final Camera mCamera;
 
+    private EMusic mCurrentPiece;
+
     public GameController(final IScreenManager sm, final InputManager im, final Map map, final Camera camera,
             final IGameScreen screen, final IGameUIScreen uiScreen, IBehavior alliedBehavior,
             IBehavior opposedBehavior) {
@@ -79,8 +82,6 @@ public class GameController {
 
         im.register((IActionListener) screen);
         im.register((IMovementListener) screen);
-
-        SoundPlayer.get().play(EMusic.BEYOND_THE_SKY);
 
     }
 
@@ -115,9 +116,13 @@ public class GameController {
     public void turnStart(IBehavior behavior) {
         if (behavior.getAffiliation() == EAffiliation.ALLIED) {
             mCurrentActiveBehavior = mAlliedBehavior;
+            mCurrentPiece = EMusic.BEYOND_THE_SKY;
+            SoundPlayer.get().play(EMusic.BEYOND_THE_SKY);
 
         } else {
             mCurrentActiveBehavior = mOpposedBehavior;
+            mCurrentPiece = EMusic.AT_THE_FINAL_DRAGON;
+            SoundPlayer.get().play(EMusic.AT_THE_FINAL_DRAGON);
         }
         mMap.getAlliedUnits().forEach(u -> u.ready());
         mMap.getOpposedUnits().forEach(u -> u.ready());
@@ -233,7 +238,6 @@ public class GameController {
     }
 
     public void initiateAttack(IUnit attacker, IUnit target) {
-
         mBattleScreen.setParticipants(attacker, target, mMap.getByPos(attacker.getX(), attacker.getY()).getType(),
                 attacker.getEquippedWeapon().get().getRange());
         mScreenManager.addScreen(mBattleScreen);
@@ -242,6 +246,10 @@ public class GameController {
 
     public void attackFinished() {
         mScreenManager.removeScreen();
-        SoundPlayer.get().play(EMusic.BEYOND_THE_SKY);
+        SoundPlayer.get().play(mCurrentPiece);
+    }
+
+    public void moveCursor(Tile tile) {
+        mScreen.moveCursor(tile);
     }
 }

@@ -303,6 +303,8 @@ public class SoundMapping {
         case CRIT_HIT:
             fileName = "song216";
             break;
+        case WING_FLAP:
+            fileName = "song611";
         default:
             break;
 

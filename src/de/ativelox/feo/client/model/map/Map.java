@@ -53,12 +53,15 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
     private NearestNeighborComputation<IUnit> mNearestOpposed;
     private NearestNeighborComputation<IUnit> mNearestAllied;
 
+    private NearestNeighborComputation<Tile> mNearestTiles;
+
     private Graph<Tile, Edge<Tile>> mGraphRepresentation;
 
     public Map(String fileName, int x, int y) {
         super(x, y, 0, 0);
         mNearestOpposed = NearestNeighborComputations.of(new ManhattanDistance<>());
         mNearestAllied = NearestNeighborComputations.of(new ManhattanDistance<>());
+        mNearestTiles = NearestNeighborComputations.of(new ManhattanDistance<>());
 
         mAlliedUnits = new ArrayList<>();
         mOpposedUnits = new ArrayList<>();
@@ -68,6 +71,40 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
         this.load();
 
         mGraphRepresentation = new MapGraph(this);
+
+    }
+
+    public Optional<Path<Tile, Edge<Tile>>> getNearestPathToAttackable(IUnit unit) {
+        if (unit.getAffiliation() == EAffiliation.ALLIED) {
+            return Optional.empty();
+
+        } else {
+            ShortestPathComputation<Tile, Edge<Tile>> algo = new ShortestPathComputationBuilder<>(mGraphRepresentation)
+                    .resetOrdinaryDijkstra().addModuleIgnoreEdgeIf(new UnitEdgeIgnoring(unit, this)).build();
+
+            Collection<Tile> tiles = new ArrayList<>();
+
+            for (final IUnit alliedUnit : mAlliedUnits) {
+
+                tiles.addAll(getNeighborTiles(this.getByPos(alliedUnit.getX(), alliedUnit.getY()), 1));
+
+            }
+
+            var path = algo.shortestPath(tiles, getByPos(unit.getX(), unit.getY()));
+
+            return path;
+
+        }
+
+    }
+
+    public List<IUnit> getUnitsBy(EAffiliation affiliation) {
+        if (affiliation == EAffiliation.ALLIED) {
+            return mAlliedUnits;
+        } else if (affiliation == EAffiliation.OPPOSED) {
+            return mOpposedUnits;
+        }
+        return null;
 
     }
 
@@ -153,6 +190,8 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
                 tile.setX(j * tile.getWidth());
                 tile.setY(i * tile.getHeight());
 
+                mNearestTiles.add(tile);
+
             }
         }
         setWidth(mInternalMap[0].length * mInternalMap[0][0].getWidth());
@@ -195,6 +234,11 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
 
         }
         return getByIndex(indexX, indexY);
+
+    }
+
+    public Collection<Tile> getNeighborTiles(Tile src, int range) {
+        return mNearestTiles.getNeighborhood(src, range);
 
     }
 

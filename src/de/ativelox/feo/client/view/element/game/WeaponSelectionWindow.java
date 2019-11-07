@@ -12,7 +12,7 @@ import de.ativelox.feo.client.model.manager.VerticalSelectionManager;
 import de.ativelox.feo.client.model.property.EActionWindowType;
 import de.ativelox.feo.client.model.property.ESide;
 import de.ativelox.feo.client.model.unit.IUnit;
-import de.ativelox.feo.client.model.unit.IWeapon;
+import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.element.generic.AActionWindow;
@@ -23,8 +23,6 @@ import de.ativelox.feo.client.view.element.generic.AButtonElement;
  *
  */
 public class WeaponSelectionWindow extends AActionWindow {
-
-    private IUnit mUnit;
 
     private Image mTop;
     private Image mBot;
@@ -92,7 +90,6 @@ public class WeaponSelectionWindow extends AActionWindow {
             this.initialize();
             return;
         }
-        mUnit = unit;
         IWeapon[] eli = new IWeapon[eligible.size()];
 
         int i = 0;

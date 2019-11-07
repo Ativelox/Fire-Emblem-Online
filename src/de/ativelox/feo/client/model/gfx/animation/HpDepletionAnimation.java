@@ -24,7 +24,7 @@ public class HpDepletionAnimation implements IRequireResources, IAnimation {
 
     private final int mTo;
 
-    public HpDepletionAnimation(int from, int to, long playTime, EAnimationDirection direction) {
+    public HpDepletionAnimation(int from, int to, EAnimationDirection direction) {
         mFrom = from;
         mTo = to;
 
@@ -32,7 +32,7 @@ public class HpDepletionAnimation implements IRequireResources, IAnimation {
 
         this.load();
 
-        mUnderlyingAnimation = new DefaultNonLoopingAnimation(mSequence, direction, playTime);
+        mUnderlyingAnimation = new DefaultNonLoopingAnimation(mSequence, direction, mSequence.length * 40);
         mUnderlyingAnimation.setScaling(1);
 
     }
@@ -151,6 +151,12 @@ public class HpDepletionAnimation implements IRequireResources, IAnimation {
     @Override
     public void addHook(int frame, Function<TimeSnapshot, Boolean> hook) {
         mUnderlyingAnimation.addHook(frame, hook);
+
+    }
+
+    @Override
+    public boolean isHidden() {
+        return mUnderlyingAnimation.isHidden();
 
     }
 }

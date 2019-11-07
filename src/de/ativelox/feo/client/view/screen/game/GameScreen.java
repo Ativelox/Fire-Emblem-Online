@@ -274,4 +274,11 @@ public class GameScreen extends InputReceiver
 
         }
     }
+
+    @Override
+    public void moveCursor(Tile tile) {
+        mSelectionCursor.setX(tile.getX());
+        mSelectionCursor.setY(tile.getY());
+
+    }
 }

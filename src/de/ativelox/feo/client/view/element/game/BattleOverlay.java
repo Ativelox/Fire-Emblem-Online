@@ -5,6 +5,7 @@ import java.awt.Image;
 import de.ativelox.feo.client.model.gfx.Assets;
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.gfx.EResource;
+import de.ativelox.feo.client.model.property.EAffiliation;
 import de.ativelox.feo.client.model.property.IRequireResources;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.util.CombatRule;
@@ -46,6 +47,9 @@ public class BattleOverlay extends AScreenElement implements IRequireResources {
     private Image mTargetWeapon;
     private Image mAttackerWeapon;
 
+    private Image mTargetWeaponImage;
+    private Image mAttackerWeaponImage;
+
     private static final int BATTLE_OVERLAY_LAYER = 5;
 
     public BattleOverlay() {
@@ -62,59 +66,107 @@ public class BattleOverlay extends AScreenElement implements IRequireResources {
     public void render(DepthBufferedGraphics g) {
         g.drawImage(mBattleBackground, 0, -30, Display.WIDTH, Display.HEIGHT);
 
-        g.drawImage(mTargetName, (int) ((mNameBoxWidth / 2f) - (mTargetName.getWidth(null) / 2f)),
-                (int) (4 * Display.INTERNAL_RES_FACTOR + (mNameBoxHeight / 2f - mTargetName.getHeight(null) / 2f)),
+        Image targetName = mTargetName;
+        Image attackerName = mAttackerName;
+
+        Image hitTarget = mHitTarget;
+        Image dmgTarget = mDmgTarget;
+        Image crtTarget = mCrtTarget;
+
+        Image hitAttacker = mHitAttacker;
+        Image dmgAttacker = mDmgAttacker;
+        Image crtAttacker = mCrtAttacker;
+
+        Image targetWeapon = mTargetWeapon;
+        Image attackerWeapon = mAttackerWeapon;
+
+        Image targetWeaponImage = mTargetWeaponImage;
+        Image attackerWeaponImage = mAttackerWeaponImage;
+
+        if (mAttacker.getAffiliation() != EAffiliation.ALLIED) {
+            targetName = mAttackerName;
+            attackerName = mTargetName;
+
+            hitTarget = mHitAttacker;
+            dmgTarget = mDmgAttacker;
+            crtTarget = mCrtAttacker;
+
+            hitAttacker = mHitTarget;
+            dmgAttacker = mDmgTarget;
+            crtAttacker = mCrtTarget;
+
+            targetWeapon = mAttackerWeapon;
+            attackerWeapon = mTargetWeapon;
+
+            targetWeaponImage = mAttackerWeaponImage;
+            attackerWeaponImage = mTargetWeaponImage;
+
+        }
+
+        g.drawImage(targetName, (int) ((mNameBoxWidth / 2f) - (targetName.getWidth(null) / 2f)),
+                (int) (4 * Display.INTERNAL_RES_FACTOR + (mNameBoxHeight / 2f - targetName.getHeight(null) / 2f)),
                 BATTLE_OVERLAY_LAYER);
-        g.drawImage(mAttackerName,
-                185 * Display.INTERNAL_RES_FACTOR + (int) ((mNameBoxWidth / 2f) - (mAttackerName.getWidth(null) / 2f)),
-                (int) (4 * Display.INTERNAL_RES_FACTOR + (mNameBoxHeight / 2f - mAttackerName.getHeight(null) / 2f)),
+        g.drawImage(attackerName,
+                185 * Display.INTERNAL_RES_FACTOR + (int) ((mNameBoxWidth / 2f) - (attackerName.getWidth(null) / 2f)),
+                (int) (4 * Display.INTERNAL_RES_FACTOR + (mNameBoxHeight / 2f - attackerName.getHeight(null) / 2f)),
                 BATTLE_OVERLAY_LAYER);
 
         g.drawImage(mHitIdentifier, 9 * Display.INTERNAL_RES_FACTOR, 108 * Display.INTERNAL_RES_FACTOR,
-                mHitIdentifier.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
+                10 * Display.INTERNAL_RES_FACTOR, 8 * Display.INTERNAL_RES_FACTOR);
         g.drawImage(mDmgIdentifier, 9 * Display.INTERNAL_RES_FACTOR, 115 * Display.INTERNAL_RES_FACTOR,
-                mHitIdentifier.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
+                10 * Display.INTERNAL_RES_FACTOR, 8 * Display.INTERNAL_RES_FACTOR);
         g.drawImage(mCrtIdentifier, 9 * Display.INTERNAL_RES_FACTOR, 123 * Display.INTERNAL_RES_FACTOR,
-                mHitIdentifier.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
+                10 * Display.INTERNAL_RES_FACTOR, 8 * Display.INTERNAL_RES_FACTOR);
 
         g.drawImage(mHitIdentifier, 196 * Display.INTERNAL_RES_FACTOR, 108 * Display.INTERNAL_RES_FACTOR,
-                mHitIdentifier.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
+                10 * Display.INTERNAL_RES_FACTOR, 8 * Display.INTERNAL_RES_FACTOR);
         g.drawImage(mDmgIdentifier, 196 * Display.INTERNAL_RES_FACTOR, 115 * Display.INTERNAL_RES_FACTOR,
-                mHitIdentifier.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
+                10 * Display.INTERNAL_RES_FACTOR, 8 * Display.INTERNAL_RES_FACTOR);
         g.drawImage(mCrtIdentifier, 196 * Display.INTERNAL_RES_FACTOR, 123 * Display.INTERNAL_RES_FACTOR,
-                mHitIdentifier.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
+                10 * Display.INTERNAL_RES_FACTOR, 8 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mHitTarget,
-                22 * Display.INTERNAL_RES_FACTOR - mHitTarget.getWidth(null) + 21 * Display.INTERNAL_RES_FACTOR,
-                108 * Display.INTERNAL_RES_FACTOR, mHitTarget.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(hitTarget,
+                23 * Display.INTERNAL_RES_FACTOR - hitTarget.getWidth(null) + 21 * Display.INTERNAL_RES_FACTOR,
+                108 * Display.INTERNAL_RES_FACTOR, hitTarget.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mDmgTarget,
-                22 * Display.INTERNAL_RES_FACTOR - mDmgTarget.getWidth(null) + 21 * Display.INTERNAL_RES_FACTOR,
-                115 * Display.INTERNAL_RES_FACTOR, mDmgTarget.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(dmgTarget,
+                22 * Display.INTERNAL_RES_FACTOR - dmgTarget.getWidth(null) + 21 * Display.INTERNAL_RES_FACTOR,
+                115 * Display.INTERNAL_RES_FACTOR, dmgTarget.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mCrtTarget,
-                22 * Display.INTERNAL_RES_FACTOR - mCrtTarget.getWidth(null) + 21 * Display.INTERNAL_RES_FACTOR,
-                123 * Display.INTERNAL_RES_FACTOR, mCrtTarget.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(crtTarget,
+                22 * Display.INTERNAL_RES_FACTOR - crtTarget.getWidth(null) + 21 * Display.INTERNAL_RES_FACTOR,
+                123 * Display.INTERNAL_RES_FACTOR, crtTarget.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mHitAttacker,
-                209 * Display.INTERNAL_RES_FACTOR - mHitAttacker.getWidth(null) + 21 * Display.INTERNAL_RES_FACTOR,
-                108 * Display.INTERNAL_RES_FACTOR, mHitAttacker.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(hitAttacker,
+                209 * Display.INTERNAL_RES_FACTOR - hitAttacker.getWidth(null) + 21 * Display.INTERNAL_RES_FACTOR,
+                108 * Display.INTERNAL_RES_FACTOR, hitAttacker.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mDmgAttacker,
-                209 * Display.INTERNAL_RES_FACTOR - mDmgAttacker.getWidth(null) + 21 * Display.INTERNAL_RES_FACTOR,
-                115 * Display.INTERNAL_RES_FACTOR, mDmgAttacker.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(dmgAttacker,
+                209 * Display.INTERNAL_RES_FACTOR - dmgAttacker.getWidth(null) + 21 * Display.INTERNAL_RES_FACTOR,
+                115 * Display.INTERNAL_RES_FACTOR, dmgAttacker.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mCrtAttacker,
-                209 * Display.INTERNAL_RES_FACTOR - mCrtAttacker.getWidth(null) + 21 * Display.INTERNAL_RES_FACTOR,
-                123 * Display.INTERNAL_RES_FACTOR, mCrtAttacker.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
+        g.drawImage(crtAttacker,
+                209 * Display.INTERNAL_RES_FACTOR - crtAttacker.getWidth(null) + 21 * Display.INTERNAL_RES_FACTOR,
+                123 * Display.INTERNAL_RES_FACTOR, crtAttacker.getWidth(null), 8 * Display.INTERNAL_RES_FACTOR);
 
-        g.drawImage(mTargetWeapon,
-                68 * Display.INTERNAL_RES_FACTOR + mWeaponBoxWidth / 2 - mTargetWeapon.getWidth(null) / 2,
-                119 * Display.INTERNAL_RES_FACTOR + mWeaponBoxHeight / 2 - mTargetWeapon.getHeight(null) / 2);
+        g.drawImage(targetWeapon,
+                68 * Display.INTERNAL_RES_FACTOR + mWeaponBoxWidth / 2 - targetWeapon.getWidth(null) / 2,
+                119 * Display.INTERNAL_RES_FACTOR + mWeaponBoxHeight / 2 - targetWeapon.getHeight(null) / 2);
 
-        g.drawImage(mAttackerWeapon,
-                140 * Display.INTERNAL_RES_FACTOR + mWeaponBoxWidth / 2 - mAttackerWeapon.getWidth(null) / 2,
-                119 * Display.INTERNAL_RES_FACTOR + mWeaponBoxHeight / 2 - mAttackerWeapon.getHeight(null) / 2);
+        g.drawImage(attackerWeapon,
+                140 * Display.INTERNAL_RES_FACTOR + mWeaponBoxWidth / 2 - attackerWeapon.getWidth(null) / 2,
+                119 * Display.INTERNAL_RES_FACTOR + mWeaponBoxHeight / 2 - attackerWeapon.getHeight(null) / 2);
+
+        if (attackerWeaponImage != null) {
+            g.drawImage(attackerWeaponImage, 125 * Display.INTERNAL_RES_FACTOR, 117 * Display.INTERNAL_RES_FACTOR,
+                    attackerWeaponImage.getWidth(null) * Display.INTERNAL_RES_FACTOR,
+                    attackerWeaponImage.getHeight(null) * Display.INTERNAL_RES_FACTOR);
+        }
+        if (targetWeaponImage != null) {
+            g.drawImage(targetWeaponImage, 53 * Display.INTERNAL_RES_FACTOR, 117 * Display.INTERNAL_RES_FACTOR,
+                    targetWeaponImage.getWidth(null) * Display.INTERNAL_RES_FACTOR,
+                    targetWeaponImage.getHeight(null) * Display.INTERNAL_RES_FACTOR);
+        }
 
     }
 
@@ -149,6 +201,7 @@ public class BattleOverlay extends AScreenElement implements IRequireResources {
 
         if (mTarget.getEquippedWeapon().isPresent()) {
             weaponTarget = mTarget.getEquippedWeapon().get().getName();
+            mTargetWeaponImage = mTarget.getEquippedWeapon().get().getImage();
         }
         mTargetWeapon = Assets.getFor(EResource.REGULAR_FONT, weaponTarget);
 
@@ -156,6 +209,7 @@ public class BattleOverlay extends AScreenElement implements IRequireResources {
 
         if (mAttacker.getEquippedWeapon().isPresent()) {
             weaponAttacker = mAttacker.getEquippedWeapon().get().getName();
+            mAttackerWeaponImage = mAttacker.getEquippedWeapon().get().getImage();
         }
         mAttackerWeapon = Assets.getFor(EResource.REGULAR_FONT, weaponAttacker);
 
