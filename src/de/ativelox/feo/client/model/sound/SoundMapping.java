@@ -294,6 +294,15 @@ public class SoundMapping {
         case SWORD_SLASHING_AIR:
             fileName = "song202";
             break;
+        case SHORT_SWORD_SWINGING:
+            fileName = "song201";
+            break;
+        case SHORTER_SWORD_SWINGING:
+            fileName = "song200";
+            break;
+        case CRIT_HIT:
+            fileName = "song216";
+            break;
         default:
             break;
 

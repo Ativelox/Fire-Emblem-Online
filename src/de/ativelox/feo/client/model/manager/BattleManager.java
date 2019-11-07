@@ -1,7 +1,6 @@
 package de.ativelox.feo.client.model.manager;
 
 import java.awt.Image;
-import java.util.function.Function;
 
 import de.ativelox.feo.client.model.gfx.Assets;
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
@@ -11,16 +10,12 @@ import de.ativelox.feo.client.model.gfx.animation.EAnimationDirection;
 import de.ativelox.feo.client.model.gfx.animation.HpBarDepletionAnimation;
 import de.ativelox.feo.client.model.gfx.animation.HpDepletionAnimation;
 import de.ativelox.feo.client.model.gfx.animation.IAnimation;
-import de.ativelox.feo.client.model.gfx.animation.hook.AnimationHook;
-import de.ativelox.feo.client.model.gfx.animation.hook.NonBlockingSoundHook;
 import de.ativelox.feo.client.model.gfx.tile.ETileType;
 import de.ativelox.feo.client.model.property.EBattleAnimType;
-import de.ativelox.feo.client.model.property.EClass;
-import de.ativelox.feo.client.model.property.EGender;
 import de.ativelox.feo.client.model.property.ESide;
 import de.ativelox.feo.client.model.sound.EMusic;
-import de.ativelox.feo.client.model.sound.ESoundEffect;
 import de.ativelox.feo.client.model.sound.SoundPlayer;
+import de.ativelox.feo.client.model.unit.BattleAnimationMapper;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.Display;
@@ -69,24 +64,25 @@ public class BattleManager implements IBattleManager {
         mHpDepletionTarget = new HpDepletionAnimation(target.getCurrentHP(), 1, 1000, EAnimationDirection.FORWARD);
         mHpBarDepletionTarget = new HpBarDepletionAnimation(target.getMaximumHP(), target.getCurrentHP(), 1,
                 EAnimationDirection.FORWARD, 1000);
+
         mHpDepletionAttacker = new HpDepletionAnimation(attacker.getCurrentHP(), 0, 1000, EAnimationDirection.FORWARD);
         mHpBarDepletionAttacker = new HpBarDepletionAnimation(attacker.getMaximumHP(), attacker.getCurrentHP(), 0,
                 EAnimationDirection.FORWARD, 1000);
 
         if (range <= 1) {
-            attackerAnim = Assets.getFor(EResource.BATTLE_ANIMATION, EClass.SWORDMASTER.toString(),
-                    EGender.FEMALE.toString(), EBattleAnimType.MELEE_ATTACK.toString(), ESide.RIGHT.toString());
+            attackerAnim = BattleAnimationMapper.get(attacker, EBattleAnimType.MELEE_CRIT, ESide.RIGHT,
+                    mHpDepletionTarget, mHpBarDepletionTarget);
 
-            targetAnim = Assets.getFor(EResource.BATTLE_ANIMATION, EClass.SWORDMASTER.toString(),
-                    EGender.FEMALE.toString(), EBattleAnimType.MELEE_ATTACK.toString(), ESide.LEFT.toString());
+            targetAnim = BattleAnimationMapper.get(target, EBattleAnimType.MELEE_CRIT, ESide.LEFT, mHpDepletionAttacker,
+                    mHpBarDepletionAttacker);
 
             mBattlePlatform = Assets.getFor(EResource.BATTLE_PLATFORM_CLOSE, type.toString());
         } else {
-            attackerAnim = Assets.getFor(EResource.BATTLE_ANIMATION, EClass.SWORDMASTER.toString(),
-                    EGender.FEMALE.toString(), EBattleAnimType.RANGED_ATTACK.toString(), ESide.RIGHT.toString());
+            attackerAnim = BattleAnimationMapper.get(attacker, EBattleAnimType.RANGED_ATTACK, ESide.RIGHT,
+                    mHpDepletionTarget, mHpBarDepletionTarget);
 
-            targetAnim = Assets.getFor(EResource.BATTLE_ANIMATION, EClass.SWORDMASTER.toString(),
-                    EGender.FEMALE.toString(), EBattleAnimType.RANGED_ATTACK.toString(), ESide.LEFT.toString());
+            targetAnim = BattleAnimationMapper.get(target, EBattleAnimType.RANGED_ATTACK, ESide.LEFT,
+                    mHpDepletionAttacker, mHpBarDepletionAttacker);
 
             attackerAnim.setX(30 * Display.INTERNAL_RES_FACTOR);
             targetAnim.setX(-30 * Display.INTERNAL_RES_FACTOR);
@@ -106,24 +102,6 @@ public class BattleManager implements IBattleManager {
         mHpDepletionAttacker.setY(137 * Display.INTERNAL_RES_FACTOR);
         mHpBarDepletionAttacker.setX(150 * Display.INTERNAL_RES_FACTOR);
         mHpBarDepletionAttacker.setY(140 * Display.INTERNAL_RES_FACTOR);
-
-        final Function<TimeSnapshot, Boolean> hook = new AnimationHook(mHpDepletionTarget);
-        final Function<TimeSnapshot, Boolean> barHook = new AnimationHook(mHpBarDepletionTarget);
-
-        final Function<TimeSnapshot, Boolean> hook2 = new AnimationHook(mHpDepletionAttacker);
-        final Function<TimeSnapshot, Boolean> barHook2 = new AnimationHook(mHpBarDepletionAttacker);
-
-        attackerAnim.addHook(15, barHook);
-        attackerAnim.addHook(15, hook);
-        attackerAnim.addHook(14, new NonBlockingSoundHook(ESoundEffect.SWORD_SLASHING_AIR));
-        attackerAnim.addHook(15, new NonBlockingSoundHook(ESoundEffect.NORMAL_HIT));
-        attackerAnim.addHook(34, new NonBlockingSoundHook(ESoundEffect.HEAVY_STEPPING));
-
-        targetAnim.addHook(15, hook2);
-        targetAnim.addHook(15, barHook2);
-        targetAnim.addHook(14, new NonBlockingSoundHook(ESoundEffect.SWORD_SLASHING_AIR));
-        targetAnim.addHook(15, new NonBlockingSoundHook(ESoundEffect.NORMAL_HIT));
-        targetAnim.addHook(34, new NonBlockingSoundHook(ESoundEffect.HEAVY_STEPPING));
 
         SoundPlayer.get().play(EMusic.ARENA_BATTLE);
 

@@ -16,6 +16,7 @@ import de.ativelox.feo.client.model.property.EAffiliation;
 import de.ativelox.feo.client.model.property.EClass;
 import de.ativelox.feo.client.model.property.EDirection;
 import de.ativelox.feo.client.model.property.EGender;
+import de.ativelox.feo.client.model.property.EUnit;
 import de.ativelox.feo.client.model.property.ICanMove;
 import de.ativelox.feo.client.model.property.IRequireResources;
 import de.ativelox.feo.client.model.property.callback.IMoveListener;
@@ -66,11 +67,15 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
 
     private IWeapon mCurrentlyEquipped;
 
-    public DummyUnit(int x, int y, int movement, EGender gender, EClass unitClass, String name,
+    private EUnit mUnit;
+
+    public DummyUnit(int x, int y, int movement, EUnit unit, EGender gender, EClass unitClass, String name,
             EAffiliation affiliation) {
         super(Tile.WIDTH * x, Tile.HEIGHT * y, Tile.WIDTH, Tile.HEIGHT);
 
         mInventory = new Inventory();
+
+        mUnit = unit;
 
         mName = name;
 
@@ -380,5 +385,20 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
         if (getInventory().getWeapons(w -> w == weapon).size() > 0) {
             mCurrentlyEquipped = weapon;
         }
+    }
+
+    @Override
+    public EGender getGender() {
+        return mGender;
+    }
+
+    @Override
+    public EClass getCurrentClass() {
+        return mClass;
+    }
+
+    @Override
+    public EUnit getUnit() {
+        return mUnit;
     }
 }

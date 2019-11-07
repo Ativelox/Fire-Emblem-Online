@@ -10,6 +10,8 @@ import de.ativelox.feo.client.model.property.IConfirmable;
 import de.ativelox.feo.client.model.property.callback.IActionListener;
 import de.ativelox.feo.client.model.property.callback.IConfirmListener;
 import de.ativelox.feo.client.model.property.callback.IMovementListener;
+import de.ativelox.feo.client.model.sound.ESoundEffect;
+import de.ativelox.feo.client.model.sound.SoundPlayer;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.element.generic.AButtonElement;
 import de.ativelox.feo.client.view.element.generic.ImageElement;
@@ -106,6 +108,8 @@ public class MainMenuScreen implements IScreen, IConfirmListener {
     @Override
     public void onConfirm(IConfirmable confirmable) {
         if (confirmable instanceof AButtonElement) {
+            SoundPlayer.get().play(ESoundEffect.WINDOW_ACCEPT);
+
             switch (((AButtonElement) confirmable).getText()) {
             case NEW_GAME:
                 mController.onNewGameButtonPressed();

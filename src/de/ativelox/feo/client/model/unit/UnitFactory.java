@@ -21,9 +21,9 @@ public class UnitFactory {
 
         switch (unit) {
         case FIR:
-            return new DummyUnit(x, y, 5, EGender.FEMALE, EClass.SWORDMASTER, "Fir", affiliation);
+            return new DummyUnit(x, y, 5, unit, EGender.FEMALE, EClass.SWORDMASTER, "Fir", affiliation);
         case ROY:
-            return new DummyUnit(x, y, 5, EGender.MALE, EClass.LORD_ROY, "Roy", affiliation);
+            return new DummyUnit(x, y, 5, unit, EGender.MALE, EClass.LORD_ROY, "Roy", affiliation);
         default:
             Logger.get().log(ELogType.ERROR, "Unknown/Unsupported unit: " + unit);
             break;

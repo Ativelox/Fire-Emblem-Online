@@ -125,6 +125,10 @@ public class SpriteSheet {
             int columns = (int) Math.ceil(Math.sqrt(amount));
             int rows = (int) Math.floor(Math.sqrt(amount));
 
+            if (amount > columns * rows) {
+                rows = (int) Math.ceil(Math.sqrt(amount));
+            }
+
             if (amount < 4) {
                 columns = 2;
                 rows = 2;
