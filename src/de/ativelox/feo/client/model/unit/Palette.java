@@ -13,8 +13,6 @@ import java.util.Map;
 import de.ativelox.feo.client.model.gfx.Assets;
 import de.ativelox.feo.client.model.gfx.EResource;
 import de.ativelox.feo.client.model.gfx.animation.IAnimation;
-import de.ativelox.feo.client.model.property.EClass;
-import de.ativelox.feo.client.model.property.EUnit;
 import de.ativelox.feo.logging.ELogType;
 import de.ativelox.feo.logging.Logger;
 
@@ -41,7 +39,7 @@ public class Palette {
     public static Map<Integer, Integer> VIOLET_GRAY;
     public static Map<Integer, Integer> GRAY_VIOLET;
 
-    private static Map<EUnit, Map<EClass, Map<Integer, Integer>>> UNIT_PALETTE;
+    private static Map<String, Map<Integer, Integer>> UNIT_PALETTE;
 
     public static void init() {
         BLUE_RED = new HashMap<>();
@@ -116,22 +114,18 @@ public class Palette {
         }
     }
 
-    private static boolean ensurePaletteExistence(EUnit unit, EClass unitClass) {
-        if (UNIT_PALETTE.containsKey(unit) && UNIT_PALETTE.get(unit).containsKey(unitClass)) {
+    private static boolean ensurePaletteExistence(String paletteName) {
+        if (UNIT_PALETTE.containsKey(paletteName)) {
             return true;
         }
 
-        if (!UNIT_PALETTE.containsKey(unit)) {
-            UNIT_PALETTE.put(unit, new HashMap<>());
-        }
-        if (!UNIT_PALETTE.get(unit).containsKey(unitClass)) {
-            UNIT_PALETTE.get(unit).put(unitClass, new HashMap<>());
+        if (!UNIT_PALETTE.containsKey(paletteName)) {
+            UNIT_PALETTE.put(paletteName, new HashMap<>());
         }
 
-        Path path = UNIT_PALETTE_PATH
-                .resolve(unit.toString().toLowerCase() + "_" + unitClass.toString().toLowerCase() + ".up");
+        Path path = UNIT_PALETTE_PATH.resolve(paletteName);
 
-        if (!Files.exists(path)) {
+        if (!Files.exists(path) || paletteName.isEmpty()) {
             return false;
         }
 
@@ -152,7 +146,7 @@ public class Palette {
                         Integer.parseInt(genericColor[2]));
                 Color newOne = new Color(Integer.parseInt(newColor[0]), Integer.parseInt(newColor[1]),
                         Integer.parseInt(newColor[2]));
-                UNIT_PALETTE.get(unit).get(unitClass).put(generic.getRGB(), newOne.getRGB());
+                UNIT_PALETTE.get(paletteName).put(generic.getRGB(), newOne.getRGB());
                 i++;
 
             }
@@ -164,12 +158,12 @@ public class Palette {
 
     }
 
-    public static Map<Integer, Integer> getUnitPalette(EUnit unit, EClass unitClass) {
-        if (!ensurePaletteExistence(unit, unitClass)) {
+    public static Map<Integer, Integer> getUnitPalette(String paletteName) {
+        if (!ensurePaletteExistence(paletteName)) {
             return new HashMap<>();
         }
 
-        return UNIT_PALETTE.get(unit).get(unitClass);
+        return UNIT_PALETTE.get(paletteName);
     }
 
     private Palette() {

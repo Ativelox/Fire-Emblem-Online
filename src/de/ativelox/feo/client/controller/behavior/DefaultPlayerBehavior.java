@@ -94,7 +94,12 @@ public class DefaultPlayerBehavior implements IBehavior {
 
         }
 
-        if (unit.isWaiting() || mPathRoutine.isActive()) {
+        if (unit.isWaiting()) {
+            return;
+        }
+        if (mPathRoutine.isActive()) {
+            mPathRoutine.updateCursorLocation(unit);
+            this.onConfirm();
             return;
         }
         SoundPlayer.get().play(ESoundEffect.MOVEMENT_RANGE);
@@ -294,5 +299,27 @@ public class DefaultPlayerBehavior implements IBehavior {
         mController.attackFinished();
         this.onWaitAction();
 
+    }
+
+    @Override
+    public void onInventoryOpenAction() {
+        if(!mIsOnTurn) {
+            return;
+        }
+        SoundPlayer.get().play(ESoundEffect.WINDOW_ACCEPT);
+
+        mController.showInventory(mPathRoutine.getActor());
+        
+    }
+
+    @Override
+    public void onInventoryCancel() {
+        if(!mIsOnTurn) {
+            return;
+        }
+        SoundPlayer.get().play(ESoundEffect.WINDOW_CANCELED);
+
+        mController.removeInventory();
+        
     }
 }

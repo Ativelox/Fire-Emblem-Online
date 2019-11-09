@@ -49,8 +49,6 @@ public class CameraScreenManager implements IScreenManager {
     private final java.util.Map<DepthBufferedGraphics, AffineTransform> mGraphicsMapping;
     private final List<DepthBufferedGraphics> mGraphics;
 
-//    private final DepthBufferedGraphics mGraphics;
-
     private final InputManager mInputManager;
 
     private final Display mDisplay;

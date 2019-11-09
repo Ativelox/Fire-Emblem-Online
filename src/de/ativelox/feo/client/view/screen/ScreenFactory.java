@@ -1,5 +1,6 @@
 package de.ativelox.feo.client.view.screen;
 
+import de.ativelox.feo.client.controller.input.InputManager;
 import de.ativelox.feo.client.view.screen.game.BattleScreen;
 import de.ativelox.feo.client.view.screen.game.IBattleScreen;
 
@@ -13,8 +14,8 @@ public class ScreenFactory {
 
     }
 
-    public static IBattleScreen createBattleScreen() {
-        return new BattleScreen();
+    public static IBattleScreen createBattleScreen(InputManager im) {
+        return new BattleScreen(im);
 
     }
 }

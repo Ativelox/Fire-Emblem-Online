@@ -159,4 +159,10 @@ public class HpDepletionAnimation implements IRequireResources, IAnimation {
         return mUnderlyingAnimation.isHidden();
 
     }
+
+    @Override
+    public void addEndHook(Function<TimeSnapshot, Boolean> hook) {
+        mUnderlyingAnimation.addEndHook(hook);
+
+    }
 }

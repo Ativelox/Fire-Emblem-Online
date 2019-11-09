@@ -25,12 +25,15 @@ public class Weapon implements IWeapon {
     private final int mWeight;
 
     private final EDamageType mDamageType;
+    
+    private int mCurrentDurability;
 
     private final Image mImage;
 
     public Weapon(String name, int durability, int range, int crit, int might, int accurracy, int weight,
             EDamageType damageType, Image image) {
 
+        mCurrentDurability = durability;
         mName = name;
         mDurability = durability;
         mRange = range;
@@ -50,7 +53,7 @@ public class Weapon implements IWeapon {
 
     @Override
     public int getCurrentDurability() {
-        return 0;
+        return mCurrentDurability;
     }
 
     @Override

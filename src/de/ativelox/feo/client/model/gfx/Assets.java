@@ -35,13 +35,11 @@ import de.ativelox.feo.client.model.gfx.tile.TileSet;
 import de.ativelox.feo.client.model.gfx.tile.editor.EditorTile;
 import de.ativelox.feo.client.model.gfx.tile.editor.EditorTileSet;
 import de.ativelox.feo.client.model.property.EBattleAnimType;
-import de.ativelox.feo.client.model.property.EClass;
-import de.ativelox.feo.client.model.property.EGender;
 import de.ativelox.feo.client.model.property.EIndicatorDirection;
 import de.ativelox.feo.client.model.property.EPlatformDistance;
 import de.ativelox.feo.client.model.property.ESide;
-import de.ativelox.feo.client.model.property.EUnit;
 import de.ativelox.feo.client.model.property.IRequireResource;
+import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.unit.Palette;
 import de.ativelox.feo.client.model.util.SplitBuilder;
 import de.ativelox.feo.client.model.util.SpriteSheet;
@@ -102,6 +100,8 @@ public class Assets {
     private static final String BATTLE_PREVIEW_NAME = "battle_preview.png";
     private static final String BATTLE_BACKGROUND_NAME = "battle_screen.png";
     private static final String HP_BAR_NAME = "hp_bar.png";
+    private static final String DIALOGUE_MAIN_NAME = "dialogue_main.png";
+    private static final String DIALOGUE_CONTINUE_NAME = "dialogue_continue.png";
 
     private static Font DIALOGUE_FONT;
 
@@ -203,55 +203,16 @@ public class Assets {
         } catch (FontFormatException | IOException e) {
             Logger.get().logError(e);
         }
-
-//        Optional<BufferedImage> swordmasterFMeleeRegular = SpriteSheet
-//                .load(Paths.get("res", "fe6", "melee_attack", "swordmaster_f.png"));
-//
-//        SWORDMASTER_F_MELEE_ATTACK = new DefaultNonLoopingAnimation(
-//                SpriteSheet.split(swordmasterFMeleeRegular.get(), 240, 160, 39, 0, 7, 7, 7, 7, 7, 4),
-//                EAnimationDirection.FORWARD, 3000);
-//
-//        Optional<BufferedImage> swordmasterFMeleeCrit = SpriteSheet
-//                .load(Paths.get("res", "fe6", "melee_crit", "swordmaster_f.png"));
-//
-//        SWORDMASTER_F_MELEE_CRIT = new DefaultNonLoopingAnimation(
-//                SpriteSheet.split(swordmasterFMeleeCrit.get(), 240, 160, 82, 0, 10, 10, 10, 10, 10, 10, 10, 10, 2),
-//                EAnimationDirection.FORWARD, 6000);
-//
-//        Optional<BufferedImage> swordmasterFRangedRegular = SpriteSheet
-//                .load(Paths.get("res", "fe6", "ranged_attack", "swordmaster_f.png"));
-//
-//        SWORDMASTER_F_RANGED_ATTACK = new DefaultNonLoopingAnimation(
-//                SpriteSheet.split(swordmasterFRangedRegular.get(), 240, 160, 5, 0, 3, 2), EAnimationDirection.FORWARD,
-//                1000);
-//
-//        Optional<BufferedImage> swordmasterFRangedCrit = SpriteSheet
-//                .load(Paths.get("res", "fe6", "ranged_crit", "swordmaster_f.png"));
-//
-//        SWORDMASTER_F_RANGED_CRIT = new DefaultNonLoopingAnimation(
-//                SpriteSheet.split(swordmasterFRangedCrit.get(), 240, 160, 12, 0, 4, 4, 4), EAnimationDirection.FORWARD,
-//                2000);
-//
-//        Optional<BufferedImage> swordmasterFDodge = SpriteSheet
-//                .load(Paths.get("res", "fe6", "dodge", "swordmaster_f.png"));
-//
-//        SWORDMASTER_F_DODGE = new DefaultNonLoopingAnimation(
-//                SpriteSheet.split(swordmasterFDodge.get(), 240, 160, 3, 0, 2, 1), EAnimationDirection.FORWARD, 700);
-//
-//        Optional<BufferedImage> tileset = SpriteSheet.load(Paths.get("res", "fe6", "map", "tileset", "fields.png"));
-//
-//        TILES = SpriteSheet.split(tileset.get(), 16, 16, 1024, 0);
-
         isInit = true;
     }
 
-    public static <T> T getFor(IRequireResource<T> requester, String... additionalInfo) {
+    public static <T> T getFor(IRequireResource<T> requester, Object... additionalInfo) {
         return getFor(requester.getResourceTypes(), additionalInfo);
 
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T getFor(EResource resource, String... additionalInfo) {
+    public static <T> T getFor(EResource resource, Object... additionalInfo) {
         T result = null;
 
         // TODO: in general better handling of passing possibly empty optionals. maybee
@@ -265,7 +226,7 @@ public class Assets {
 
         case MAP:
             try {
-                List<String> lines = Files.readAllLines(MAP_PATH.resolve(additionalInfo[0]));
+                List<String> lines = Files.readAllLines(MAP_PATH.resolve((String) additionalInfo[0]));
                 String[] header = lines.remove(0).split("\t");
                 int columns = Integer.parseInt(header[0]);
                 int rows = Integer.parseInt(header[1]);
@@ -302,7 +263,7 @@ public class Assets {
                     .setDirectProcessing(new TightWidthFit(11063456)).setDimensions(15, 15, 15, 15, 11).apply(sheet);
             List<Image> relevant = new ArrayList<>();
 
-            for (final char c : additionalInfo[0].toCharArray()) {
+            for (final char c : ((String) additionalInfo[0]).toCharArray()) {
                 String asString = Character.toString(c);
                 if (INDEX_MAPPING.containsKey(asString)) {
                     relevant.add(loaded[INDEX_MAPPING.get(asString)]);
@@ -312,7 +273,7 @@ public class Assets {
             }
 
             result = (T) SpriteSheet.stitchHorizontally(relevant);
-            REGULAR_FONT_CACHE.put(additionalInfo[0], (Image) result);
+            REGULAR_FONT_CACHE.put((String) additionalInfo[0], (Image) result);
             break;
 
         case SYSTEM_SELECTOR_LEFT:
@@ -324,28 +285,28 @@ public class Assets {
             break;
 
         case MAP_HOVER:
-            BufferedImage hoverSheet = SpriteSheet.load(HOVER_MAP_PATH.resolve(additionalInfo[0])).get();
+            BufferedImage hoverSheet = SpriteSheet.load(HOVER_MAP_PATH.resolve((String) additionalInfo[0])).get();
             BufferedImage[] animationSequence = SpriteSheet.split(hoverSheet, 16, 16, 3, 0, 1, 1, 1);
             result = (T) new DefaultLoopingAnimation(animationSequence, EAnimationDirection.FORWARD_BACKWARD, 1000,
                     16 * Display.INTERNAL_RES_FACTOR, 16 * Display.INTERNAL_RES_FACTOR);
             break;
 
         case MAP_MOVE_RIGHT:
-            BufferedImage moveRightSheet = SpriteSheet.load(MOVE_MAP_PATH.resolve(additionalInfo[0])).get();
+            BufferedImage moveRightSheet = SpriteSheet.load(MOVE_MAP_PATH.resolve((String) additionalInfo[0])).get();
             BufferedImage[] rightSequence = SpriteSheet.split(moveRightSheet, 32, 32, 4, 0, 1, 1, 1, 1);
             result = (T) new UnitMovementAnimation(rightSequence, EAnimationDirection.FORWARD, 1000,
                     32 * Display.INTERNAL_RES_FACTOR, 32 * Display.INTERNAL_RES_FACTOR);
             break;
 
         case MAP_MOVE_LEFT:
-            BufferedImage moveLeftSheet = SpriteSheet.load(MOVE_MAP_PATH.resolve(additionalInfo[0])).get();
+            BufferedImage moveLeftSheet = SpriteSheet.load(MOVE_MAP_PATH.resolve((String) additionalInfo[0])).get();
             BufferedImage[] sequenceLeft = SpriteSheet.split(moveLeftSheet, 32, 32, 4, 0, 0, 0, 0, 0, 1, 1, 1, 1);
             result = (T) new UnitMovementAnimation(sequenceLeft, EAnimationDirection.FORWARD, 1000,
                     32 * Display.INTERNAL_RES_FACTOR, 32 * Display.INTERNAL_RES_FACTOR);
             break;
 
         case MAP_MOVE_DOWN:
-            BufferedImage moveDownSheet = SpriteSheet.load(MOVE_MAP_PATH.resolve(additionalInfo[0])).get();
+            BufferedImage moveDownSheet = SpriteSheet.load(MOVE_MAP_PATH.resolve((String) additionalInfo[0])).get();
             BufferedImage[] downSequence = SpriteSheet.split(moveDownSheet, 32, 32, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
                     1, 1);
             result = (T) new UnitMovementAnimation(downSequence, EAnimationDirection.FORWARD, 1000,
@@ -353,7 +314,7 @@ public class Assets {
             break;
 
         case MAP_MOVE_UP:
-            BufferedImage moveUpShet = SpriteSheet.load(MOVE_MAP_PATH.resolve(additionalInfo[0])).get();
+            BufferedImage moveUpShet = SpriteSheet.load(MOVE_MAP_PATH.resolve((String) additionalInfo[0])).get();
             BufferedImage[] upSequence = SpriteSheet.split(moveUpShet, 32, 32, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     1, 1, 1, 1);
             result = (T) new UnitMovementAnimation(upSequence, EAnimationDirection.FORWARD, 1000,
@@ -361,7 +322,7 @@ public class Assets {
             break;
 
         case MAP_SELECTION:
-            BufferedImage selectionSheet = SpriteSheet.load(MOVE_MAP_PATH.resolve(additionalInfo[0])).get();
+            BufferedImage selectionSheet = SpriteSheet.load(MOVE_MAP_PATH.resolve((String) additionalInfo[0])).get();
             BufferedImage[] selectionSequence = SpriteSheet.split(selectionSheet, 32, 32, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1);
             result = (T) new UnitMovementAnimation(selectionSequence, EAnimationDirection.FORWARD_BACKWARD, 700,
@@ -387,7 +348,7 @@ public class Assets {
         case MAP_INDICATOR:
             BufferedImage mapIndicatorSheet = SpriteSheet.load(SYSTEM_PATH.resolve(MAP_INDICATOR_NAME)).get();
             BufferedImage[] mapIndicatorSequence = SpriteSheet.split(mapIndicatorSheet, 16, 16, 16, 0, 16);
-            EIndicatorDirection direction = EIndicatorDirection.valueOf(additionalInfo[0]);
+            EIndicatorDirection direction = (EIndicatorDirection) additionalInfo[0];
 
             Image tempResult = null;
 
@@ -459,7 +420,7 @@ public class Assets {
             break;
 
         case PORTRAIT:
-            BufferedImage portraitSheet = SpriteSheet.load(PORTRAIT_PATH.resolve(additionalInfo[0])).get();
+            BufferedImage portraitSheet = SpriteSheet.load(PORTRAIT_PATH.resolve((String) additionalInfo[0])).get();
             result = (T) SpriteSheet.split(portraitSheet, 96, 80, 1, 0, 1)[0];
             break;
 
@@ -493,7 +454,7 @@ public class Assets {
             break;
 
         case PALETTE:
-            result = (T) SpriteSheet.load(PALETTE_PATH.resolve(additionalInfo[0])).get();
+            result = (T) SpriteSheet.load(PALETTE_PATH.resolve((String) additionalInfo[0])).get();
             break;
 
         case BATTLE_PREVIEW:
@@ -501,9 +462,9 @@ public class Assets {
             break;
 
         case BATTLE_PLATFORM_WIDE:
-            BufferedImage widePlatformTexture = getBattlePlatformTexture(ETileType.valueOf(additionalInfo[0])).get();
+            BufferedImage widePlatformTexture = getBattlePlatformTexture((ETileType) additionalInfo[0]).get();
 
-            switch (ESide.valueOf(additionalInfo[1])) {
+            switch ((ESide) additionalInfo[1]) {
             case LEFT:
                 result = (T) SpriteSheet.generatePlatform(widePlatformTexture, EPlatformDistance.WIDE_LEFT);
                 break;
@@ -518,7 +479,7 @@ public class Assets {
             break;
 
         case BATTLE_PLATFORM_CLOSE:
-            BufferedImage closePlatformTexture = getBattlePlatformTexture(ETileType.valueOf(additionalInfo[0])).get();
+            BufferedImage closePlatformTexture = getBattlePlatformTexture((ETileType) additionalInfo[0]).get();
             result = (T) SpriteSheet.generatePlatform(closePlatformTexture, EPlatformDistance.CLOSE);
             break;
 
@@ -527,47 +488,41 @@ public class Assets {
             break;
 
         case BATTLE_ANIMATION:
-            // 0: class
-            // 1. gender
             // 2: animation type (dodge, crit, normal, ranged, ...)
             // 3: side (left, right)
-            EClass unitClass = EClass.valueOf(additionalInfo[0]);
-            EGender gender = EGender.valueOf(additionalInfo[1]);
-            EBattleAnimType animType = EBattleAnimType.valueOf(additionalInfo[2]);
-            ESide side = ESide.valueOf(additionalInfo[3]);
-            EUnit unit = EUnit.valueOf(additionalInfo[4]);
+            EBattleAnimType animType = (EBattleAnimType) additionalInfo[0];
+            ESide side = (ESide) additionalInfo[1];
+            IUnit unit = (IUnit) additionalInfo[2];
 
             Path path = null;
 
             switch (animType) {
             case DODGE:
-                path = DODGE_PATH;
+                path = DODGE_PATH.resolve(unit.getBattleAnimation(animType));
                 break;
             case MELEE_ATTACK:
-                path = MELEE_ATTACK_PATH;
+                path = MELEE_ATTACK_PATH.resolve(unit.getBattleAnimation(animType));
                 break;
             case MELEE_CRIT:
-                path = MELEE_CRIT_PATH;
+                path = MELEE_CRIT_PATH.resolve(unit.getBattleAnimation(animType));
                 break;
             case RANGED_ATTACK:
-                path = RANGED_ATTACK_PATH;
+                path = RANGED_ATTACK_PATH.resolve(unit.getBattleAnimation(animType));
                 break;
             case RANGED_CRIT:
-                path = RANGED_CRIT_PATH;
+                path = RANGED_CRIT_PATH.resolve(unit.getBattleAnimation(animType));
                 break;
             case STALE:
-                path = MELEE_ATTACK_PATH;
+                path = MELEE_ATTACK_PATH.resolve(unit.getBattleAnimation(EBattleAnimType.MELEE_ATTACK));
                 break;
             default:
                 Logger.get().log(ELogType.ERROR, "Couldn't parse the following animation type: " + animType);
                 break;
 
             }
-            path = path.resolve(unitClass.toString().toLowerCase() + "_"
-                    + gender.toString().toLowerCase().substring(0, 1) + ".png");
 
             BufferedImage animationSheet = SpriteSheet.load(path).get();
-            SpriteSheet.convertAll(animationSheet, Palette.getUnitPalette(unit, unitClass));
+            SpriteSheet.convertAll(animationSheet, Palette.getUnitPalette(unit.getBattlePaletteName()));
             BufferedImage[] splitAnimation = null;
 
             if (animType == EBattleAnimType.STALE) {
@@ -606,7 +561,22 @@ public class Assets {
             break;
 
         case WEAPON_IMAGE:
-            result = (T) SpriteSheet.load(WEAPON_PATH.resolve(additionalInfo[0])).get();
+            result = (T) SpriteSheet.load(WEAPON_PATH.resolve((String) additionalInfo[0])).get();
+            break;
+
+        case DIALOGUE_MAIN:
+            BufferedImage dialogue = SpriteSheet.load(SYSTEM_PATH.resolve(DIALOGUE_MAIN_NAME)).get();
+            result = (T) SpriteSheet.applyTransparency(dialogue, 240,
+                    new boolean[dialogue.getWidth() * dialogue.getHeight()]);
+
+            break;
+
+        case DIALOGUE_CONTINUE:
+            BufferedImage continueSheet = SpriteSheet.load(SYSTEM_PATH.resolve(DIALOGUE_CONTINUE_NAME)).get();
+
+            result = (T) new DefaultLoopingAnimation(SpriteSheet.split(continueSheet, 8, 12, 3, 0, 3),
+                    EAnimationDirection.FORWARD_BACKWARD, 500, 8 * Display.INTERNAL_RES_FACTOR,
+                    12 * Display.INTERNAL_RES_FACTOR);
             break;
 
         default:

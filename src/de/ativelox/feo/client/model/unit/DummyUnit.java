@@ -13,6 +13,7 @@ import de.ativelox.feo.client.model.gfx.SpatialObject;
 import de.ativelox.feo.client.model.gfx.animation.IAnimation;
 import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.property.EAffiliation;
+import de.ativelox.feo.client.model.property.EBattleAnimType;
 import de.ativelox.feo.client.model.property.EClass;
 import de.ativelox.feo.client.model.property.EDirection;
 import de.ativelox.feo.client.model.property.EGender;
@@ -26,6 +27,8 @@ import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 import de.ativelox.feo.client.model.util.IMoveRoutine;
 import de.ativelox.feo.client.model.util.SmoothMoveRoutine;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
+import de.ativelox.feo.logging.ELogType;
+import de.ativelox.feo.logging.Logger;
 import de.zabuza.maglev.external.algorithms.EdgeCost;
 import de.zabuza.maglev.external.graph.Edge;
 
@@ -87,10 +90,64 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     private double mGrowthDef;
     private double mGrowthRes;
 
+    private String mHoverSheetName;
+    private String mPortraitSheetName;
+    private String mMoveSheetName;
+
+    private String mMeleeAttackSheetName;
+    private String mMeleeCritSheetName;
+    private String mRangedAttackSheetName;
+    private String mRangedCritSheetName;
+    private String mDodgeSheetName;
+
+    private String mBattlePaletteName;
+    private String mAnimationHookName;
+
+    private final String mDeathQuote;
+
+    private boolean mIsCommander;
+
+    private String mCommanderAttackedQuote;
+
+    public DummyUnit(UnitProperties properties) {
+        this(0, 0, EAffiliation.ALLIED, properties);
+    }
+
+    public DummyUnit(int x, int y, EAffiliation affiliation, UnitProperties properties) {
+        this(x, y, properties.getUnit(), properties.getGender(), properties.getUnitClass(), properties.getName(),
+                affiliation, properties.getMov(), properties.getHp(), properties.getStr(), properties.getSkl(),
+                properties.getSkl(), properties.getLck(), properties.getDef(), properties.getRes(),
+                properties.getGrowthHp(), properties.getGrowthStr(), properties.getGrowthSkl(),
+                properties.getGrowthSpd(), properties.getGrowthLck(), properties.getGrowthDef(),
+                properties.getGrowthRes(), properties.getHoverSheetName(), properties.getMeleeAttackSheetName(),
+                properties.getRangedAttackSheetName(), properties.getMeleeCritSheetName(),
+                properties.getRangedCritSheetName(), properties.getDodgeSheetName(), properties.getPortraitSheetName(),
+                properties.getMoveSheetName(), properties.getBattlePaletteName(), properties.getAnimationHookName(),
+                properties.getDeathQuote(), properties.getCommanderAttackedQuote());
+    }
+
     public DummyUnit(int x, int y, EUnit unit, EGender gender, EClass unitClass, String name, EAffiliation affiliation,
             int mov, int hp, int str, int skl, int spd, int lck, int def, int res, double growthHp, double growthStr,
-            double growthSkl, double growthSpd, double growthLck, double growthDef, double growthRes) {
+            double growthSkl, double growthSpd, double growthLck, double growthDef, double growthRes,
+            String hoverSheetName, String meleeAttackSheetName, String rangedAttackSheetName, String meleeCritSheetName,
+            String rangedCritSheetName, String dodgeSheetName, String portraitSheetName, String moveSheetName,
+            String battlePaletteName, String animationHookName, String deathQuote, String commanderAttackedQuote) {
         super(Tile.WIDTH * x, Tile.HEIGHT * y, Tile.WIDTH, Tile.HEIGHT);
+
+        mCommanderAttackedQuote = commanderAttackedQuote;
+
+        mDeathQuote = deathQuote;
+
+        mHoverSheetName = hoverSheetName;
+        mPortraitSheetName = portraitSheetName;
+        mMoveSheetName = moveSheetName;
+        mMeleeAttackSheetName = meleeAttackSheetName;
+        mMeleeCritSheetName = meleeCritSheetName;
+        mRangedAttackSheetName = rangedAttackSheetName;
+        mRangedCritSheetName = rangedCritSheetName;
+        mDodgeSheetName = dodgeSheetName;
+        mBattlePaletteName = battlePaletteName;
+        mAnimationHookName = animationHookName;
 
         mMov = mov;
         mCurrentHp = hp;
@@ -145,21 +202,12 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
 
     @Override
     public void load() {
-        String suffix = "";
-        if (mGender == EGender.MALE) {
-            suffix = "_m.png";
-        } else {
-            suffix = "_f.png";
-        }
-
-        String dataName = mClass.toString().toLowerCase() + suffix;
-
-        mHover = Assets.getFor(EResource.MAP_HOVER, dataName);
-        mMoveRight = Assets.getFor(EResource.MAP_MOVE_RIGHT, dataName);
-        mMoveLeft = Assets.getFor(EResource.MAP_MOVE_LEFT, dataName);
-        mMoveUp = Assets.getFor(EResource.MAP_MOVE_UP, dataName);
-        mMoveDown = Assets.getFor(EResource.MAP_MOVE_DOWN, dataName);
-        mSelection = Assets.getFor(EResource.MAP_SELECTION, dataName);
+        mHover = Assets.getFor(EResource.MAP_HOVER, mHoverSheetName);
+        mMoveRight = Assets.getFor(EResource.MAP_MOVE_RIGHT, mMoveSheetName);
+        mMoveLeft = Assets.getFor(EResource.MAP_MOVE_LEFT, mMoveSheetName);
+        mMoveUp = Assets.getFor(EResource.MAP_MOVE_UP, mMoveSheetName);
+        mMoveDown = Assets.getFor(EResource.MAP_MOVE_DOWN, mMoveSheetName);
+        mSelection = Assets.getFor(EResource.MAP_SELECTION, mMoveSheetName);
 
         mCurrentAnimation = mHover;
 
@@ -178,7 +226,7 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
 
         }
 
-        mPortrait = Assets.getFor(EResource.PORTRAIT, mName.toLowerCase() + ".png");
+        mPortrait = Assets.getFor(EResource.PORTRAIT, mPortraitSheetName);
     }
 
     @Override
@@ -438,5 +486,56 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     public void removeHp(int hp) {
         mCurrentHp -= hp;
 
+    }
+
+    @Override
+    public String getBattleAnimation(EBattleAnimType type) {
+        switch (type) {
+        case DODGE:
+            return mDodgeSheetName;
+        case MELEE_ATTACK:
+            return mMeleeAttackSheetName;
+        case MELEE_CRIT:
+            return mMeleeCritSheetName;
+        case RANGED_ATTACK:
+            return mRangedAttackSheetName;
+        case RANGED_CRIT:
+            return mRangedCritSheetName;
+        default:
+            Logger.get().log(ELogType.ERROR, "No sheet found for the type: " + type);
+            break;
+
+        }
+        return "";
+    }
+
+    @Override
+    public String getBattlePaletteName() {
+        return mBattlePaletteName;
+    }
+
+    @Override
+    public String getAnimationHookName() {
+        return mAnimationHookName;
+    }
+
+    @Override
+    public String getDeathQuote() {
+        return mDeathQuote;
+    }
+
+    @Override
+    public boolean isCommander() {
+        return mIsCommander;
+    }
+
+    @Override
+    public void setToCommander() {
+        mIsCommander = true;
+    }
+
+    @Override
+    public String getCommanderAttackedQuote() {
+        return mCommanderAttackedQuote;
     }
 }

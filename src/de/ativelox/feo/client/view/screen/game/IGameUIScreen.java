@@ -37,6 +37,10 @@ public interface IGameUIScreen extends IScreen {
     public void displayWeaponSelection(IUnit unit, Collection<IWeapon> eligible);
 
     public void removeWeaponSelection();
+    
+    public void displayInventory(IUnit unit);
+    
+    public void removeInventory();
 
     public void initializeBattlePreview(Collection<IUnit> targets);
 

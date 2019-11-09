@@ -24,7 +24,7 @@ public class BehaviorAdapter implements IBehavior {
 
     public BehaviorAdapter(final Map map, EAffiliation affiliation) {
         mAffiliation = affiliation;
-        
+
         mMap = map;
 
         mUnits = map.getUnitsBy(affiliation);
@@ -139,6 +139,17 @@ public class BehaviorAdapter implements IBehavior {
     @Override
     public EAffiliation getAffiliation() {
         return mAffiliation;
+
+    }
+
+    @Override
+    public void onInventoryOpenAction() {
+
+    }
+
+    @Override
+    public void onInventoryCancel() {
+        // TODO Auto-generated method stub
 
     }
 }

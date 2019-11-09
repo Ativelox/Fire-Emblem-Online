@@ -178,4 +178,10 @@ public class HpBarDepletionAnimation implements IAnimation, IRequireResources {
         return mUnderlyingAnimation.isHidden();
     }
 
+    @Override
+    public void addEndHook(Function<TimeSnapshot, Boolean> hook) {
+        mUnderlyingAnimation.addEndHook(hook);
+        
+    }
+
 }

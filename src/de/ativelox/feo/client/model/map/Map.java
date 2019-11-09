@@ -76,7 +76,20 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
 
     public Optional<Path<Tile, Edge<Tile>>> getNearestPathToAttackable(IUnit unit) {
         if (unit.getAffiliation() == EAffiliation.ALLIED) {
-            return Optional.empty();
+            ShortestPathComputation<Tile, Edge<Tile>> algo = new ShortestPathComputationBuilder<>(mGraphRepresentation)
+                    .resetOrdinaryDijkstra().addModuleIgnoreEdgeIf(new UnitEdgeIgnoring(unit, this)).build();
+
+            Collection<Tile> tiles = new ArrayList<>();
+
+            for (final IUnit opposedUnit : mOpposedUnits) {
+
+                tiles.addAll(getNeighborTiles(this.getByPos(opposedUnit.getX(), opposedUnit.getY()), 1));
+
+            }
+
+            var path = algo.shortestPath(tiles, getByPos(unit.getX(), unit.getY()));
+
+            return path;
 
         } else {
             ShortestPathComputation<Tile, Edge<Tile>> algo = new ShortestPathComputationBuilder<>(mGraphRepresentation)

@@ -4,6 +4,7 @@ import java.awt.Image;
 import java.util.Optional;
 
 import de.ativelox.feo.client.model.property.EAffiliation;
+import de.ativelox.feo.client.model.property.EBattleAnimType;
 import de.ativelox.feo.client.model.property.EClass;
 import de.ativelox.feo.client.model.property.EGender;
 import de.ativelox.feo.client.model.property.EUnit;
@@ -20,7 +21,7 @@ import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
  *
  */
 public interface IUnit extends IRenderable, IUpdateable, ISpatial, ISelectable, ICanMove {
-    
+
     public void removeHp(int hp);
 
     public int getMov();
@@ -59,6 +60,10 @@ public interface IUnit extends IRenderable, IUpdateable, ISpatial, ISelectable, 
 
     public int getRes();
 
+    public String getBattleAnimation(EBattleAnimType type);
+
+    public String getBattlePaletteName();
+
     public EGender getGender();
 
     public EClass getCurrentClass();
@@ -68,5 +73,15 @@ public interface IUnit extends IRenderable, IUpdateable, ISpatial, ISelectable, 
     public Optional<IWeapon> getEquippedWeapon();
 
     public void equip(IWeapon weapon);
+
+    public String getAnimationHookName();
+
+    public String getDeathQuote();
+
+    public boolean isCommander();
+
+    public void setToCommander();
+
+    public String getCommanderAttackedQuote();
 
 }

@@ -240,8 +240,7 @@ public class SpriteSheet {
             if (ignore[i]) {
                 continue;
             }
-            // the main rgb value used for complete transparency throughout the project.
-            if (pixels[i] == 10014920) {
+            if (pixels[i] == 10014920 || pixels[i] == 11063456) {
                 continue;
             }
 

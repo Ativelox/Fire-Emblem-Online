@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.crypto.Mac;
+
 import de.ativelox.feo.client.controller.behavior.IBehavior;
 import de.ativelox.feo.client.controller.input.InputManager;
 import de.ativelox.feo.client.model.camera.Camera;
@@ -63,10 +65,12 @@ public class GameController {
         mInputManager = im;
         mScreen = screen;
         mUiScreen = uiScreen;
-        mBattleScreen = ScreenFactory.createBattleScreen();
+        mBattleScreen = ScreenFactory.createBattleScreen(im);
         mAlliedBehavior = alliedBehavior;
         mOpposedBehavior = opposedBehavior;
         mScreenManager = sm;
+
+        mCurrentActiveBehavior = alliedBehavior;
 
         mCamera = camera;
         mMap = map;
@@ -75,13 +79,13 @@ public class GameController {
         opposedBehavior.setController(this);
         mBattleScreen.setController(this);
 
-        alliedBehavior.onTurnStart();
-
         uiScreen.setController(this);
         screen.setController(this);
 
         im.register((IActionListener) screen);
         im.register((IMovementListener) screen);
+
+        alliedBehavior.onTurnStart();
 
     }
 
@@ -158,6 +162,7 @@ public class GameController {
         if (mMap.allyInRange(unit, 1)) {
             temp.add(EActionWindowOption.TRADE);
         }
+        temp.add(EActionWindowOption.ITEM);
         temp.add(EActionWindowOption.WAIT);
 
         EActionWindowOption[] result = new EActionWindowOption[temp.size()];
@@ -246,10 +251,22 @@ public class GameController {
 
     public void attackFinished() {
         mScreenManager.removeScreen();
+        mMap.getAlliedUnits().removeIf(u -> u.getCurrentHP() <= 0);
+        mMap.getOpposedUnits().removeIf(u -> u.getCurrentHP() <= 0);
+
         SoundPlayer.get().play(mCurrentPiece);
     }
 
     public void moveCursor(Tile tile) {
         mScreen.moveCursor(tile);
+    }
+
+    public void showInventory(IUnit unit) {
+        mUiScreen.displayInventory(unit);
+    }
+
+    public void removeInventory() {
+        mUiScreen.removeInventory();
+
     }
 }

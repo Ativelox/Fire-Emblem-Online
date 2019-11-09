@@ -3,6 +3,7 @@ package de.ativelox.feo.client.view.screen.game;
 import java.awt.Color;
 
 import de.ativelox.feo.client.controller.GameController;
+import de.ativelox.feo.client.controller.input.InputManager;
 import de.ativelox.feo.client.model.camera.ECameraApplication;
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.gfx.tile.ETileType;
@@ -26,9 +27,9 @@ public class BattleScreen implements IBattleScreen {
     private final BattleOverlay mBattleOverlay;
     private final BattleManager mBattleManager;
 
-    public BattleScreen() {
+    public BattleScreen(final InputManager im) {
         mBattleOverlay = new BattleOverlay();
-        mBattleManager = new BattleManager(this);
+        mBattleManager = new BattleManager(this, im);
 
     }
 

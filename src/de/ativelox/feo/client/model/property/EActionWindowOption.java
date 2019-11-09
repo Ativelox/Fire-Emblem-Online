@@ -6,6 +6,6 @@ package de.ativelox.feo.client.model.property;
  */
 public enum EActionWindowOption {
 
-    WAIT, ATTACK, TRADE, VISIT, TALK, END_TURN;
+    WAIT, ATTACK, TRADE, VISIT, TALK, END_TURN, ITEM;
 
 }

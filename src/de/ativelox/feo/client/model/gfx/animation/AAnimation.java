@@ -120,6 +120,11 @@ public abstract class AAnimation extends SpatialObject implements IAnimation {
     }
 
     @Override
+    public void addEndHook(Function<TimeSnapshot, Boolean> hook) {
+        addHook(mSequence.length, hook);
+    }
+
+    @Override
     public boolean isHidden() {
         return mHidden;
     }

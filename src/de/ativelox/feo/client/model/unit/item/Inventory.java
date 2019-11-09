@@ -42,8 +42,17 @@ public class Inventory {
 
     }
 
-    public IItem[] getItems() {
-        return mInventory;
+    public List<IItem> getItems() {
+        List<IItem> result = new ArrayList<>();
+
+        for (final IItem item : mInventory) {
+            if (item == null) {
+                continue;
+            }
+
+            result.add(item);
+        }
+        return result;
 
     }
 
@@ -73,7 +82,7 @@ public class Inventory {
         List<IWeapon> temp = new ArrayList<>();
 
         for (final IItem item : mInventory) {
-            if (item instanceof IWeapon) {
+            if (item instanceof IItem) {
                 temp.add((IWeapon) item);
             }
         }

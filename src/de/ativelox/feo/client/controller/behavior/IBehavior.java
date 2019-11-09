@@ -52,6 +52,10 @@ public interface IBehavior {
 
     void onBattleFinished();
 
+    void onInventoryOpenAction();
+    
+    void onInventoryCancel();
+
     EAffiliation getAffiliation();
 
 }

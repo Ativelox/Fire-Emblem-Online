@@ -54,36 +54,36 @@ public class MovementIndicator implements IRenderable, IRequireResources {
     @Override
     public void load() {
         mImageMapping.put(EIndicatorDirection.BEGINNING_LEFT_RIGHT,
-                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.BEGINNING_LEFT_RIGHT.toString()));
+                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.BEGINNING_LEFT_RIGHT));
         mImageMapping.put(EIndicatorDirection.BEGINNING_DOWN_UP,
-                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.BEGINNING_DOWN_UP.toString()));
+                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.BEGINNING_DOWN_UP));
         mImageMapping.put(EIndicatorDirection.BEGINNING_RIGHT_LEFT,
-                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.BEGINNING_RIGHT_LEFT.toString()));
+                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.BEGINNING_RIGHT_LEFT));
         mImageMapping.put(EIndicatorDirection.BEGINNING_UP_DOWN,
-                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.BEGINNING_UP_DOWN.toString()));
+                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.BEGINNING_UP_DOWN));
 
         mImageMapping.put(EIndicatorDirection.ARC_DOWN_RIGHT,
-                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.ARC_DOWN_RIGHT.toString()));
+                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.ARC_DOWN_RIGHT));
         mImageMapping.put(EIndicatorDirection.ARC_LEFT_DOWN,
-                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.ARC_LEFT_DOWN.toString()));
+                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.ARC_LEFT_DOWN));
         mImageMapping.put(EIndicatorDirection.ARC_LEFT_UP,
-                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.ARC_LEFT_UP.toString()));
+                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.ARC_LEFT_UP));
         mImageMapping.put(EIndicatorDirection.ARC_UP_RIGHT,
-                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.ARC_UP_RIGHT.toString()));
+                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.ARC_UP_RIGHT));
 
         mImageMapping.put(EIndicatorDirection.END_DOWN_UP,
-                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.END_DOWN_UP.toString()));
+                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.END_DOWN_UP));
         mImageMapping.put(EIndicatorDirection.END_LEFT_RIGHT,
-                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.END_LEFT_RIGHT.toString()));
+                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.END_LEFT_RIGHT));
         mImageMapping.put(EIndicatorDirection.END_RIGHT_LEFT,
-                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.END_RIGHT_LEFT.toString()));
+                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.END_RIGHT_LEFT));
         mImageMapping.put(EIndicatorDirection.END_UP_DOWN,
-                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.END_UP_DOWN.toString()));
+                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.END_UP_DOWN));
 
         mImageMapping.put(EIndicatorDirection.VERTICAL,
-                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.VERTICAL.toString()));
+                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.VERTICAL));
         mImageMapping.put(EIndicatorDirection.HORIZONTAL,
-                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.HORIZONTAL.toString()));
+                Assets.getFor(EResource.MAP_INDICATOR, EIndicatorDirection.HORIZONTAL));
 
     }
 

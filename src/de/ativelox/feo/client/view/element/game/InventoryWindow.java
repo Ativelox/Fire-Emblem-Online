@@ -1,8 +1,6 @@
 package de.ativelox.feo.client.view.element.game;
 
 import java.awt.Image;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import de.ativelox.feo.client.model.gfx.Assets;
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
@@ -12,7 +10,6 @@ import de.ativelox.feo.client.model.manager.VerticalSelectionManager;
 import de.ativelox.feo.client.model.property.EActionWindowType;
 import de.ativelox.feo.client.model.property.ESide;
 import de.ativelox.feo.client.model.unit.IUnit;
-import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.element.generic.AActionWindow;
@@ -22,44 +19,26 @@ import de.ativelox.feo.client.view.element.generic.AButtonElement;
  * @author Ativelox ({@literal ativelox.dev@web.de})
  *
  */
-public class WeaponSelectionWindow extends AActionWindow {
+public class InventoryWindow extends AActionWindow {
 
     private Image mTop;
     private Image mBot;
+    private Image mFill;
 
-    public WeaponSelectionWindow(IUnit unit) {
-        super(EActionWindowType.WEAPON_SELECT, 0, 0, 0, 0, true);
+    private int mInventoryLimit;
 
-        this.setUnit(unit, new ArrayList<>());
+    public InventoryWindow() {
+        super(EActionWindowType.INVENTORY_WINDOW, 0, 0, 0, 0, true);
 
-    }
+        setUnit(null);
 
-    private void initialize(IWeapon... weapons) {
-        setX(10 * Display.INTERNAL_RES_FACTOR);
-        setY(12 * Display.INTERNAL_RES_FACTOR);
-        setWidth((int) (Display.WIDTH / 2.5f));
-
-        mButtons = new ItemSelectionButton[weapons.length];
-
-        for (int i = 0; i < weapons.length; i++) {
-            mButtons[i] = new ItemSelectionButton(getX(),
-                    4 * Display.INTERNAL_RES_FACTOR + getY() + (i * 16 * Display.INTERNAL_RES_FACTOR), i, weapons[i],
-                    EActionWindowType.WEAPON_SELECT);
-
-            mButtons[i].setWidth(getWidth());
-
-        }
-        setHeight((16 * weapons.length + 5 + 4) * Display.INTERNAL_RES_FACTOR);
-
-        mSelectionManager = new VerticalSelectionManager<>(true, mButtons);
-        mButtonConfirmManager = new ConfirmCancelWhenSelectedManager<>(mButtons);
     }
 
     @Override
     public void render(DepthBufferedGraphics g) {
         super.render(g);
-
-        if (mIsHidden || mButtons.length <= 0) {
+        
+        if(mIsHidden || mButtons.length <= 0) {
             return;
         }
 
@@ -70,11 +49,18 @@ public class WeaponSelectionWindow extends AActionWindow {
         for (final AButtonElement button : mButtons) {
             button.render(g);
         }
+
+        for (int i = mButtons.length; i < mInventoryLimit; i++) {
+            g.drawImage(mFill, mButtons[0].getX(), mButtons[0].getY() + i * mButtons[0].getHeight(),
+                    mButtons[0].getWidth(), mButtons[0].getHeight());
+
+        }
     }
 
     @Override
     public void update(TimeSnapshot ts) {
         super.update(ts);
+
         setY(10 * Display.INTERNAL_RES_FACTOR);
 
         int i = 0;
@@ -83,22 +69,43 @@ public class WeaponSelectionWindow extends AActionWindow {
             button.setY(4 * Display.INTERNAL_RES_FACTOR + getY() + (i * 16 * Display.INTERNAL_RES_FACTOR));
             i++;
         }
-
     }
 
-    public void setUnit(IUnit unit, Collection<IWeapon> eligible) {
-        if (unit == null) {
-            this.initialize();
-            return;
-        }
-        IWeapon[] eli = new IWeapon[eligible.size()];
+    public boolean setUnit(final IUnit unit) {
+        setX(10 * Display.INTERNAL_RES_FACTOR);
+        setY(12 * Display.INTERNAL_RES_FACTOR);
+        setWidth((int) (Display.WIDTH / 2.5f));
 
-        int i = 0;
-        for (final IWeapon weapon : eligible) {
-            eli[i] = weapon;
-            i++;
+        int limit = 0;
+        int invSize = 0;
+
+        if (unit != null) {
+            limit = unit.getInventory().getLimit();
+            invSize = unit.getInventory().getItems().size();
         }
-        this.initialize(eli);
+
+        mInventoryLimit = limit;
+
+        mButtons = new ItemSelectionButton[invSize];
+
+        for (int i = 0; i < invSize; i++) {
+
+            mButtons[i] = new ItemSelectionButton(getX(),
+                    4 * Display.INTERNAL_RES_FACTOR + getY() + (i * 16 * Display.INTERNAL_RES_FACTOR), i,
+                    unit.getInventory().getItems().get(i), EActionWindowType.INVENTORY_WINDOW);
+
+            mButtons[i].setWidth(getWidth());
+
+        }
+        setHeight((16 * limit + 5 + 4) * Display.INTERNAL_RES_FACTOR);
+
+        mSelectionManager = new VerticalSelectionManager<>(true, mButtons);
+        mButtonConfirmManager = new ConfirmCancelWhenSelectedManager<>(mButtons);
+
+        if (mButtons.length <= 0) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -111,6 +118,7 @@ public class WeaponSelectionWindow extends AActionWindow {
     public void load() {
         mTop = Assets.getFor(EResource.ACTION_WINDOW_TOP);
         mBot = Assets.getFor(EResource.ACTION_WINDOW_BOTTOM);
-
+        mFill = Assets.getFor(EResource.ACTION_WINDOW_MIDDLE);
     }
+
 }

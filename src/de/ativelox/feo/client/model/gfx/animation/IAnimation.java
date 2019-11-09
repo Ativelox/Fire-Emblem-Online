@@ -44,4 +44,6 @@ public interface IAnimation extends IUpdateable, IRenderable, ISpatial, Iterable
      */
     void addHook(int frame, Function<TimeSnapshot, Boolean> hook);
 
+    void addEndHook(Function<TimeSnapshot, Boolean> hook);
+
 }

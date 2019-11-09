@@ -1,7 +1,5 @@
 package de.ativelox.feo.client.model.unit.item.weapon;
 
-import java.awt.Image;
-
 import de.ativelox.feo.client.model.property.EDamageType;
 import de.ativelox.feo.client.model.unit.item.IItem;
 
@@ -10,7 +8,7 @@ import de.ativelox.feo.client.model.unit.item.IItem;
  *
  */
 public interface IWeapon extends IItem {
-
+    
     int getCurrentDurability();
 
     int getMaximumDurability();
@@ -26,7 +24,4 @@ public interface IWeapon extends IItem {
     int getWeight();
 
     EDamageType getDamageType();
-
-    Image getImage();
-
 }

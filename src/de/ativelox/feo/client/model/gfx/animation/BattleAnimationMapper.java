@@ -18,12 +18,11 @@ public class BattleAnimationMapper {
     }
 
     public static IAnimation get(IUnit unit, EBattleAnimType type, ESide side, IHook... insertOnHit) {
-        IAnimation temp = Assets.getFor(EResource.BATTLE_ANIMATION, unit.getCurrentClass().toString(),
-                unit.getGender().toString(), type.toString(), side.toString(), unit.getUnit().toString());
+        IAnimation temp = Assets.getFor(EResource.BATTLE_ANIMATION, type, side, unit);
 
-        UnitHookInserter.insert(temp, unit.getCurrentClass(), type);
+        UnitHookInserter.insert(temp, unit.getAnimationHookName(), type);
 
-        UnitHookInserter.insert(temp, unit.getCurrentClass(), type, insertOnHit);
+        UnitHookInserter.insert(temp, unit.getAnimationHookName(), type, insertOnHit);
 
         return temp;
 
