@@ -47,7 +47,7 @@ public class ItemSelectionButton extends ActionWindowButton implements IRequireR
 
     }
 
-    public IItem getWeapon() {
+    public IItem getItem() {
         return mItem;
 
     }

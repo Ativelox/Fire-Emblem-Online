@@ -7,6 +7,7 @@ import de.ativelox.feo.client.model.gfx.tile.Tile;
 import de.ativelox.feo.client.model.property.EActionWindowOption;
 import de.ativelox.feo.client.model.property.ESide;
 import de.ativelox.feo.client.model.unit.IUnit;
+import de.ativelox.feo.client.model.unit.item.IItem;
 import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 import de.ativelox.feo.client.view.screen.IScreen;
 
@@ -37,9 +38,9 @@ public interface IGameUIScreen extends IScreen {
     public void displayWeaponSelection(IUnit unit, Collection<IWeapon> eligible);
 
     public void removeWeaponSelection();
-    
+
     public void displayInventory(IUnit unit);
-    
+
     public void removeInventory();
 
     public void initializeBattlePreview(Collection<IUnit> targets);
@@ -47,5 +48,9 @@ public interface IGameUIScreen extends IScreen {
     public void removeBattlePreview();
 
     public void switchBattlePreview(IUnit attacker, IUnit target);
+
+    public void displayItemUsageSelection(IItem item);
+
+    public void removeItemUsageSelection();
 
 }

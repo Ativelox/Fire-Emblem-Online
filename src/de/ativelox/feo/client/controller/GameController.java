@@ -23,6 +23,7 @@ import de.ativelox.feo.client.model.property.callback.IMovementListener;
 import de.ativelox.feo.client.model.sound.EMusic;
 import de.ativelox.feo.client.model.sound.SoundPlayer;
 import de.ativelox.feo.client.model.unit.IUnit;
+import de.ativelox.feo.client.model.unit.item.IItem;
 import de.ativelox.feo.client.model.unit.item.Inventory;
 import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 import de.ativelox.feo.client.view.Display;
@@ -267,6 +268,32 @@ public class GameController {
 
     public void removeInventory() {
         mUiScreen.removeInventory();
+
+    }
+
+    public void showItemUsageSelection(IItem item) {
+        mUiScreen.displayItemUsageSelection(item);
+
+    }
+
+    public void removeItemUsageSelection() {
+        mUiScreen.removeItemUsageSelection();
+
+    }
+
+    public void useItem(IItem item) {
+        item.use();
+
+    }
+
+    public void discardItem(IItem item) {
+        item.getOwner().getInventory().remove(item);
+        mUiScreen.displayInventory(item.getOwner());
+
+    }
+
+    public void equipWeaon(IWeapon weapon) {
+        weapon.getOwner().equip(weapon);
 
     }
 }

@@ -7,6 +7,7 @@ import de.ativelox.feo.client.model.map.Map;
 import de.ativelox.feo.client.model.property.EAffiliation;
 import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.unit.IUnit;
+import de.ativelox.feo.client.model.unit.item.IItem;
 import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 
 /**
@@ -150,6 +151,31 @@ public class BehaviorAdapter implements IBehavior {
     @Override
     public void onInventoryCancel() {
         // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onItemUsageSelection(IItem item) {
+
+    }
+
+    @Override
+    public void onItemUsageSelectionCancel() {
+
+    }
+
+    @Override
+    public void onItemUseAction(IItem item) {
+
+    }
+
+    @Override
+    public void onItemDiscardAction(IItem item) {
+
+    }
+
+    @Override
+    public void onWeaponEquipAction(IWeapon weapon) {
 
     }
 }

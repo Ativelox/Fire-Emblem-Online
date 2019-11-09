@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
+import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 
 /**
@@ -14,26 +15,33 @@ import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
  */
 public class Inventory {
 
-    private final IItem[] mInventory;
+    private final List<IItem> mInventory;
 
     private int mLimit;
 
     private int mSize;
 
-    public Inventory(int max, IItem... items) {
-        mInventory = new IItem[max];
+    private final IUnit mOwner;
+
+    public Inventory(final IUnit owner, int max, IItem... items) {
+        mInventory = new ArrayList<>();
+
+        for (final IItem item : items) {
+            this.add(item);
+        }
+
+        mOwner = owner;
 
         mLimit = max;
 
         for (int i = 0; i < Math.min(items.length, max); i++) {
-            mInventory[i] = items[i];
-            mSize++;
+            this.add(items[i]);
 
         }
     }
 
-    public Inventory(IItem... items) {
-        this(5, items);
+    public Inventory(final IUnit owner, IItem... items) {
+        this(owner, 5, items);
 
     }
 
@@ -82,7 +90,7 @@ public class Inventory {
         List<IWeapon> temp = new ArrayList<>();
 
         for (final IItem item : mInventory) {
-            if (item instanceof IItem) {
+            if (item instanceof IWeapon) {
                 temp.add((IWeapon) item);
             }
         }
@@ -97,32 +105,24 @@ public class Inventory {
     }
 
     public void add(IItem item) {
-        mInventory[mSize] = item;
+        item.setOwner(mOwner);
+        mInventory.add(item);
         mSize++;
     }
 
-    public void remove() {
-
-    }
-
     public IItem swap(IItem itemAdd, int index) {
-        IItem result = mInventory[index];
-        mInventory[index] = itemAdd;
+        IItem result = mInventory.remove(index);
+        mInventory.add(index, itemAdd);
 
         return result;
     }
 
-    public IItem swap(IItem itemAdd, IItem itemRemove) {
-        IItem result = null;
+    public void remove(IItem item) {
+        mInventory.remove(item);
 
-        for (int i = 0; i < mInventory.length; i++) {
-            if (mInventory[i] == itemRemove) {
-                result = mInventory[i];
-                mInventory[i] = itemAdd;
-                break;
-            }
-        }
-        return result;
+    }
 
+    public boolean contains(IWeapon weapon) {
+        return mInventory.contains(weapon);
     }
 }

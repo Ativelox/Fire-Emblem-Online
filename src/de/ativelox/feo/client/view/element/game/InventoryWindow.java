@@ -10,6 +10,7 @@ import de.ativelox.feo.client.model.manager.VerticalSelectionManager;
 import de.ativelox.feo.client.model.property.EActionWindowType;
 import de.ativelox.feo.client.model.property.ESide;
 import de.ativelox.feo.client.model.unit.IUnit;
+import de.ativelox.feo.client.model.unit.item.IItem;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.element.generic.AActionWindow;
@@ -27,6 +28,8 @@ public class InventoryWindow extends AActionWindow {
 
     private int mInventoryLimit;
 
+    private IUnit mCurrentUnit;
+
     public InventoryWindow() {
         super(EActionWindowType.INVENTORY_WINDOW, 0, 0, 0, 0, true);
 
@@ -37,8 +40,8 @@ public class InventoryWindow extends AActionWindow {
     @Override
     public void render(DepthBufferedGraphics g) {
         super.render(g);
-        
-        if(mIsHidden || mButtons.length <= 0) {
+
+        if (mIsHidden || mButtons.length <= 0) {
             return;
         }
 
@@ -55,6 +58,17 @@ public class InventoryWindow extends AActionWindow {
                     mButtons[0].getWidth(), mButtons[0].getHeight());
 
         }
+    }
+
+    public void block() {
+        mSelectionManager.block();
+        mButtonConfirmManager.block();
+
+    }
+
+    public void unblock() {
+        mSelectionManager.unblock();
+        mButtonConfirmManager.unblock();
     }
 
     @Override
@@ -75,6 +89,8 @@ public class InventoryWindow extends AActionWindow {
         setX(10 * Display.INTERNAL_RES_FACTOR);
         setY(12 * Display.INTERNAL_RES_FACTOR);
         setWidth((int) (Display.WIDTH / 2.5f));
+
+        mCurrentUnit = unit;
 
         int limit = 0;
         int invSize = 0;
@@ -119,6 +135,10 @@ public class InventoryWindow extends AActionWindow {
         mTop = Assets.getFor(EResource.ACTION_WINDOW_TOP);
         mBot = Assets.getFor(EResource.ACTION_WINDOW_BOTTOM);
         mFill = Assets.getFor(EResource.ACTION_WINDOW_MIDDLE);
+    }
+
+    public IItem getSelectedItem() {
+        return mCurrentUnit.getInventory().getItems().get(mSelectionManager.getSelectionIndex());
     }
 
 }

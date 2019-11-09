@@ -166,7 +166,7 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
         mGrowthDef = growthDef;
         mGrowthRes = growthRes;
 
-        mInventory = new Inventory();
+        mInventory = new Inventory(this);
 
         mUnit = unit;
 
@@ -454,7 +454,7 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
 
     @Override
     public Optional<IWeapon> getEquippedWeapon() {
-        if (mCurrentlyEquipped == null) {
+        if (mCurrentlyEquipped == null || !mInventory.contains(mCurrentlyEquipped)) {
             return Optional.empty();
         }
         return Optional.of(mCurrentlyEquipped);
@@ -537,5 +537,11 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     @Override
     public String getCommanderAttackedQuote() {
         return mCommanderAttackedQuote;
+    }
+
+    @Override
+    public void addHp(int hp) {
+        mCurrentHp = Math.min(mHp, mCurrentHp + hp);
+
     }
 }

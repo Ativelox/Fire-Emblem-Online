@@ -83,5 +83,7 @@ public interface IUnit extends IRenderable, IUpdateable, ISpatial, ISelectable, 
     public void setToCommander();
 
     public String getCommanderAttackedQuote();
+    
+    public void addHp(int hp);
 
 }

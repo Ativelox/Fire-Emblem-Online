@@ -1,5 +1,8 @@
 package de.ativelox.feo.client.view.element.generic;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.ativelox.feo.client.controller.input.InputManager;
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.manager.ConfirmWhenSelectedManager;
@@ -32,8 +35,15 @@ public abstract class AActionWindow extends AScreenElement implements IRequireRe
 
     private EActionWindowType mType;
 
+    private List<ICancelListener> mTempCancelListener;
+
+    private List<IConfirmListener> mTempConfirmListener;
+
     public AActionWindow(EActionWindowType type, int x, int y, int width, int height, boolean isPercent) {
         super(x, y, width, height, isPercent);
+
+        mTempCancelListener = new ArrayList<>();
+        mTempConfirmListener = new ArrayList<>();
 
         mType = type;
 
@@ -58,9 +68,16 @@ public abstract class AActionWindow extends AScreenElement implements IRequireRe
         } else {
             mIsHidden = true;
         }
+        for (final ACancelableButton button : mButtons) {
+            mTempCancelListener.forEach(l -> button.addCancelListener(l));
+            mTempConfirmListener.forEach(l -> button.add(l));
+        }
+
         mSelectionManager.update(ts);
         mButtonConfirmManager.update(ts);
 
+        mTempCancelListener.clear();
+        mTempConfirmListener.clear();
     }
 
     @Override
@@ -73,17 +90,11 @@ public abstract class AActionWindow extends AScreenElement implements IRequireRe
     }
 
     public void addCancelListener(ICancelListener listener) {
-        for (final ACancelableButton button : mButtons) {
-            button.addCancelListener(listener);
-
-        }
+        mTempCancelListener.add(listener);
     }
 
     public void addConfirmListener(IConfirmListener listener) {
-        for (final ACancelableButton button : mButtons) {
-            button.add(listener);
-
-        }
+        mTempConfirmListener.add(listener);
     }
 
     public void show() {

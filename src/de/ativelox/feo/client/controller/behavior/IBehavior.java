@@ -4,6 +4,7 @@ import de.ativelox.feo.client.controller.GameController;
 import de.ativelox.feo.client.model.property.EAffiliation;
 import de.ativelox.feo.client.model.property.ISpatial;
 import de.ativelox.feo.client.model.unit.IUnit;
+import de.ativelox.feo.client.model.unit.item.IItem;
 import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 
 /**
@@ -53,9 +54,19 @@ public interface IBehavior {
     void onBattleFinished();
 
     void onInventoryOpenAction();
-    
+
     void onInventoryCancel();
 
+    void onItemUsageSelection(IItem item);
+
+    void onItemUsageSelectionCancel();
+
     EAffiliation getAffiliation();
+
+    void onItemUseAction(IItem item);
+
+    void onItemDiscardAction(IItem item);
+
+    void onWeaponEquipAction(IWeapon weapon);
 
 }

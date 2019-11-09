@@ -6,6 +6,6 @@ package de.ativelox.feo.client.model.property;
  */
 public enum EActionWindowType {
 
-    WEAPON_SELECT, DEFAULT, INVENTORY_WINDOW;
+    WEAPON_SELECT, DEFAULT, INVENTORY_WINDOW, ITEM_USE, ITEM_DISCARD, WEAPON_EQUIP;
 
 }

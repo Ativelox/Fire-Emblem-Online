@@ -1,16 +1,18 @@
 package de.ativelox.feo.client.model.unit.item.weapon;
 
 import java.awt.Image;
+import java.util.function.BiConsumer;
 
 import de.ativelox.feo.client.model.property.EDamageType;
+import de.ativelox.feo.client.model.unit.IUnit;
+import de.ativelox.feo.client.model.unit.item.AItem;
+import de.ativelox.feo.client.model.unit.item.IItem;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
  *
  */
-public class Weapon implements IWeapon {
-
-    private final String mName;
+public class Weapon extends AItem implements IWeapon {
 
     private final int mDurability;
 
@@ -25,16 +27,14 @@ public class Weapon implements IWeapon {
     private final int mWeight;
 
     private final EDamageType mDamageType;
-    
+
     private int mCurrentDurability;
 
-    private final Image mImage;
-
     public Weapon(String name, int durability, int range, int crit, int might, int accurracy, int weight,
-            EDamageType damageType, Image image) {
+            EDamageType damageType, Image image, IUnit owner, BiConsumer<IUnit, IItem> use) {
+        super(name, image, owner, use);
 
         mCurrentDurability = durability;
-        mName = name;
         mDurability = durability;
         mRange = range;
         mCrit = crit;
@@ -42,13 +42,25 @@ public class Weapon implements IWeapon {
         mAccuracy = accurracy;
         mWeight = weight;
         mDamageType = damageType;
-        mImage = image;
 
     }
 
-    @Override
-    public String getName() {
-        return mName;
+    public Weapon(String name, int durability, int range, int crit, int might, int accurracy, int weight,
+            EDamageType damageType, Image image, BiConsumer<IUnit, IItem> use) {
+        this(name, durability, range, crit, might, accurracy, weight, damageType, image, null, use);
+
+    }
+
+    public Weapon(String name, int durability, int range, int crit, int might, int accurracy, int weight,
+            EDamageType damageType, Image image, IUnit owner) {
+        this(name, durability, range, crit, might, accurracy, weight, damageType, image, owner, (p, u) -> {
+        });
+    }
+
+    public Weapon(String name, int durability, int range, int crit, int might, int accurracy, int weight,
+            EDamageType damageType, Image image) {
+        this(name, durability, range, crit, might, accurracy, weight, damageType, image, (p, u) -> {
+        });
     }
 
     @Override
@@ -92,8 +104,9 @@ public class Weapon implements IWeapon {
     }
 
     @Override
-    public Image getImage() {
-        return mImage;
-    }
+    public IWeapon copy() {
+        return new Weapon(mName, mDurability, mRange, mCrit, mMight, mAccuracy, mWeight, mDamageType, mImage,
+                mUsageContract);
 
+    }
 }

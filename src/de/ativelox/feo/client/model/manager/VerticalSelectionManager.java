@@ -126,4 +126,8 @@ public class VerticalSelectionManager<T extends ISelectable> extends InputReceiv
     public ESoundEffect getSoundEffect() {
         return ESoundEffect.WINDOW_SELECTION_MOVED;
     }
+
+    public int getSelectionIndex() {
+        return mSelectionIndex;
+    }
 }

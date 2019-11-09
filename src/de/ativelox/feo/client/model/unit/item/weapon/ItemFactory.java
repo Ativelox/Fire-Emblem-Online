@@ -8,23 +8,30 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import de.ativelox.feo.client.model.gfx.Assets;
 import de.ativelox.feo.client.model.gfx.EResource;
 import de.ativelox.feo.client.model.property.EDamageType;
+import de.ativelox.feo.client.model.unit.IUnit;
+import de.ativelox.feo.client.model.unit.item.EItem;
+import de.ativelox.feo.client.model.unit.item.IItem;
+import de.ativelox.feo.client.model.unit.item.Item;
 import de.ativelox.feo.logging.Logger;
 
 /**
  * @author Ativelox ({@literal ativelox.dev@web.de})
  *
  */
-public class WeaponFactory {
+public class ItemFactory {
 
-    private static final Path WEAPON_DATA_PATH = Paths.get("res", "fe6", "weapons", "weapons.txt");
+    private static final Path WEAPON_DATA_PATH = Paths.get("res", "fe6", "items", "weapons.txt");
+    private static final Path ITEM_DATA_PATH = Paths.get("res", "fe6", "items", "items.txt");
 
     private static Map<EWeapon, IWeapon> WEAPON_CACHE;
+    private static Map<EItem, IItem> ITEM_CACHE;
 
-    private WeaponFactory() {
+    private ItemFactory() {
 
     }
 
@@ -33,12 +40,43 @@ public class WeaponFactory {
             init();
         }
 
-        return WEAPON_CACHE.get(weapon);
+        return (IWeapon) WEAPON_CACHE.get(weapon).copy();
+
+    }
+
+    public static IItem generate(EItem item) {
+        if (ITEM_CACHE == null) {
+            init();
+        }
+        return ITEM_CACHE.get(item).copy();
+
+    }
+    
+    public static IItem generate(EItem item, BiConsumer<IUnit, IItem> use) {
+        if (ITEM_CACHE == null) {
+            init();
+        }
+        IItem itemCopy = ITEM_CACHE.get(item).copy();
+        itemCopy.overwriteUsage(use);
+
+        return itemCopy;
+
+    }
+
+    public static IWeapon generate(EWeapon weapon, BiConsumer<IUnit, IItem> use) {
+        if (WEAPON_CACHE == null) {
+            init();
+        }
+        IWeapon weaponCopy = (IWeapon) WEAPON_CACHE.get(weapon).copy();
+        weaponCopy.overwriteUsage(use);
+
+        return weaponCopy;
 
     }
 
     public static void init() {
         WEAPON_CACHE = new HashMap<>();
+        ITEM_CACHE = new HashMap<>();
 
         try {
             List<String> lines = Files.readAllLines(WEAPON_DATA_PATH);
@@ -62,6 +100,22 @@ public class WeaponFactory {
 
                 WEAPON_CACHE.put(weapon,
                         new Weapon(name, durability, range, crit, might, accuracy, weight, type, image));
+
+            }
+
+            lines = Files.readAllLines(ITEM_DATA_PATH);
+            for (final String line : lines) {
+                if (line.startsWith("#")) {
+                    continue;
+                }
+                String[] data = line.split("\t+");
+                String name = data[0];
+                String fileName = data[1];
+                EItem item = EItem.valueOf(data[2]);
+
+                Image image = Assets.getFor(EResource.ITEM_IMAGE, fileName);
+
+                ITEM_CACHE.put(item, new Item(name, image));
 
             }
 

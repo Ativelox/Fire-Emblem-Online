@@ -72,7 +72,7 @@ public class Assets {
 
     private static final Path DODGE_PATH = Paths.get("res", "fe6", "dodge");
 
-    private static final Path WEAPON_PATH = Paths.get("res", "fe6", "weapons");
+    private static final Path ITEM_PATH = Paths.get("res", "fe6", "items");
 
     private static final Path MELEE_ATTACK_PATH = Paths.get("res", "fe6", "melee_attack");
     private static final Path MELEE_CRIT_PATH = Paths.get("res", "fe6", "melee_crit");
@@ -561,7 +561,11 @@ public class Assets {
             break;
 
         case WEAPON_IMAGE:
-            result = (T) SpriteSheet.load(WEAPON_PATH.resolve((String) additionalInfo[0])).get();
+            result = (T) SpriteSheet.load(ITEM_PATH.resolve((String) additionalInfo[0])).get();
+            break;
+
+        case ITEM_IMAGE:
+            result = (T) SpriteSheet.load(ITEM_PATH.resolve((String) additionalInfo[0])).get();
             break;
 
         case DIALOGUE_MAIN:

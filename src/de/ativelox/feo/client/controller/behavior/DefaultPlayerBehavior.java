@@ -8,6 +8,7 @@ import de.ativelox.feo.client.model.property.routine.PathCalculationRoutine;
 import de.ativelox.feo.client.model.sound.ESoundEffect;
 import de.ativelox.feo.client.model.sound.SoundPlayer;
 import de.ativelox.feo.client.model.unit.IUnit;
+import de.ativelox.feo.client.model.unit.item.IItem;
 import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 import de.ativelox.feo.logging.Logger;
 
@@ -303,23 +304,78 @@ public class DefaultPlayerBehavior implements IBehavior {
 
     @Override
     public void onInventoryOpenAction() {
-        if(!mIsOnTurn) {
+        if (!mIsOnTurn) {
             return;
         }
         SoundPlayer.get().play(ESoundEffect.WINDOW_ACCEPT);
 
         mController.showInventory(mPathRoutine.getActor());
-        
+
     }
 
     @Override
     public void onInventoryCancel() {
-        if(!mIsOnTurn) {
+        if (!mIsOnTurn) {
             return;
         }
         SoundPlayer.get().play(ESoundEffect.WINDOW_CANCELED);
 
         mController.removeInventory();
-        
+
+    }
+
+    @Override
+    public void onItemUsageSelection(IItem item) {
+        if (!mIsOnTurn) {
+            return;
+        }
+        SoundPlayer.get().play(ESoundEffect.WINDOW_ACCEPT);
+        mController.showItemUsageSelection(item);
+
+    }
+
+    @Override
+    public void onItemUsageSelectionCancel() {
+        if (!mIsOnTurn) {
+            return;
+        }
+        SoundPlayer.get().play(ESoundEffect.WINDOW_CANCELED);
+        mController.removeItemUsageSelection();
+
+    }
+
+    @Override
+    public void onItemUseAction(IItem item) {
+        if (!mIsOnTurn) {
+            return;
+        }
+        SoundPlayer.get().play(ESoundEffect.WINDOW_ACCEPT);
+        mController.useItem(item);
+        mController.removeItemUsageSelection();
+        mController.removeInventory();
+        this.onWaitAction();
+
+    }
+
+    @Override
+    public void onItemDiscardAction(IItem item) {
+        if (!mIsOnTurn) {
+            return;
+        }
+        SoundPlayer.get().play(ESoundEffect.WINDOW_ACCEPT);
+        mController.discardItem(item);
+        mController.removeItemUsageSelection();
+
+    }
+
+    @Override
+    public void onWeaponEquipAction(IWeapon weapon) {
+        if (!mIsOnTurn) {
+            return;
+        }
+        SoundPlayer.get().play(ESoundEffect.WINDOW_ACCEPT);
+        mController.equipWeaon(weapon);
+        mController.removeItemUsageSelection();
+
     }
 }

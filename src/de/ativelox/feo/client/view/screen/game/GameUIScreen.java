@@ -16,6 +16,7 @@ import de.ativelox.feo.client.model.property.callback.ICancelListener;
 import de.ativelox.feo.client.model.property.callback.IConfirmListener;
 import de.ativelox.feo.client.model.property.callback.ISelectionListener;
 import de.ativelox.feo.client.model.unit.IUnit;
+import de.ativelox.feo.client.model.unit.item.IItem;
 import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.element.game.ActionWindow;
@@ -26,6 +27,7 @@ import de.ativelox.feo.client.view.element.game.TargetSelectionWindow;
 import de.ativelox.feo.client.view.element.game.TileStatusWindow;
 import de.ativelox.feo.client.view.element.game.UnitBurstWindow;
 import de.ativelox.feo.client.view.element.game.ItemSelectionButton;
+import de.ativelox.feo.client.view.element.game.ItemUsageWindow;
 import de.ativelox.feo.client.view.element.game.WeaponSelectionWindow;
 import de.ativelox.feo.client.view.screen.EScreen;
 
@@ -44,6 +46,7 @@ public class GameUIScreen implements IGameUIScreen, ICancelListener, IConfirmLis
     private TargetSelectionWindow mTargetSelector;
     private final BattlePreviewWindow mBattlePreviewWindow;
     private final InventoryWindow mInventoryWindow;
+    private final ItemUsageWindow mItemUsageWindow;
 
     private boolean mIsSystemWindow;
 
@@ -54,11 +57,13 @@ public class GameUIScreen implements IGameUIScreen, ICancelListener, IConfirmLis
         mWeaponSelectionWindow = new WeaponSelectionWindow(null);
         mBattlePreviewWindow = new BattlePreviewWindow();
         mInventoryWindow = new InventoryWindow();
+        mItemUsageWindow = new ItemUsageWindow();
         mActionWindow.hide();
         mUnitBurstWindow.hide();
         mWeaponSelectionWindow.hide();
         mBattlePreviewWindow.hide();
         mInventoryWindow.hide();
+        mItemUsageWindow.hide();
 
     }
 
@@ -141,6 +146,7 @@ public class GameUIScreen implements IGameUIScreen, ICancelListener, IConfirmLis
         mTileStatusWindow.render(g);
         mBattlePreviewWindow.render(g);
         mInventoryWindow.render(g);
+        mItemUsageWindow.render(g);
     }
 
     @Override
@@ -150,6 +156,7 @@ public class GameUIScreen implements IGameUIScreen, ICancelListener, IConfirmLis
         mUnitBurstWindow.update(ts);
         mTileStatusWindow.update(ts);
         mInventoryWindow.update(ts);
+        mItemUsageWindow.update(ts);
 
         if (mTargetSelector != null) {
             mTargetSelector.update(ts);
@@ -174,6 +181,11 @@ public class GameUIScreen implements IGameUIScreen, ICancelListener, IConfirmLis
 
             } else if (cancel.getType() == EActionWindowType.INVENTORY_WINDOW) {
                 mController.getActiveBehavior().onInventoryCancel();
+
+            } else if (cancel.getType() == EActionWindowType.ITEM_USE
+                    || cancel.getType() == EActionWindowType.WEAPON_EQUIP
+                    || cancel.getType() == EActionWindowType.ITEM_DISCARD) {
+                mController.getActiveBehavior().onItemUsageSelectionCancel();
             }
 
         } else if (cancelable instanceof TargetSelectionWindow) {
@@ -202,18 +214,35 @@ public class GameUIScreen implements IGameUIScreen, ICancelListener, IConfirmLis
                 break;
             case END_TURN:
                 mController.getActiveBehavior().onTurnEnd();
+                break;
             case ITEM:
                 mController.getActiveBehavior().onInventoryOpenAction();
+                break;
             default:
                 break;
 
             }
 
+        } else if (confirmable instanceof ActionWindowButton
+                && ((ActionWindowButton) confirmable).getType() == EActionWindowType.ITEM_USE) {
+            mController.getActiveBehavior().onItemUseAction(mInventoryWindow.getSelectedItem());
+
+        } else if (confirmable instanceof ActionWindowButton
+                && ((ActionWindowButton) confirmable).getType() == EActionWindowType.ITEM_DISCARD) {
+            mController.getActiveBehavior().onItemDiscardAction(mInventoryWindow.getSelectedItem());
+
+        } else if (confirmable instanceof ActionWindowButton
+                && ((ActionWindowButton) confirmable).getType() == EActionWindowType.WEAPON_EQUIP) {
+            mController.getActiveBehavior().onWeaponEquipAction((IWeapon) mInventoryWindow.getSelectedItem());
+
         } else if (confirmable instanceof ItemSelectionButton) {
             ItemSelectionButton button = (ItemSelectionButton) confirmable;
 
             if (button.getType() == EActionWindowType.WEAPON_SELECT) {
-                mController.getActiveBehavior().onWeaponSelection((IWeapon) button.getWeapon());
+                mController.getActiveBehavior().onWeaponSelection((IWeapon) button.getItem());
+
+            } else if (button.getType() == EActionWindowType.INVENTORY_WINDOW) {
+                mController.getActiveBehavior().onItemUsageSelection(button.getItem());
             }
 
         } else if (confirmable instanceof TargetSelectionWindow) {
@@ -324,6 +353,27 @@ public class GameUIScreen implements IGameUIScreen, ICancelListener, IConfirmLis
     public void removeInventory() {
         mInventoryWindow.hide();
         mActionWindow.show();
+
+    }
+
+    @Override
+    public void displayItemUsageSelection(IItem item) {
+        mInventoryWindow.block();
+
+        mItemUsageWindow.setItem(item, null);
+        mItemUsageWindow.registerTo(mController.getInputManager());
+        mItemUsageWindow.addCancelListener(this);
+        mItemUsageWindow.addConfirmListener(this);
+
+        mItemUsageWindow.show();
+
+    }
+
+    @Override
+    public void removeItemUsageSelection() {
+        mInventoryWindow.unblock();
+
+        mItemUsageWindow.hide();
 
     }
 }
