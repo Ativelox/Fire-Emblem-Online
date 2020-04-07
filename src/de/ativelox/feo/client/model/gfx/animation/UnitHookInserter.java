@@ -32,7 +32,7 @@ public class UnitHookInserter {
     private static Map<String, Map<EBattleAnimType, Integer>> HIT_MAPPING;
 
     public static void insert(IAnimation source, String animationHook, EBattleAnimType type) {
-        ensureAvailability(animationHook);
+        ensureAvailability(animationHook);	
 
         List<Pair<Integer, ESoundEffect>> hooks = SOUND_HOOK_MAPPING.get(animationHook).get(type);
 

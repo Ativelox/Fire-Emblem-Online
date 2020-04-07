@@ -10,8 +10,8 @@ public class Launcher {
 
     public static void main(String[] args) {
 
-//        SpriteSheet.generateFrom(Paths.get("res", "dumps", "fe6", "melee_attack", "myrmidon_f"),
-//                Paths.get("res", "fe6", "melee_attack", "myrmidon_f.png"), 240, 160);
+//        SpriteSheet.generateFrom(Paths.get("res", "dumps", "fe6", "melee_crit", "lord_m"),
+//                Paths.get("res", "fe6", "melee_crit", "lord_m.png"), 240, 160);
 //
 //        SpriteSheet.generateFrom(Paths.get("res", "dumps", "fe6", "melee_crit", "myrmidon_f"),
 //                Paths.get("res", "fe6", "melee_crit", "myrmidon_f.png"), 240, 160);
@@ -25,9 +25,9 @@ public class Launcher {
 //        SpriteSheet.generateFrom(Paths.get("res", "dumps", "fe6", "ranged_crit", "myrmidon_f"),
 //                Paths.get("res", "fe6", "ranged_crit", "myrmidon_f.png"), 240, 160);
 
-        MainController mc = new MainController();
-        mc.initialize();
-        mc.run();
+	MainController mc = new MainController();
+	mc.initialize();
+	mc.run();
 
     }
 }

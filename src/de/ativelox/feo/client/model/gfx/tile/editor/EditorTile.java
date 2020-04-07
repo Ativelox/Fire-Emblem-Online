@@ -1,6 +1,6 @@
 package de.ativelox.feo.client.model.gfx.tile.editor;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,14 +29,14 @@ public class EditorTile extends Tile implements IHoverable, IClickable {
 
     private boolean mPressed;
 
-    public EditorTile(ETileType type, Image image) {
+    public EditorTile(ETileType type, BufferedImage image) {
         super(type, image);
 
         mListener = new ArrayList<>();
         mRoutine = new DefaultHoverRoutine(this);
     }
 
-    public EditorTile(ETileType type, Image image, int id) {
+    public EditorTile(ETileType type, BufferedImage image, int id) {
         super(type, image, id);
 
         mListener = new ArrayList<>();

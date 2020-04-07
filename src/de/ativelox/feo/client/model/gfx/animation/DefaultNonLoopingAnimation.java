@@ -48,7 +48,7 @@ public class DefaultNonLoopingAnimation extends AAnimation {
         mTimePassed = 0;
         mFrameCounter = 1;
 
-        mFrameSpacing = playTime / sequence.length;
+        mFrameSpacing = mPlayTime / sequence.length;
 
         mIsFinished = false;
 

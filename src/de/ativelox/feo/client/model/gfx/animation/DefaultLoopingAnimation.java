@@ -29,7 +29,7 @@ public class DefaultLoopingAnimation extends ALoopingAnimation {
         mTimePassed = 0;
         mFrameCounter = 1;
 
-        mFrameSpacing = playTime / sequence.length;
+        mFrameSpacing = mPlayTime / sequence.length;
 
         mIsSmooth = false;
 

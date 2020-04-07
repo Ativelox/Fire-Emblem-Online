@@ -35,23 +35,25 @@ public abstract class AAnimation extends SpatialObject implements IAnimation {
     protected boolean mHidden;
 
     public AAnimation(BufferedImage[] sequence, EAnimationDirection direction, boolean looping, long playTime,
-            int width, int height) {
-        super(0, 0, width, height);
+	    int width, int height) {
+	super(0, 0, width, height);
 
-        mHookMapping = new HashMap<>();
+	mHookMapping = new HashMap<>();
 
-        mAnimationDirection = direction;
-        mIsLooping = looping;
-        mPlayTime = playTime;
-        mSequence = sequence;
+	mAnimationDirection = direction;
+	mIsLooping = looping;
+	mPlayTime = playTime;
+	mSequence = sequence;
 
-        mNext = 0;
-        mIsStopped = true;
+	mPlayTime /= 2;
+
+	mNext = 0;
+	mIsStopped = true;
     }
 
     @Override
     public boolean isLooping() {
-        return mIsLooping;
+	return mIsLooping;
 
     }
 
@@ -61,16 +63,16 @@ public abstract class AAnimation extends SpatialObject implements IAnimation {
     public abstract void update(TimeSnapshot ts);
 
     protected boolean hookRoutine(TimeSnapshot ts) {
-        if (mHookMapping.containsKey(mNext + 1)) {
-            boolean isContinuing = true;
+	if (mHookMapping.containsKey(mNext + 1)) {
+	    boolean isContinuing = true;
 
-            for (final Function<TimeSnapshot, Boolean> hook : mHookMapping.get(mNext + 1)) {
-                boolean hookResult = hook.apply(ts);
-                isContinuing = isContinuing && hookResult;
-            }
-            return isContinuing;
-        }
-        return true;
+	    for (final Function<TimeSnapshot, Boolean> hook : mHookMapping.get(mNext + 1)) {
+		boolean hookResult = hook.apply(ts);
+		isContinuing = isContinuing && hookResult;
+	    }
+	    return isContinuing;
+	}
+	return true;
     }
 
     @Override
@@ -78,54 +80,54 @@ public abstract class AAnimation extends SpatialObject implements IAnimation {
 
     @Override
     public void start() {
-        mIsStopped = false;
+	mIsStopped = false;
 
     }
 
     @Override
     public void stop() {
-        mNext = mSequence.length - 1;
-        mIsStopped = true;
+	mNext = mSequence.length - 1;
+	mIsStopped = true;
 
     }
 
     @Override
     public void reset() {
-        mNext = 0;
+	mNext = 0;
 
     }
 
     @Override
     public void hide() {
-        mHidden = true;
+	mHidden = true;
     }
 
     @Override
     public void show() {
-        mHidden = false;
+	mHidden = false;
     }
 
     @Override
     public Iterator<BufferedImage> iterator() {
-        return new AnimationIterator(mSequence);
+	return new AnimationIterator(mSequence);
     }
 
     @Override
     public void addHook(int frame, Function<TimeSnapshot, Boolean> hook) {
-        if (!mHookMapping.containsKey(frame)) {
-            mHookMapping.put(frame, new ArrayList<>());
-        }
-        mHookMapping.get(frame).add(hook);
+	if (!mHookMapping.containsKey(frame)) {
+	    mHookMapping.put(frame, new ArrayList<>());
+	}
+	mHookMapping.get(frame).add(hook);
 
     }
 
     @Override
     public void addEndHook(Function<TimeSnapshot, Boolean> hook) {
-        addHook(mSequence.length, hook);
+	addHook(mSequence.length, hook);
     }
 
     @Override
     public boolean isHidden() {
-        return mHidden;
+	return mHidden;
     }
 }

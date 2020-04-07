@@ -110,438 +110,438 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     private String mCommanderAttackedQuote;
 
     public DummyUnit(UnitProperties properties) {
-        this(0, 0, EAffiliation.ALLIED, properties);
+	this(0, 0, EAffiliation.ALLIED, properties);
     }
 
     public DummyUnit(int x, int y, EAffiliation affiliation, UnitProperties properties) {
-        this(x, y, properties.getUnit(), properties.getGender(), properties.getUnitClass(), properties.getName(),
-                affiliation, properties.getMov(), properties.getHp(), properties.getStr(), properties.getSkl(),
-                properties.getSkl(), properties.getLck(), properties.getDef(), properties.getRes(),
-                properties.getGrowthHp(), properties.getGrowthStr(), properties.getGrowthSkl(),
-                properties.getGrowthSpd(), properties.getGrowthLck(), properties.getGrowthDef(),
-                properties.getGrowthRes(), properties.getHoverSheetName(), properties.getMeleeAttackSheetName(),
-                properties.getRangedAttackSheetName(), properties.getMeleeCritSheetName(),
-                properties.getRangedCritSheetName(), properties.getDodgeSheetName(), properties.getPortraitSheetName(),
-                properties.getMoveSheetName(), properties.getBattlePaletteName(), properties.getAnimationHookName(),
-                properties.getDeathQuote(), properties.getCommanderAttackedQuote());
+	this(x, y, properties.getUnit(), properties.getGender(), properties.getUnitClass(), properties.getName(),
+		affiliation, properties.getMov(), properties.getHp(), properties.getStr(), properties.getSkl(),
+		properties.getSkl(), properties.getLck(), properties.getDef(), properties.getRes(),
+		properties.getGrowthHp(), properties.getGrowthStr(), properties.getGrowthSkl(),
+		properties.getGrowthSpd(), properties.getGrowthLck(), properties.getGrowthDef(),
+		properties.getGrowthRes(), properties.getHoverSheetName(), properties.getMeleeAttackSheetName(),
+		properties.getRangedAttackSheetName(), properties.getMeleeCritSheetName(),
+		properties.getRangedCritSheetName(), properties.getDodgeSheetName(), properties.getPortraitSheetName(),
+		properties.getMoveSheetName(), properties.getBattlePaletteName(), properties.getAnimationHookName(),
+		properties.getDeathQuote(), properties.getCommanderAttackedQuote());
     }
 
     public DummyUnit(int x, int y, EUnit unit, EGender gender, EClass unitClass, String name, EAffiliation affiliation,
-            int mov, int hp, int str, int skl, int spd, int lck, int def, int res, double growthHp, double growthStr,
-            double growthSkl, double growthSpd, double growthLck, double growthDef, double growthRes,
-            String hoverSheetName, String meleeAttackSheetName, String rangedAttackSheetName, String meleeCritSheetName,
-            String rangedCritSheetName, String dodgeSheetName, String portraitSheetName, String moveSheetName,
-            String battlePaletteName, String animationHookName, String deathQuote, String commanderAttackedQuote) {
-        super(Tile.WIDTH * x, Tile.HEIGHT * y, Tile.WIDTH, Tile.HEIGHT);
+	    int mov, int hp, int str, int skl, int spd, int lck, int def, int res, double growthHp, double growthStr,
+	    double growthSkl, double growthSpd, double growthLck, double growthDef, double growthRes,
+	    String hoverSheetName, String meleeAttackSheetName, String rangedAttackSheetName, String meleeCritSheetName,
+	    String rangedCritSheetName, String dodgeSheetName, String portraitSheetName, String moveSheetName,
+	    String battlePaletteName, String animationHookName, String deathQuote, String commanderAttackedQuote) {
+	super(Tile.WIDTH * x, Tile.HEIGHT * y, Tile.WIDTH, Tile.HEIGHT);
 
-        mCommanderAttackedQuote = commanderAttackedQuote;
+	mCommanderAttackedQuote = commanderAttackedQuote;
 
-        mDeathQuote = deathQuote;
+	mDeathQuote = deathQuote;
 
-        mHoverSheetName = hoverSheetName;
-        mPortraitSheetName = portraitSheetName;
-        mMoveSheetName = moveSheetName;
-        mMeleeAttackSheetName = meleeAttackSheetName;
-        mMeleeCritSheetName = meleeCritSheetName;
-        mRangedAttackSheetName = rangedAttackSheetName;
-        mRangedCritSheetName = rangedCritSheetName;
-        mDodgeSheetName = dodgeSheetName;
-        mBattlePaletteName = battlePaletteName;
-        mAnimationHookName = animationHookName;
+	mHoverSheetName = hoverSheetName;
+	mPortraitSheetName = portraitSheetName;
+	mMoveSheetName = moveSheetName;
+	mMeleeAttackSheetName = meleeAttackSheetName;
+	mMeleeCritSheetName = meleeCritSheetName;
+	mRangedAttackSheetName = rangedAttackSheetName;
+	mRangedCritSheetName = rangedCritSheetName;
+	mDodgeSheetName = dodgeSheetName;
+	mBattlePaletteName = battlePaletteName;
+	mAnimationHookName = animationHookName;
 
-        mMov = mov;
-        mCurrentHp = hp;
-        mHp = hp;
-        mStr = str;
-        mSkl = skl;
-        mSpd = spd;
-        mLck = lck;
-        mDef = def;
-        mRes = res;
-        mGrowthHp = growthHp;
-        mGrowthStr = growthStr;
-        mGrowthSkl = growthSkl;
-        mGrowthSpd = growthSpd;
-        mGrowthLck = growthLck;
-        mGrowthDef = growthDef;
-        mGrowthRes = growthRes;
+	mMov = mov;
+	mCurrentHp = hp;
+	mHp = hp;
+	mStr = str;
+	mSkl = skl;
+	mSpd = spd;
+	mLck = lck;
+	mDef = def;
+	mRes = res;
+	mGrowthHp = growthHp;
+	mGrowthStr = growthStr;
+	mGrowthSkl = growthSkl;
+	mGrowthSpd = growthSpd;
+	mGrowthLck = growthLck;
+	mGrowthDef = growthDef;
+	mGrowthRes = growthRes;
 
-        mInventory = new Inventory(this);
+	mInventory = new Inventory(this);
 
-        mUnit = unit;
+	mUnit = unit;
 
-        mName = name;
+	mName = name;
 
-        mGender = gender;
-        mClass = unitClass;
+	mGender = gender;
+	mClass = unitClass;
 
-        mAffiliation = affiliation;
+	mAffiliation = affiliation;
 
-        mMoveListener = new ArrayList<>();
-        mSelectionListener = new ArrayList<>();
-        mMover = new SmoothMoveRoutine(this);
+	mMoveListener = new ArrayList<>();
+	mSelectionListener = new ArrayList<>();
+	mMover = new SmoothMoveRoutine(this);
 
-        load();
+	load();
     }
 
     @Override
     public void render(DepthBufferedGraphics g) {
-        mCurrentAnimation.render(g);
+	mCurrentAnimation.render(g);
     }
 
     @Override
     public void update(TimeSnapshot ts) {
-        mMover.update(ts);
+	mMover.update(ts);
 
-        mCurrentAnimation.setX(getX());
-        mCurrentAnimation.setY(getY());
+	mCurrentAnimation.setX(getX());
+	mCurrentAnimation.setY(getY());
 
-        mCurrentAnimation.update(ts);
+	mCurrentAnimation.update(ts);
 
     }
 
     @Override
     public void load() {
-        mHover = Assets.getFor(EResource.MAP_HOVER, mHoverSheetName);
-        mMoveRight = Assets.getFor(EResource.MAP_MOVE_RIGHT, mMoveSheetName);
-        mMoveLeft = Assets.getFor(EResource.MAP_MOVE_LEFT, mMoveSheetName);
-        mMoveUp = Assets.getFor(EResource.MAP_MOVE_UP, mMoveSheetName);
-        mMoveDown = Assets.getFor(EResource.MAP_MOVE_DOWN, mMoveSheetName);
-        mSelection = Assets.getFor(EResource.MAP_SELECTION, mMoveSheetName);
+	mHover = Assets.getFor(EResource.MAP_HOVER, mHoverSheetName);
+	mMoveRight = Assets.getFor(EResource.MAP_MOVE_RIGHT, mMoveSheetName);
+	mMoveLeft = Assets.getFor(EResource.MAP_MOVE_LEFT, mMoveSheetName);
+	mMoveUp = Assets.getFor(EResource.MAP_MOVE_UP, mMoveSheetName);
+	mMoveDown = Assets.getFor(EResource.MAP_MOVE_DOWN, mMoveSheetName);
+	mSelection = Assets.getFor(EResource.MAP_SELECTION, mMoveSheetName);
 
-        mCurrentAnimation = mHover;
+	mCurrentAnimation = mHover;
 
-        mCurrentAnimation.setX(getX());
-        mCurrentAnimation.setY(getY());
+	mCurrentAnimation.setX(getX());
+	mCurrentAnimation.setY(getY());
 
-        mCurrentAnimation.start();
+	mCurrentAnimation.start();
 
-        if (mAffiliation == EAffiliation.OPPOSED) {
-            Palette.convertTo(mHover, Palette.BLUE_RED);
-            Palette.convertTo(mMoveRight, Palette.BLUE_RED);
-            Palette.convertTo(mMoveLeft, Palette.BLUE_RED);
-            Palette.convertTo(mMoveUp, Palette.BLUE_RED);
-            Palette.convertTo(mMoveDown, Palette.BLUE_RED);
-            Palette.convertTo(mSelection, Palette.BLUE_RED);
+	if (mAffiliation == EAffiliation.OPPOSED) {
+	    Palette.convertTo(mHover, Palette.BLUE_RED);
+	    Palette.convertTo(mMoveRight, Palette.BLUE_RED);
+	    Palette.convertTo(mMoveLeft, Palette.BLUE_RED);
+	    Palette.convertTo(mMoveUp, Palette.BLUE_RED);
+	    Palette.convertTo(mMoveDown, Palette.BLUE_RED);
+	    Palette.convertTo(mSelection, Palette.BLUE_RED);
 
-        }
+	}
 
-        mPortrait = Assets.getFor(EResource.PORTRAIT, mPortraitSheetName);
+	mPortrait = Assets.getFor(EResource.PORTRAIT, mPortraitSheetName);
     }
 
     @Override
     public void move(Iterator<EdgeCost<Tile, Edge<Tile>>> path, boolean reversed) {
-        mMoveListener.forEach(l -> l.onMoveStarted(this));
-        mMover.move(path, reversed, getMov());
+	mMoveListener.forEach(l -> l.onMoveStarted(this));
+	mMover.move(path, reversed, getMov());
 
     }
 
     @Override
     public void onDirectionChange(EDirection direction) {
-        switch (direction) {
-        case DOWN:
-            mCurrentAnimation = mMoveDown;
-            break;
-        case LEFT:
-            mCurrentAnimation = mMoveLeft;
-            break;
-        case RIGHT:
-            mCurrentAnimation = mMoveRight;
-            break;
-        case UP:
-            mCurrentAnimation = mMoveUp;
-            break;
-        default:
-            break;
+	switch (direction) {
+	case DOWN:
+	    mCurrentAnimation = mMoveDown;
+	    break;
+	case LEFT:
+	    mCurrentAnimation = mMoveLeft;
+	    break;
+	case RIGHT:
+	    mCurrentAnimation = mMoveRight;
+	    break;
+	case UP:
+	    mCurrentAnimation = mMoveUp;
+	    break;
+	default:
+	    break;
 
-        }
-        mCurrentAnimation.setX(getX());
-        mCurrentAnimation.setY(getY());
-        mCurrentAnimation.reset();
-        mCurrentAnimation.start();
+	}
+	mCurrentAnimation.setX(getX());
+	mCurrentAnimation.setY(getY());
+	mCurrentAnimation.reset();
+	mCurrentAnimation.start();
 
     }
 
     @Override
     public void onMoveFinished() {
-        mCurrentAnimation = mHover;
-        mCurrentAnimation.setX(getX());
-        mCurrentAnimation.setY(getY());
+	mCurrentAnimation = mHover;
+	mCurrentAnimation.setX(getX());
+	mCurrentAnimation.setY(getY());
 
-        mCurrentAnimation.reset();
-        mCurrentAnimation.start();
+	mCurrentAnimation.reset();
+	mCurrentAnimation.start();
 
-        mMoveListener.forEach(l -> l.onMoveFinished(this));
+	mMoveListener.forEach(l -> l.onMoveFinished(this));
 
     }
 
     @Override
     public void selected() {
-        mIsSelected = true;
+	mIsSelected = true;
 
-        if (!mIsWaiting) {
-            mCurrentAnimation = mSelection;
+	if (!mIsWaiting) {
+	    mCurrentAnimation = mSelection;
 
-            mCurrentAnimation.setX(getX());
-            mCurrentAnimation.setY(getY());
-            mCurrentAnimation.reset();
-            mCurrentAnimation.start();
-        }
+	    mCurrentAnimation.setX(getX());
+	    mCurrentAnimation.setY(getY());
+	    mCurrentAnimation.reset();
+	    mCurrentAnimation.start();
+	}
 
-        mSelectionListener.forEach(l -> l.onSelect(this));
+	mSelectionListener.forEach(l -> l.onSelect(this));
 
     }
 
     @Override
     public void deSelected() {
-        mIsSelected = false;
-        mCurrentAnimation = mHover;
-        mCurrentAnimation.reset();
-        mCurrentAnimation.start();
+	mIsSelected = false;
+	mCurrentAnimation = mHover;
+	mCurrentAnimation.reset();
+	mCurrentAnimation.start();
 
-        mSelectionListener.forEach(l -> l.onDeSelect(this));
+	mSelectionListener.forEach(l -> l.onDeSelect(this));
 
     }
 
     @Override
     public boolean isSelected() {
-        return mIsSelected;
+	return mIsSelected;
     }
 
     @Override
     public void add(ISelectionListener listener) {
-        mSelectionListener.add(listener);
+	mSelectionListener.add(listener);
 
     }
 
     @Override
     public void remove(ISelectionListener listener) {
-        mSelectionListener.add(listener);
+	mSelectionListener.add(listener);
 
     }
 
     @Override
     public void addMoveFinishedListener(IMoveListener listener) {
-        mMoveListener.add(listener);
+	mMoveListener.add(listener);
 
     }
 
     @Override
     public void removeMoveFinishedListener(IMoveListener listener) {
-        mMoveListener.remove(listener);
+	mMoveListener.remove(listener);
 
     }
 
     @Override
     public int getMov() {
-        return mMov;
+	return mMov;
 
     }
 
     @Override
     public int getRange() {
-        int maxRange = 0;
+	int maxRange = 0;
 
-        for (final IWeapon weapon : getInventory().getWeapons()) {
-            if (weapon.getRange() > maxRange) {
-                maxRange = weapon.getRange();
-            }
-        }
-        return maxRange;
+	for (final IWeapon weapon : getInventory().getWeapons()) {
+	    if (weapon.getRange() > maxRange) {
+		maxRange = weapon.getRange();
+	    }
+	}
+	return maxRange;
     }
 
     @Override
     public void moveInstantly(int x, int y) {
-        this.setX(x);
-        this.setY(y);
+	this.setX(x);
+	this.setY(y);
 
     }
 
     @Override
     public void finished() {
-        mCurrentAnimation = mHover;
-        mCurrentAnimation.setX(getX());
-        mCurrentAnimation.setY(getY());
-        mCurrentAnimation.reset();
-        mCurrentAnimation.start();
+	mCurrentAnimation = mHover;
+	mCurrentAnimation.setX(getX());
+	mCurrentAnimation.setY(getY());
+	mCurrentAnimation.reset();
+	mCurrentAnimation.start();
 
-        if (mAffiliation == EAffiliation.ALLIED) {
-            Palette.convertTo(mCurrentAnimation, Palette.BLUE_GRAY);
-        } else {
-            Palette.convertTo(mCurrentAnimation, Palette.RED_GRAY);
-        }
+	if (mAffiliation == EAffiliation.ALLIED) {
+	    Palette.convertTo(mCurrentAnimation, Palette.BLUE_GRAY);
+	} else {
+	    Palette.convertTo(mCurrentAnimation, Palette.RED_GRAY);
+	}
 
-        mIsWaiting = true;
+	mIsWaiting = true;
 
     }
 
     @Override
     public boolean isWaiting() {
-        return mIsWaiting;
+	return mIsWaiting;
     }
 
     @Override
     public void ready() {
-        mIsWaiting = false;
+	mIsWaiting = false;
 
-        if (mAffiliation == EAffiliation.ALLIED) {
-            Palette.convertTo(mCurrentAnimation, Palette.GRAY_BLUE);
-        } else {
-            Palette.convertTo(mCurrentAnimation, Palette.GRAY_RED);
-        }
+	if (mAffiliation == EAffiliation.ALLIED) {
+	    Palette.convertTo(mCurrentAnimation, Palette.GRAY_BLUE);
+	} else {
+	    Palette.convertTo(mCurrentAnimation, Palette.GRAY_RED);
+	}
 
     }
 
     @Override
     public Image getPortrait() {
-        return mPortrait;
+	return mPortrait;
     }
 
     @Override
     public String getName() {
-        return mName;
+	return mName;
     }
 
     @Override
     public int getCurrentHP() {
-        return mCurrentHp;
+	return mCurrentHp;
     }
 
     @Override
     public int getMaximumHP() {
-        return mHp;
+	return mHp;
     }
 
     @Override
     public EAffiliation getAffiliation() {
-        return mAffiliation;
+	return mAffiliation;
     }
 
     @Override
     public Inventory getInventory() {
-        return mInventory;
+	return mInventory;
     }
 
     @Override
     public int getStr() {
-        return mStr;
+	return mStr;
     }
 
     @Override
     public int getSkill() {
-        return mSkl;
+	return mSkl;
     }
 
     @Override
     public int getSpd() {
-        return mSpd;
+	return mSpd;
     }
 
     @Override
     public int getLuck() {
-        return mLck;
+	return mLck;
     }
 
     @Override
     public int getDef() {
-        return mDef;
+	return mDef;
     }
 
     @Override
     public int getRes() {
-        return mRes;
+	return mRes;
     }
 
     @Override
     public Optional<IWeapon> getEquippedWeapon() {
-        if (mCurrentlyEquipped == null || !mInventory.contains(mCurrentlyEquipped)) {
-            return Optional.empty();
-        }
-        return Optional.of(mCurrentlyEquipped);
+	if (mCurrentlyEquipped == null || !mInventory.contains(mCurrentlyEquipped)) {
+	    return Optional.empty();
+	}
+	return Optional.of(mCurrentlyEquipped);
     }
 
     @Override
     public void equip(IWeapon weapon) {
-        if (getInventory().getWeapons(w -> w == weapon).size() > 0) {
-            mCurrentlyEquipped = weapon;
-        }
+	if (getInventory().getWeapons(w -> w == weapon).size() > 0) {
+	    mCurrentlyEquipped = weapon;
+	}
     }
 
     @Override
     public EGender getGender() {
-        return mGender;
+	return mGender;
     }
 
     @Override
     public EClass getCurrentClass() {
-        return mClass;
+	return mClass;
     }
 
     @Override
     public EUnit getUnit() {
-        return mUnit;
+	return mUnit;
     }
 
     @Override
     public void removeHp(int hp) {
-        mCurrentHp -= hp;
+	mCurrentHp -= hp;
 
     }
 
     @Override
     public String getBattleAnimation(EBattleAnimType type) {
-        switch (type) {
-        case DODGE:
-            return mDodgeSheetName;
-        case MELEE_ATTACK:
-            return mMeleeAttackSheetName;
-        case MELEE_CRIT:
-            return mMeleeCritSheetName;
-        case RANGED_ATTACK:
-            return mRangedAttackSheetName;
-        case RANGED_CRIT:
-            return mRangedCritSheetName;
-        default:
-            Logger.get().log(ELogType.ERROR, "No sheet found for the type: " + type);
-            break;
+	switch (type) {
+	case DODGE:
+	    return mDodgeSheetName;
+	case MELEE_ATTACK:
+	    return mMeleeAttackSheetName;
+	case MELEE_CRIT:
+	    return mMeleeCritSheetName;
+	case RANGED_ATTACK:
+	    return mRangedAttackSheetName;
+	case RANGED_CRIT:
+	    return mRangedCritSheetName;
+	default:
+	    Logger.get().log(ELogType.ERROR, "No sheet found for the type: " + type);
+	    break;
 
-        }
-        return "";
+	}
+	return "";
     }
 
     @Override
     public String getBattlePaletteName() {
-        return mBattlePaletteName;
+	return mBattlePaletteName;
     }
 
     @Override
     public String getAnimationHookName() {
-        return mAnimationHookName;
+	return mAnimationHookName;
     }
 
     @Override
     public String getDeathQuote() {
-        return mDeathQuote;
+	return mDeathQuote;
     }
 
     @Override
     public boolean isCommander() {
-        return mIsCommander;
+	return mIsCommander;
     }
 
     @Override
     public void setToCommander() {
-        mIsCommander = true;
+	mIsCommander = true;
     }
 
     @Override
     public String getCommanderAttackedQuote() {
-        return mCommanderAttackedQuote;
+	return mCommanderAttackedQuote;
     }
 
     @Override
     public void addHp(int hp) {
-        mCurrentHp = Math.min(mHp, mCurrentHp + hp);
+	mCurrentHp = Math.min(mHp, mCurrentHp + hp);
 
     }
 }

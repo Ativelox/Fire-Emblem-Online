@@ -24,105 +24,105 @@ public class Inventory {
     private final IUnit mOwner;
 
     public Inventory(final IUnit owner, int max, IItem... items) {
-        mInventory = new ArrayList<>();
+	mInventory = new ArrayList<>();
 
-        for (final IItem item : items) {
-            this.add(item);
-        }
+	for (final IItem item : items) {
+	    this.add(item);
+	}
 
-        mOwner = owner;
+	mOwner = owner;
 
-        mLimit = max;
+	mLimit = max;
 
-        for (int i = 0; i < Math.min(items.length, max); i++) {
-            this.add(items[i]);
+	for (int i = 0; i < Math.min(items.length, max); i++) {
+	    this.add(items[i]);
 
-        }
+	}
     }
 
     public Inventory(final IUnit owner, IItem... items) {
-        this(owner, 5, items);
+	this(owner, 5, items);
 
     }
 
     public int getLimit() {
-        return mLimit;
+	return mLimit;
 
     }
 
     public List<IItem> getItems() {
-        List<IItem> result = new ArrayList<>();
+	List<IItem> result = new ArrayList<>();
 
-        for (final IItem item : mInventory) {
-            if (item == null) {
-                continue;
-            }
+	for (final IItem item : mInventory) {
+	    if (item == null) {
+		continue;
+	    }
 
-            result.add(item);
-        }
-        return result;
+	    result.add(item);
+	}
+	return result;
 
     }
 
     public Collection<IWeapon> getSorted(Comparator<? super IWeapon> comparator) {
-        List<IWeapon> weapons = new ArrayList<>();
+	List<IWeapon> weapons = new ArrayList<>();
 
-        for (final IWeapon weapon : this.getWeapons()) {
-            weapons.add(weapon);
-        }
-        weapons.sort(comparator);
-        return weapons;
+	for (final IWeapon weapon : this.getWeapons()) {
+	    weapons.add(weapon);
+	}
+	weapons.sort(comparator);
+	return weapons;
 
     }
 
     public Collection<IWeapon> getWeapons(Predicate<IWeapon> predicate) {
-        Collection<IWeapon> weapons = new ArrayList<>();
+	Collection<IWeapon> weapons = new ArrayList<>();
 
-        for (final IWeapon weapon : this.getWeapons()) {
-            if (predicate.test(weapon)) {
-                weapons.add(weapon);
-            }
-        }
-        return weapons;
+	for (final IWeapon weapon : this.getWeapons()) {
+	    if (predicate.test(weapon)) {
+		weapons.add(weapon);
+	    }
+	}
+	return weapons;
     }
 
     public IWeapon[] getWeapons() {
-        List<IWeapon> temp = new ArrayList<>();
+	List<IWeapon> temp = new ArrayList<>();
 
-        for (final IItem item : mInventory) {
-            if (item instanceof IWeapon) {
-                temp.add((IWeapon) item);
-            }
-        }
+	for (final IItem item : mInventory) {
+	    if (item instanceof IWeapon) {
+		temp.add((IWeapon) item);
+	    }
+	}
 
-        IWeapon[] result = new IWeapon[temp.size()];
-        for (int i = 0; i < temp.size(); i++) {
-            result[i] = temp.get(i);
+	IWeapon[] result = new IWeapon[temp.size()];
+	for (int i = 0; i < temp.size(); i++) {
+	    result[i] = temp.get(i);
 
-        }
-        return result;
+	}
+	return result;
 
     }
 
     public void add(IItem item) {
-        item.setOwner(mOwner);
-        mInventory.add(item);
-        mSize++;
+	item.setOwner(mOwner);
+	mInventory.add(item);
+	mSize++;
     }
 
     public IItem swap(IItem itemAdd, int index) {
-        IItem result = mInventory.remove(index);
-        mInventory.add(index, itemAdd);
+	IItem result = mInventory.remove(index);
+	mInventory.add(index, itemAdd);
 
-        return result;
+	return result;
     }
 
     public void remove(IItem item) {
-        mInventory.remove(item);
+	mInventory.remove(item);
 
     }
 
     public boolean contains(IWeapon weapon) {
-        return mInventory.contains(weapon);
+	return mInventory.contains(weapon);
     }
 }
