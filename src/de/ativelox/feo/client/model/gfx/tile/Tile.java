@@ -1,6 +1,6 @@
 package de.ativelox.feo.client.model.gfx.tile;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.property.ILayerable;
@@ -13,7 +13,7 @@ import de.ativelox.feo.client.model.property.ISpatial;
  */
 public class Tile extends AStatAssignedTile implements ISpatial, IRenderable, ILayerable {
 
-    protected final Image mImage;
+    protected final BufferedImage mImage;
 
     private static int id = 0;
 
@@ -21,51 +21,55 @@ public class Tile extends AStatAssignedTile implements ISpatial, IRenderable, IL
 
     private int mLayer;
 
-    public Tile(ETileType type, Image image, int id) {
-        super(type);
+    public Tile(ETileType type, BufferedImage image, int id) {
+	super(type);
 
-        mId = id;
+	mId = id;
 
-        mImage = image;
+	mImage = image;
     }
 
-    public Tile(ETileType type, Image image) {
-        super(type);
+    public Tile(ETileType type, BufferedImage image) {
+	super(type);
 
-        mId = Tile.id;
+	mId = Tile.id;
 
-        Tile.id++;
+	Tile.id++;
 
-        mImage = image;
+	mImage = image;
+    }
+
+    public BufferedImage getImage() {
+	return mImage;
     }
 
     public static void resetId() {
-        id = 0;
+	id = 0;
     }
 
     public int getId() {
-        return mId;
+	return mId;
     }
 
     @Override
     public void render(DepthBufferedGraphics g) {
-        g.drawImage(mImage, mX, mY, mWidth, mHeight, getLayer());
+	g.drawImage(mImage, mX, mY, mWidth, mHeight, getLayer());
 
     }
 
     @Override
     public int getLayer() {
-        return mLayer;
+	return mLayer;
     }
 
     @Override
     public void setLayer(int layer) {
-        mLayer = layer;
+	mLayer = layer;
 
     }
 
     @Override
     public ITile copy() {
-        return new Tile(mType, mImage, this.mId);
+	return new Tile(mType, mImage, this.mId);
     }
 }

@@ -1,6 +1,6 @@
 package de.ativelox.feo.client.model.gfx.tile.editor;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,7 +41,7 @@ public class EditorTileSet extends ATileSet<EditorTile>
     }
 
     @Override
-    protected void put(int index, Image[] tiles, ETileType type) {
+    protected void put(int index, BufferedImage[] tiles, ETileType type) {
         if (!mMapping.containsKey(type)) {
             mMapping.put(type, new ArrayList<>());
 
