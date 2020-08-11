@@ -126,6 +126,8 @@ public class SmoothMoveRoutine implements IMoveRoutine {
 
         if (reachedTempGoal) {
             mMovedTiles++;
+            
+            System.out.println("REACHED TEMP GOAL " + mMovedTiles + " " + mPath.hasNext());
 
             if (!mPath.hasNext() || mMovedTiles >= mLimit) {
                 mPath = null;

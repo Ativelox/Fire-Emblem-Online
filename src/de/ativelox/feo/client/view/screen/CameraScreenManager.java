@@ -18,6 +18,7 @@ import de.ativelox.feo.client.model.camera.Camera;
 import de.ativelox.feo.client.model.gfx.DepthBufferedGraphics;
 import de.ativelox.feo.client.model.map.Map;
 import de.ativelox.feo.client.model.map.TutorialMap;
+import de.ativelox.feo.client.model.network.NetworkRoutine;
 import de.ativelox.feo.client.model.property.EAffiliation;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.Display;
@@ -168,6 +169,9 @@ public class CameraScreenManager implements IScreenManager {
             break;
         case MAIN_MENU_SCREEN:
             removeUntil(screen);
+            break;
+        case ONLINE_SCREEN:
+            new NetworkRoutine(mCamera, this, mInputManager);
             break;
         default:
             break;

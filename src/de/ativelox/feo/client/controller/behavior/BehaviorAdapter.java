@@ -178,4 +178,22 @@ public class BehaviorAdapter implements IBehavior {
     public void onWeaponEquipAction(IWeapon weapon) {
 
     }
+
+    @Override
+    public void beforeAttack(IUnit target) {
+
+    }
+
+    @Override
+    public void beforeTurnEnd() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setAffiliation(EAffiliation affiliation) {
+        mAffiliation = affiliation;
+        mUnits = mMap.getUnitsBy(affiliation);
+
+    }
 }

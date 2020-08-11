@@ -5,7 +5,7 @@ package de.ativelox.feo.client.view.screen;
  *
  */
 public enum EScreen {
-    
-    GAME_SCREEN, MAIN_MENU_SCREEN, MAP_EDITOR_SCREEN;
+
+    GAME_SCREEN, MAIN_MENU_SCREEN, MAP_EDITOR_SCREEN, ONLINE_SCREEN;
 
 }

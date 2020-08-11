@@ -130,6 +130,14 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
 
     }
 
+    public Optional<Path<Tile, Edge<Tile>>> getPath(IUnit source, IUnit destination) {
+        ShortestPathComputation<Tile, Edge<Tile>> algo = new ShortestPathComputationBuilder<>(mGraphRepresentation)
+                .resetOrdinaryDijkstra().addModuleIgnoreEdgeIf(new UnitEdgeIgnoring(source, this)).build();
+        
+        return algo.shortestPath(this.getByPos(source.getX(), source.getY()), this.getByPos(destination.getX(), destination.getY()));
+
+    }
+
     public Set<Tile> getTilesInRange(IUnit unit, int range) {
         ShortestPathComputation<Tile, Edge<Tile>> algo = new ShortestPathComputationBuilder<>(mGraphRepresentation)
                 .resetOrdinaryDijkstra().addModuleAbortAfterRange(range)

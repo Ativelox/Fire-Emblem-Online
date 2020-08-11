@@ -12,6 +12,8 @@ import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
  *
  */
 public interface IBehavior {
+    
+    void setAffiliation(EAffiliation affiliation);
 
     void setController(GameController controller);
 
@@ -68,5 +70,9 @@ public interface IBehavior {
     void onItemDiscardAction(IItem item);
 
     void onWeaponEquipAction(IWeapon weapon);
+
+    void beforeAttack(IUnit target);
+    
+    void beforeTurnEnd();
 
 }

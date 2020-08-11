@@ -32,4 +32,8 @@ public class MainMenuController {
         mManager.switchTo(EScreen.MAP_EDITOR_SCREEN);
 
     }
+    
+    public void onOnlineButtonPressed() {
+        mManager.switchTo(EScreen.ONLINE_SCREEN);
+    }
 }

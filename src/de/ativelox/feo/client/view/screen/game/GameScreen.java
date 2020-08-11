@@ -197,6 +197,7 @@ public class GameScreen extends InputReceiver
     @Override
     public void onMoveFinished(ICanMove mover) {
         if (mover instanceof IUnit) {
+            System.out.println("MOVEMENT FINISHED " + mController.getActiveBehavior());
             mController.getActiveBehavior().onMovementFinished((IUnit) mover);
         }
 

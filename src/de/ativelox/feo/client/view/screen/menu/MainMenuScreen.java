@@ -120,6 +120,7 @@ public class MainMenuScreen implements IScreen, IConfirmListener {
                 break;
 
             case ONLINE:
+                mController.onOnlineButtonPressed();
                 break;
             case SETTING:
                 break;

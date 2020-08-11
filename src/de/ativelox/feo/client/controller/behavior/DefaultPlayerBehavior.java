@@ -20,9 +20,9 @@ public class DefaultPlayerBehavior implements IBehavior {
 
     private GameController mController;
 
-    private PathCalculationRoutine mPathRoutine;
+    protected PathCalculationRoutine mPathRoutine;
 
-    private final EAffiliation mAffiliation;
+    private EAffiliation mAffiliation;
 
     private boolean mIsOnTurn;
 
@@ -70,6 +70,8 @@ public class DefaultPlayerBehavior implements IBehavior {
 
         mController.removeActionWindow();
         mController.unBlockNonUiInput();
+
+        this.beforeTurnEnd();
 
         mIsOnTurn = false;
         mController.turnEnd(this);
@@ -279,6 +281,8 @@ public class DefaultPlayerBehavior implements IBehavior {
         mController.removeTargetSelect();
         mController.removeWeaponSelect();
 
+        this.beforeAttack(target);
+
         mController.initiateAttack(mPathRoutine.getActor(), target);
 
     }
@@ -376,6 +380,22 @@ public class DefaultPlayerBehavior implements IBehavior {
         SoundPlayer.get().play(ESoundEffect.WINDOW_ACCEPT);
         mController.equipWeaon(weapon);
         mController.removeItemUsageSelection();
+
+    }
+
+    @Override
+    public void beforeAttack(IUnit target) {
+
+    }
+
+    @Override
+    public void beforeTurnEnd() {
+
+    }
+
+    @Override
+    public void setAffiliation(EAffiliation affiliation) {
+        mAffiliation = affiliation;
 
     }
 }

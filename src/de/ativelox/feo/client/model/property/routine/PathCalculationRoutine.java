@@ -248,4 +248,8 @@ public class PathCalculationRoutine {
             mActor.move(mCurrentPath.iterator(), false);
         }
     }
+
+    public Iterator<EdgeCost<Tile, Edge<Tile>>> getPath() {
+        return mCurrentPath.iterator();
+    }
 }

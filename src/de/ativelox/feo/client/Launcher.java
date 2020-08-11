@@ -10,8 +10,8 @@ public class Launcher {
 
     public static void main(String[] args) {
 
-//        SpriteSheet.generateFrom(Paths.get("res", "dumps", "fe6", "melee_attack", "myrmidon_f"),
-//                Paths.get("res", "fe6", "melee_attack", "myrmidon_f.png"), 240, 160);
+//        SpriteSheet.generateFrom(Paths.get("res", "dumps", "fe6", "melee_attack", "altina_f"),
+//                Paths.get("res", "fe6", "melee_attack", "altina_f.png"), 240, 160);
 //
 //        SpriteSheet.generateFrom(Paths.get("res", "dumps", "fe6", "melee_crit", "myrmidon_f"),
 //                Paths.get("res", "fe6", "melee_crit", "myrmidon_f.png"), 240, 160);
