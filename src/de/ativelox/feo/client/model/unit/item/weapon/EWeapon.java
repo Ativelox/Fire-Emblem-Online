@@ -6,6 +6,6 @@ package de.ativelox.feo.client.model.unit.item.weapon;
  */
 public enum EWeapon {
 
-    RAPIER, WO_DAO, IRON_SWORD;
+    RAPIER, WO_DAO, IRON_SWORD, IRON_LANCE, SLIM_LANCE, IRON_BOW;
 
 }

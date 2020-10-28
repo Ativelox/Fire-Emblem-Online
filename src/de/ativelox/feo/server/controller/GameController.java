@@ -2,6 +2,7 @@ package de.ativelox.feo.server.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import de.ativelox.feo.network.INetworkController;
 import de.ativelox.feo.network.protocol.EC2S;
@@ -51,18 +52,22 @@ public final class GameController implements IGameController<ES2C, EC2S> {
      */
     private int mCurrentTurnPlayerId;
 
+    private long mSeed;
+
     /**
      * Creates a new {@link GameController}.
      * 
      * @param playerAmount The amount of players this instance manages.
      */
     public GameController(final int playerAmount) {
-        mPIdToNetwork = new HashMap<>();
+	mPIdToNetwork = new HashMap<>();
 
-        mPlayerAmount = playerAmount;
-        mReadyPlayers = 0;
-        mGameOngoing = false;
-        mCurrentTurnPlayerId = 0;
+	mPlayerAmount = playerAmount;
+	mReadyPlayers = 0;
+	mGameOngoing = false;
+	mCurrentTurnPlayerId = 0;
+
+	mSeed = new Random().nextLong();
 
     }
 
@@ -74,7 +79,7 @@ public final class GameController implements IGameController<ES2C, EC2S> {
      */
     @Override
     public void register(final int playerId, final INetworkController<ES2C, EC2S> networkController) {
-        this.mPIdToNetwork.put(playerId, networkController);
+	this.mPIdToNetwork.put(playerId, networkController);
 
     }
 
@@ -88,7 +93,7 @@ public final class GameController implements IGameController<ES2C, EC2S> {
      * @see GameController#sendExcluding(ES2C, String[], int)
      */
     private void sendExcluding(final ES2C protocol, final int excludePlayerId) {
-        this.sendExcluding(protocol, null, excludePlayerId);
+	this.sendExcluding(protocol, null, excludePlayerId);
     }
 
     /**
@@ -101,11 +106,21 @@ public final class GameController implements IGameController<ES2C, EC2S> {
      */
     private void sendExcluding(final ES2C protocol, final String[] args, final int excludePlayerId) {
 
-        for (int i = 0; i < mPlayerAmount - 1; i++) {
-            int playerIdToSend = ((excludePlayerId + i) % mPlayerAmount) + 1;
-            this.mPIdToNetwork.get(playerIdToSend).send(protocol, args);
+	for (int i = 0; i < mPlayerAmount - 1; i++) {
+	    int playerIdToSend = ((excludePlayerId + i + 1) % mPlayerAmount);
+	    this.mPIdToNetwork.get(playerIdToSend).send(protocol, args);
 
-        }
+	}
+    }
+
+    private void sendTo(final ES2C protocol, final String[] args, final int... playerIds) {
+	for (final int i : playerIds) {
+	    this.mPIdToNetwork.get(i).send(protocol, args);
+	}
+    }
+
+    private void sendTo(final ES2C protocol, final int... playerIds) {
+	this.sendTo(protocol, null, playerIds);
     }
 
     /**
@@ -115,9 +130,9 @@ public final class GameController implements IGameController<ES2C, EC2S> {
      * @param args     The additional arguments.
      */
     private void sendToAll(final ES2C protocol, final String[] args) {
-        for (int i = 1; i <= mPlayerAmount; i++) {
-            mPIdToNetwork.get(i).send(protocol, args);
-        }
+	for (int i = 1; i <= mPlayerAmount; i++) {
+	    mPIdToNetwork.get(i).send(protocol, args);
+	}
     }
 
     /*
@@ -127,13 +142,25 @@ public final class GameController implements IGameController<ES2C, EC2S> {
      */
     @Override
     public void sendWelcome(final int playerId) {
-        this.mPIdToNetwork.get(playerId).send(ES2C.WELCOME, new String[] { playerId + "" });
+	this.mPIdToNetwork.get(playerId).send(ES2C.WELCOME, new String[] { playerId + "", mSeed + "" });
 
     }
 
     @Override
     public void onAttackReceived(int playerId, String[] args) {
-        this.sendExcluding(ES2C.ATTACK, args, playerId);
+	this.sendExcluding(ES2C.ATTACK, args, playerId);
+
+    }
+
+    @Override
+    public void onEndTurnReceived(int playerId) {
+	this.sendExcluding(ES2C.END_TURN, playerId);
+
+    }
+
+    @Override
+    public void onWaitReceived(int playerId, String[] args) {
+	this.sendExcluding(ES2C.WAIT, args, playerId);
 
     }
 }

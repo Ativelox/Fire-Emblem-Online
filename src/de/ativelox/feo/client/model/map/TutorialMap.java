@@ -13,33 +13,46 @@ import de.ativelox.feo.client.model.unit.item.weapon.ItemFactory;
 public class TutorialMap extends Map {
 
     public TutorialMap(int x, int y) {
-	super("ch2.map", x, y);
+	super("ch0.map", x, y);
 	IUnit roy = UnitFactory.get("roy.json", EAffiliation.ALLIED, 1, 0);
 	roy.getInventory().add(ItemFactory.generate(EWeapon.RAPIER));
-//        roy.getInventory().add(ItemFactory.generate(EItem.VULNERARY, new HealthRegeneration(20)));
 	roy.equip(roy.getInventory().getWeapons()[0]);
 	roy.setToCommander();
 
-	IUnit evilRoy = UnitFactory.get("roy.json", EAffiliation.OPPOSED, 1, 1);
-	evilRoy.getInventory().add(ItemFactory.generate(EWeapon.RAPIER));
-	evilRoy.equip(evilRoy.getInventory().getWeapons()[0]);
-	evilRoy.setToCommander();
-//
-//        IUnit evilFir = UnitFactory.get("fir.json", EAffiliation.OPPOSED, 10, 4);
-//        evilFir.getInventory().add(ItemFactory.generate(EWeapon.WO_DAO));
-//        evilFir.getInventory().add(ItemFactory.generate(EWeapon.RAPIER));
-//        evilFir.equip(evilFir.getInventory().getWeapons()[0]);
-//
-//        IUnit chad = UnitFactory.get("chad.json", EAffiliation.OPPOSED, 5, 3);
-//        chad.getInventory().add(ItemFactory.generate(EWeapon.IRON_SWORD));
-//        chad.equip(chad.getInventory().getWeapons()[0]);
-//
-//        IUnit fir = UnitFactory.get("fir.json", EAffiliation.ALLIED, 0, 2);
-//        fir.getInventory().add(ItemFactory.generate(EWeapon.WO_DAO));
-//        fir.equip(fir.getInventory().getWeapons()[0]);
+	IUnit wolt = UnitFactory.get("wolt.json", EAffiliation.ALLIED, 13, 0);
+	wolt.getInventory().add(ItemFactory.generate(EWeapon.IRON_BOW));
+	wolt.equip(wolt.getInventory().getWeapons()[0]);
+	
+	
+
+	IUnit soldier1 = UnitFactory.get("soldier.json", EAffiliation.OPPOSED, 9, 5);
+	soldier1.getInventory().add(ItemFactory.generate(EWeapon.SLIM_LANCE));
+	soldier1.equip(soldier1.getInventory().getWeapons()[0]);
+
+	IUnit soldier2 = UnitFactory.get("soldier.json", EAffiliation.OPPOSED, 19, 5);
+	soldier2.getInventory().add(ItemFactory.generate(EWeapon.SLIM_LANCE));
+	soldier2.equip(soldier2.getInventory().getWeapons()[0]);
+
+	IUnit soldier3 = UnitFactory.get("soldier.json", EAffiliation.OPPOSED, 17, 7);
+	soldier3.getInventory().add(ItemFactory.generate(EWeapon.SLIM_LANCE));
+	soldier3.equip(soldier3.getInventory().getWeapons()[0]);
+
+	IUnit archer = UnitFactory.get("archer.json", EAffiliation.OPPOSED, 18, 6);
+	archer.getInventory().add(ItemFactory.generate(EWeapon.IRON_BOW));
+	archer.equip(archer.getInventory().getWeapons()[0]);
+
+	IUnit bors = UnitFactory.get("bors.json", EAffiliation.OPPOSED, 22, 4);
+	bors.getInventory().add(ItemFactory.generate(EWeapon.IRON_LANCE));
+	bors.equip(bors.getInventory().getWeapons()[0]);
+	bors.setToCommander();
 
 	this.add(roy);
-	this.add(evilRoy);
+	this.add(soldier1);
+	this.add(soldier2);
+	this.add(soldier3);
+	this.add(bors);
+	this.add(archer);
+	this.add(wolt);
 
     }
 }

@@ -20,27 +20,25 @@ public class SendDrivenBehavior extends DefaultPlayerBehavior {
      * @param affiliation
      */
     public SendDrivenBehavior(Map map, EAffiliation affiliation, IPlayerControllerSender<EC2S, ES2C> pc) {
-        super(map, affiliation);
+	super(map, affiliation);
 
-        mPc = pc;
+	mPc = pc;
     }
 
     @Override
     public void beforeAttack(IUnit target) {
-        mPc.sendAttack(mPathRoutine.getActor(), target, mPathRoutine.getPath());
+	mPc.sendAttack(mPathRoutine.getActor(), target, mPathRoutine.getPath());
 
     }
 
     @Override
-    public void onWaitAction() {
-        super.onWaitAction();
-
-//        mPc.sendWait(mPathRoutine.getActor());
+    public void beforeWait() {
+	mPc.sendWait(mPathRoutine.getActor(), mPathRoutine.getPath());
     }
 
     @Override
     public void beforeTurnEnd() {
-        mPc.sendEndTurn();
+	mPc.sendEndTurn();
 
     }
 }

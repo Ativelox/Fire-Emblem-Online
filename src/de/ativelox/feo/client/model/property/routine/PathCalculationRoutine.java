@@ -65,13 +65,13 @@ public class PathCalculationRoutine {
 
         mInRange = mMap.getTilesInRange(unit, unit.getMov());
 
-        Set<Tile> ranged = mMap.getTilesInRange(unit, unit.getMov() + unit.getRange());
+        Set<Tile> ranged = mMap.getTilesInRange(unit, unit.getMov() + unit.getMaxRange());
 
         ranged.removeAll(mInRange);
 
         mIsActive = true;
 
-        mMovementRange = new MovementRange(mInRange, mMap.getAttackableTilesInRange(mInRange, unit.getRange()));
+        mMovementRange = new MovementRange(mInRange, mMap.getAttackableTilesInRange(mInRange, unit.getMaxRange()));
 
     }
 

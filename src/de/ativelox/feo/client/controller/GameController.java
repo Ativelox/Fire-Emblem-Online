@@ -24,6 +24,7 @@ import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.unit.item.IItem;
 import de.ativelox.feo.client.model.unit.item.Inventory;
 import de.ativelox.feo.client.model.unit.item.weapon.IWeapon;
+import de.ativelox.feo.client.model.util.closy.ManhattanDistance;
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.element.game.MovementIndicator;
 import de.ativelox.feo.client.view.element.game.MovementRange;
@@ -47,8 +48,8 @@ public class GameController {
 
     private final IScreenManager mScreenManager;
 
-    private final IBehavior mAlliedBehavior;
-    private final IBehavior mOpposedBehavior;
+    private final IBehavior mInitialBehavior;
+    private final IBehavior mOtherBehavior;
 
     private IBehavior mCurrentActiveBehavior;
 
@@ -59,241 +60,246 @@ public class GameController {
     private EMusic mCurrentPiece;
 
     public GameController(final IScreenManager sm, final InputManager im, final Map map, final Camera camera,
-            final IGameScreen screen, final IGameUIScreen uiScreen, IBehavior alliedBehavior,
-            IBehavior opposedBehavior) {
-        mInputManager = im;
-        mScreen = screen;
-        mUiScreen = uiScreen;
-        mBattleScreen = ScreenFactory.createBattleScreen(im);
-        mAlliedBehavior = alliedBehavior;
-        mOpposedBehavior = opposedBehavior;
-        mScreenManager = sm;
+	    final IGameScreen screen, final IGameUIScreen uiScreen, IBehavior initialBehavior,
+	    IBehavior otherBehavior) {
+	mInputManager = im;
+	mScreen = screen;
+	mUiScreen = uiScreen;
+	mBattleScreen = ScreenFactory.createBattleScreen(im);
+	mInitialBehavior = initialBehavior;
+	mOtherBehavior = otherBehavior;
+	mScreenManager = sm;
 
-        mCurrentActiveBehavior = alliedBehavior;
-        
-        System.out.println("Current active behavior: " + alliedBehavior);
+	mCurrentActiveBehavior = initialBehavior;
 
-        mCamera = camera;
-        mMap = map;
+	System.out.println("Current active behavior: " + initialBehavior);
 
-        alliedBehavior.setController(this);
-        opposedBehavior.setController(this);
-        mBattleScreen.setController(this);
+	mCamera = camera;
+	mMap = map;
 
-        uiScreen.setController(this);
-        screen.setController(this);
+	initialBehavior.setController(this);
+	otherBehavior.setController(this);
+	mBattleScreen.setController(this);
 
-        im.register((IActionListener) screen);
-        im.register((IMovementListener) screen);
+	uiScreen.setController(this);
+	screen.setController(this);
 
-        alliedBehavior.onTurnStart();
+	im.register((IActionListener) screen);
+	im.register((IMovementListener) screen);
+
+	initialBehavior.onTurnStart();
 
     }
 
     public void blockNonUiInput() {
-        mScreen.blockInput();
+	mScreen.blockInput();
     }
 
     public void unBlockNonUiInput() {
-        mScreen.unblockInput();
+	mScreen.unblockInput();
     }
 
     public void displayUnitWindow(IUnit unit) {
-        mUiScreen.displayUnitWindow(unit);
+	mUiScreen.displayUnitWindow(unit);
 
     }
 
     public void removeUnitWindow(IUnit unit) {
-        mUiScreen.removeUnitWindow(unit);
+	mUiScreen.removeUnitWindow(unit);
 
     }
 
     public void turnEnd(IBehavior behavior) {
-        if (behavior.getAffiliation() == EAffiliation.ALLIED) {
-            mOpposedBehavior.onTurnStart();
+	if (behavior.equals(mInitialBehavior)) {
+	    mOtherBehavior.onTurnStart();
 
-        } else {
-            mAlliedBehavior.onTurnStart();
+	} else {
+	    mInitialBehavior.onTurnStart();
 
-        }
+	}
     }
 
     public void turnStart(IBehavior behavior) {
-        if (behavior.getAffiliation() == EAffiliation.ALLIED) {
-            mCurrentActiveBehavior = mAlliedBehavior;
-            mCurrentPiece = EMusic.BEYOND_THE_SKY;
-            SoundPlayer.get().play(EMusic.BEYOND_THE_SKY);
+	mCurrentActiveBehavior = behavior;
 
-        } else {
-            mCurrentActiveBehavior = mOpposedBehavior;
-            mCurrentPiece = EMusic.AT_THE_FINAL_DRAGON;
-            SoundPlayer.get().play(EMusic.AT_THE_FINAL_DRAGON);
-        }
-        mMap.getAlliedUnits().forEach(u -> u.ready());
-        mMap.getOpposedUnits().forEach(u -> u.ready());
+	if (behavior.getAffiliation() == EAffiliation.ALLIED) {
+	    mCurrentPiece = EMusic.BEYOND_THE_SKY;
+	    SoundPlayer.get().play(EMusic.BEYOND_THE_SKY);
+
+	} else {
+	    mCurrentPiece = EMusic.AT_THE_FINAL_DRAGON;
+	    SoundPlayer.get().play(EMusic.AT_THE_FINAL_DRAGON);
+
+	}
+	mMap.getAlliedUnits().forEach(u -> u.ready());
+	mMap.getOpposedUnits().forEach(u -> u.ready());
 
     }
 
     public IBehavior getActiveBehavior() {
-        return mCurrentActiveBehavior;
+	return mCurrentActiveBehavior;
     }
 
     public void displayMovementRange(MovementRange range) {
-        mScreen.displayUnitMovementRange(range);
+	mScreen.displayUnitMovementRange(range);
     }
 
     public void removeMovementRange() {
-        mScreen.removeUnitMovementRange();
+	mScreen.removeUnitMovementRange();
     }
 
     public void displayMovementIndicator(MovementIndicator indicator) {
-        mScreen.displayMovementIndicator(indicator);
+	mScreen.displayMovementIndicator(indicator);
     }
 
     public void removeMovementIndicator() {
-        mScreen.removeMovementIndicator();
+	mScreen.removeMovementIndicator();
     }
 
     public void displayActionWindow(IUnit unit) {
-        List<EActionWindowOption> temp = new ArrayList<>();
+	List<EActionWindowOption> temp = new ArrayList<>();
 
-        if (unit.getInventory().getWeapons().length > 0 && mMap.opponentInRange(unit, unit.getRange())) {
-            temp.add(EActionWindowOption.ATTACK);
-        }
-        if (mMap.allyInRange(unit, 1)) {
-            temp.add(EActionWindowOption.TRADE);
-        }
-        temp.add(EActionWindowOption.ITEM);
-        temp.add(EActionWindowOption.WAIT);
+	if (unit.getInventory().getWeapons().length > 0 && mMap.opponentInRange(unit, unit.getMaxRange())) {
+	    temp.add(EActionWindowOption.ATTACK);
+	}
+	if (mMap.allyInRange(unit, 1)) {
+	    temp.add(EActionWindowOption.TRADE);
+	}
+	temp.add(EActionWindowOption.ITEM);
+	temp.add(EActionWindowOption.WAIT);
 
-        EActionWindowOption[] result = new EActionWindowOption[temp.size()];
+	EActionWindowOption[] result = new EActionWindowOption[temp.size()];
 
-        for (int i = 0; i < temp.size(); i++) {
-            result[i] = temp.get(i);
+	for (int i = 0; i < temp.size(); i++) {
+	    result[i] = temp.get(i);
 
-        }
-        mUiScreen.displayUnitActionWindow(result);
+	}
+	mUiScreen.displayUnitActionWindow(result);
 
     }
 
     public void removeActionWindow() {
-        mUiScreen.removeActionWindow();
+	mUiScreen.removeActionWindow();
     }
 
     public void displaySystemActionWindow() {
-        mUiScreen.displaySystemActionWindow(EActionWindowOption.END_TURN);
+	mUiScreen.displaySystemActionWindow(EActionWindowOption.END_TURN);
     }
 
     public InputManager getInputManager() {
-        return mInputManager;
+	return mInputManager;
     }
 
     public void displayTileStatus(int x, int y) {
-        mUiScreen.displayTileStatus(mMap.getByPos(x, y));
+	mUiScreen.displayTileStatus(mMap.getByPos(x, y));
     }
 
     public void cursorMoved(ISpatial cursor) {
-        Point2D point = mCamera.getTransform(mScreen.cameraApplied()).transform(new Point(cursor.getX(), cursor.getY()),
-                null);
+	Point2D point = mCamera.getTransform(mScreen.cameraApplied()).transform(new Point(cursor.getX(), cursor.getY()),
+		null);
 
-        if (point.getX() > Display.WIDTH / 2) {
-            mUiScreen.switchSides(ESide.LEFT);
+	if (point.getX() > Display.WIDTH / 2) {
+	    mUiScreen.switchSides(ESide.LEFT);
 
-        } else {
-            mUiScreen.switchSides(ESide.RIGHT);
+	} else {
+	    mUiScreen.switchSides(ESide.RIGHT);
 
-        }
+	}
     }
 
     public void showWeaponSelection(IUnit unit) {
-        Inventory inv = unit.getInventory();
-        Collection<IWeapon> sorted = inv.getSorted(Comparator.comparing(w -> w.getRange()));
-        Collection<IWeapon> eligible = new ArrayList<>();
+	Inventory inv = unit.getInventory();
+	Collection<IWeapon> sorted = inv.getSorted(Comparator.comparing(w -> w.getRange().getMax()));
+	Collection<IWeapon> eligible = new ArrayList<>();
 
-        for (final IWeapon weapon : sorted) {
-            if (mMap.opponentInRange(unit, weapon.getRange())) {
-                eligible.addAll(inv.getWeapons(w -> w.getRange() >= weapon.getRange()));
-                break;
+	for (final IWeapon weapon : sorted) {
+	    if (mMap.opponentInRange(unit, weapon.getRange().getMax())) {
+		eligible.addAll(inv.getWeapons(w -> w.getRange().getMax() >= weapon.getRange().getMax()));
+		break;
 
-            }
-        }
-        mUiScreen.displayWeaponSelection(unit, eligible);
+	    }
+	}
+	mUiScreen.displayWeaponSelection(unit, eligible);
     }
 
     public void removeWeaponSelect() {
-        mUiScreen.removeWeaponSelection();
+	mUiScreen.removeWeaponSelection();
 
     }
 
     public void showTargetUnitSelect(IUnit unit, IWeapon weapon) {
-        unit.equip(weapon);
+	unit.equip(weapon);
 
-        Collection<IUnit> targets = mMap.getOpponentsInRange(unit, weapon.getRange());
-        mUiScreen.initializeBattlePreview(targets);
+	Collection<IUnit> targets = mMap.getOpponentsInRange(unit, weapon.getRange().getMax());
+	mUiScreen.initializeBattlePreview(targets);
 
     }
 
     public void removeTargetSelect() {
-        mScreen.removeTargetSelection();
-        mUiScreen.removeBattlePreview();
+	mScreen.removeTargetSelection();
+	mUiScreen.removeBattlePreview();
     }
 
     public void switchTarget(IUnit attacker, IUnit target) {
-        mScreen.moveTargetSelection(target);
-        mUiScreen.switchBattlePreview(attacker, target);
+	mScreen.moveTargetSelection(target);
+	mUiScreen.switchBattlePreview(attacker, target);
     }
 
     public void initiateAttack(IUnit attacker, IUnit target) {
-        mBattleScreen.setParticipants(attacker, target, mMap.getByPos(attacker.getX(), attacker.getY()).getType(),
-                attacker.getEquippedWeapon().get().getRange());
-        mScreenManager.addScreen(mBattleScreen);
+	mBattleScreen.setParticipants(attacker, target, mMap.getByPos(attacker.getX(), attacker.getY()).getType(),
+		(int) new ManhattanDistance<>().distance(attacker, target));
+	mScreenManager.addScreen(mBattleScreen);
 
     }
 
     public void attackFinished() {
-        mScreenManager.removeScreen();
-        mMap.getAlliedUnits().removeIf(u -> u.getCurrentHP() <= 0);
-        mMap.getOpposedUnits().removeIf(u -> u.getCurrentHP() <= 0);
+	mScreenManager.removeScreen();
+	mMap.getAlliedUnits().removeIf(u -> u.getCurrentHP() <= 0);
+	mMap.getOpposedUnits().removeIf(u -> u.getCurrentHP() <= 0);
 
-        SoundPlayer.get().play(mCurrentPiece);
+	SoundPlayer.get().play(mCurrentPiece);
     }
 
     public void moveCursor(Tile tile) {
-        mScreen.moveCursor(tile);
+	mScreen.moveCursor(tile);
     }
 
     public void showInventory(IUnit unit) {
-        mUiScreen.displayInventory(unit);
+	mUiScreen.displayInventory(unit);
     }
 
     public void removeInventory() {
-        mUiScreen.removeInventory();
+	mUiScreen.removeInventory();
 
     }
 
     public void showItemUsageSelection(IItem item) {
-        mUiScreen.displayItemUsageSelection(item);
+	mUiScreen.displayItemUsageSelection(item);
 
     }
 
     public void removeItemUsageSelection() {
-        mUiScreen.removeItemUsageSelection();
+	mUiScreen.removeItemUsageSelection();
 
     }
 
     public void useItem(IItem item) {
-        item.use();
+	item.use();
 
     }
 
     public void discardItem(IItem item) {
-        item.getOwner().getInventory().remove(item);
-        mUiScreen.displayInventory(item.getOwner());
+	item.getOwner().getInventory().remove(item);
+	mUiScreen.displayInventory(item.getOwner());
 
     }
 
     public void equipWeaon(IWeapon weapon) {
-        weapon.getOwner().equip(weapon);
+	weapon.getOwner().equip(weapon);
 
+    }
+
+    public void setSeed(long seed) {
+	mBattleScreen.getManager().setSeed(seed);
     }
 }

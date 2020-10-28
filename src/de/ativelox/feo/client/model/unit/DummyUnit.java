@@ -38,6 +38,10 @@ import de.zabuza.maglev.external.graph.Edge;
  */
 public class DummyUnit extends SpatialObject implements IUnit, IRequireResources, ICanMove {
 
+    private static int ID;
+
+    private final int mId;
+
     private IAnimation mHover;
     private IAnimation mSelection;
 
@@ -133,6 +137,10 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
 	    String rangedCritSheetName, String dodgeSheetName, String portraitSheetName, String moveSheetName,
 	    String battlePaletteName, String animationHookName, String deathQuote, String commanderAttackedQuote) {
 	super(Tile.WIDTH * x, Tile.HEIGHT * y, Tile.WIDTH, Tile.HEIGHT);
+
+	mId = ID;
+
+	ID++;
 
 	mCommanderAttackedQuote = commanderAttackedQuote;
 
@@ -231,6 +239,10 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
 
     @Override
     public void move(Iterator<EdgeCost<Tile, Edge<Tile>>> path, boolean reversed) {
+	if (!mMover.isFinished()) {
+	    return;
+	}
+
 	mMoveListener.forEach(l -> l.onMoveStarted(this));
 	mMover.move(path, reversed, getMov());
 
@@ -339,12 +351,12 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     }
 
     @Override
-    public int getRange() {
+    public int getMaxRange() {
 	int maxRange = 0;
 
 	for (final IWeapon weapon : getInventory().getWeapons()) {
-	    if (weapon.getRange() > maxRange) {
-		maxRange = weapon.getRange();
+	    if (weapon.getRange().getMax() > maxRange) {
+		maxRange = weapon.getRange().getMax();
 	    }
 	}
 	return maxRange;
@@ -543,5 +555,10 @@ public class DummyUnit extends SpatialObject implements IUnit, IRequireResources
     public void addHp(int hp) {
 	mCurrentHp = Math.min(mHp, mCurrentHp + hp);
 
+    }
+
+    @Override
+    public int getId() {
+	return mId;
     }
 }

@@ -8,6 +8,7 @@ import de.ativelox.feo.client.model.map.Map;
 import de.ativelox.feo.client.model.network.IPlayerControllerReceiver;
 import de.ativelox.feo.client.model.network.NetworkRoutine;
 import de.ativelox.feo.client.model.property.EAffiliation;
+import de.ativelox.feo.client.model.property.EPlayerAction;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.util.maglev.SimplePath;
 import de.ativelox.feo.util.Pair;
@@ -26,91 +27,117 @@ public class ReceiveDrivenBehavior extends BehaviorAdapter implements IPlayerCon
 
     private Path<Tile, Edge<Tile>> mCurrentPath;
 
+    private EPlayerAction mNextAction;
+
     /**
      * @param map
      * @param affiliation
      */
     public ReceiveDrivenBehavior(Map map, EAffiliation affiliation, NetworkRoutine routine) {
-        super(map, affiliation);
+	super(map, affiliation);
 
-        mNetworkRoutine = routine;
+	System.out.println(affiliation);
+
+	mNetworkRoutine = routine;
 
     }
 
     @Override
     public void onTurnStart() {
-        super.onTurnStart();
-        mController.blockNonUiInput();
+	super.onTurnStart();
+	mController.blockNonUiInput();
 
     }
 
     @Override
     public void onTurnEnd() {
-        super.onTurnEnd();
-        mController.unBlockNonUiInput();
+	super.onTurnEnd();
+	mController.unBlockNonUiInput();
     }
 
     @Override
     public void onMovementFinished(IUnit unit) {
-        System.out.println("MOVEMENT FINISHED");
+	switch (mNextAction) {
+	case ATTACK:
+	    mController.initiateAttack(unit, mTarget);
+	    break;
+	case WAIT:
+	    unit.finished();
+	    break;
+	default:
+	    break;
 
-        mController.initiateAttack(unit, mTarget);
+	}
 
     }
 
     @Override
     public void onBattleFinished() {
-        mController.attackFinished();
+	mController.attackFinished();
     }
 
     @Override
     public void onUnitSelect(IUnit unit) {
-        if (!mIsOnTurn) {
-            return;
-        }
-        unit.move(mCurrentPath.iterator(), false);
+	if (!mIsOnTurn) {
+	    return;
+	}
+	System.out.println("onUnitSelect called");
+	unit.move(mCurrentPath.iterator(), false);
 
     }
 
     @Override
     public void onTurnEndReceived() {
-        this.onTurnEnd();
+	this.onTurnEnd();
 
     }
 
     @Override
-    public void onAttackReceived(IUnit initiator, IUnit target, List<Pair<Integer, Integer>> path) {
-        Optional<IUnit> possibleInitiator = getAppropriateUnit(initiator);
-        Optional<IUnit> possibleTarget = getAppropriateUnit(target);
+    public void onAttackReceived(int initiatorId, int targetId, List<Pair<Integer, Integer>> path) {
+	IUnit initiator = mMap.getById(initiatorId);
+	IUnit target = mMap.getById(targetId);
 
-        mCurrentPath = SimplePath.of(path, mMap);
+	mCurrentPath = SimplePath.of(path, mMap);
 
-        if (possibleInitiator.isEmpty() || possibleTarget.isEmpty()) {
-            throw new UnknownError("Couldnt find a suited initiator/target");
-        }
+	mTarget = target;
 
-        mTarget = possibleTarget.get();
-
-        this.onUnitSelect(possibleInitiator.get());
+	mNextAction = EPlayerAction.ATTACK;
+	this.onUnitSelect(initiator);
     }
 
     private Optional<IUnit> getAppropriateUnit(IUnit fake) {
 
-        List<IUnit> units = mMap.getUnitsBy(fake.getAffiliation());
+	List<IUnit> units = mMap.getUnitsBy(fake.getAffiliation());
 
-        for (final IUnit unit : units) {
-            if (unit.getName().equals(fake.getName())) {
-                return Optional.of(unit);
-            }
+	for (final IUnit unit : units) {
+	    if (unit.getName().equals(fake.getName())) {
+		return Optional.of(unit);
+	    }
 
-        }
-        return Optional.empty();
+	}
+	return Optional.empty();
 
     }
 
     @Override
-    public void onServerWelcome(int playerId) {
-        mNetworkRoutine.start(playerId);
+    public void onServerWelcome(int playerId, long seed) {
+	mNetworkRoutine.start(playerId, seed);
+
+    }
+
+    @Override
+    public void onWaitReceived(int initiatorId, List<Pair<Integer, Integer>> path) {
+	IUnit initator = mMap.getById(initiatorId);
+
+	if (mNextAction != null && mNextAction.equals(EPlayerAction.ATTACK)) {
+	    mNextAction = EPlayerAction.WAIT;
+	    initator.finished();
+	    return;
+	}
+
+	mCurrentPath = SimplePath.of(path, mMap);
+	mNextAction = EPlayerAction.WAIT;
+	this.onUnitSelect(initator);
 
     }
 }

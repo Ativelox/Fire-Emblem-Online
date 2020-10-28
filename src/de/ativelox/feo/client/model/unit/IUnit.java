@@ -26,7 +26,7 @@ public interface IUnit extends IRenderable, IUpdateable, ISpatial, ISelectable, 
 
     public int getMov();
 
-    public int getRange();
+    public int getMaxRange();
 
     public void moveInstantly(int x, int y);
 
@@ -85,5 +85,7 @@ public interface IUnit extends IRenderable, IUpdateable, ISpatial, ISelectable, 
     public String getCommanderAttackedQuote();
     
     public void addHp(int hp);
+    
+    public int getId();
 
 }

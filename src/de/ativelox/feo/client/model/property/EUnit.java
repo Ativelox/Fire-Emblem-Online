@@ -6,6 +6,6 @@ package de.ativelox.feo.client.model.property;
  */
 public enum EUnit {
 
-    FIR, ROY, CHAD, CUSTOM;
+    FIR, ROY, CHAD, BORS, CUSTOM;
 
 }

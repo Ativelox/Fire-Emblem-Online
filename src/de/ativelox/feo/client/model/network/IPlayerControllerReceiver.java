@@ -16,13 +16,15 @@ public interface IPlayerControllerReceiver {
      */
     void onTurnEndReceived();
 
-    void onServerWelcome(int playerId);
+    void onServerWelcome(int playerId, long seed);
 
     /**
      * @param initiator
      * @param target
      * @param path
      */
-    void onAttackReceived(IUnit initiator, IUnit target, List<Pair<Integer, Integer>> path);
+    void onAttackReceived(int initiatorId, int targetId, List<Pair<Integer, Integer>> path);
+
+    void onWaitReceived(int initiatorId, List<Pair<Integer, Integer>> path);
 
 }

@@ -15,4 +15,6 @@ public interface IMoveRoutine extends IUpdateable {
 
     void move(Iterator<EdgeCost<Tile, Edge<Tile>>> path, boolean reversed, int limit);
 
+    boolean isFinished();
+
 }

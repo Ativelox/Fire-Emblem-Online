@@ -3,6 +3,7 @@ package de.ativelox.feo.client.model.manager;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import de.ativelox.feo.client.controller.input.InputManager;
 import de.ativelox.feo.client.model.gfx.Assets;
@@ -29,6 +30,7 @@ import de.ativelox.feo.client.model.sound.EMusic;
 import de.ativelox.feo.client.model.sound.SoundPlayer;
 import de.ativelox.feo.client.model.unit.IUnit;
 import de.ativelox.feo.client.model.util.CombatRule;
+import de.ativelox.feo.client.model.util.Range;
 import de.ativelox.feo.client.model.util.TimeSnapshot;
 import de.ativelox.feo.client.view.Display;
 import de.ativelox.feo.client.view.element.game.DialogueWindow;
@@ -71,9 +73,13 @@ public class BattleManager implements IBattleManager, ICanDisplayDialogue {
 
     private boolean mDeathOccured;
 
+    private final Random mRandom;
+
     public BattleManager(IBattleScreen screen, final InputManager im) {
 	mScreen = screen;
 	mInputManager = im;
+
+	mRandom = new Random();
     }
 
     /**
@@ -97,11 +103,12 @@ public class BattleManager implements IBattleManager, ICanDisplayDialogue {
 	    targetSide = ESide.RIGHT;
 	}
 
-	boolean attackerHit = CombatRule.getAccuracy(attacker, target) > Math.random() * 100;
-	boolean targetHit = CombatRule.getAccuracy(target, attacker) > Math.random() * 100;
+	boolean attackerHit = CombatRule.getAccuracy(attacker, target) > mRandom.nextDouble() * 100;
+	boolean targetHit = CombatRule.getAccuracy(target, attacker) > mRandom.nextDouble() * 100;
 
-	boolean attackerCrit = attackerHit && CombatRule.getCriticalChance(attacker, target) > Math.random() * 100;
-	boolean targetCrit = targetHit && CombatRule.getCriticalChance(target, attacker) > Math.random() * 100;
+	boolean attackerCrit = attackerHit
+		&& CombatRule.getCriticalChance(attacker, target) > mRandom.nextDouble() * 100;
+	boolean targetCrit = targetHit && CombatRule.getCriticalChance(target, attacker) > mRandom.nextDouble() * 100;
 
 	int targetHpLoss = 0;
 	int attackerHpLoss = 0;
@@ -346,7 +353,7 @@ public class BattleManager implements IBattleManager, ICanDisplayDialogue {
 	    mBattlePlatformRight = Assets.getFor(EResource.BATTLE_PLATFORM_WIDE, type, ESide.RIGHT);
 	}
 
-	mAnimation = getOneCycle(mAttacker, mTarget, range, true);
+	mAnimation = getOneCycle(mAttacker, mTarget, range, CombatRule.canCounterattack(mAttacker, mTarget));
 
 	if (CombatRule.hasRepeatedAttack(attacker, target) && CombatRule.hasRepeatedAttack(target, attacker)) {
 	    mRemainingAttacksAttacker = 1;
@@ -362,6 +369,10 @@ public class BattleManager implements IBattleManager, ICanDisplayDialogue {
 
 	} else {
 	    mRemainingAttacksAttacker = 0;
+	    mRemainingAttacksTarget = 0;
+	}
+
+	if (!CombatRule.canCounterattack(attacker, target)) {
 	    mRemainingAttacksTarget = 0;
 	}
 
@@ -453,6 +464,12 @@ public class BattleManager implements IBattleManager, ICanDisplayDialogue {
 	    return;
 	}
 	mDialogueWindow = null;
+
+    }
+
+    @Override
+    public void setSeed(long seed) {
+	mRandom.setSeed(seed);
 
     }
 }

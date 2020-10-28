@@ -20,54 +20,52 @@ public class DefaultPlayerControllerSender implements IPlayerControllerSender<EC
 
     @Override
     public void sendAttack(IUnit initiator, IUnit target, Iterator<EdgeCost<Tile, Edge<Tile>>> path) {
-        mNetworkController.send(EC2S.ATTACK,
-                new String[] { encodeUnit(initiator), encodeUnit(target), encodePath(path) });
+	mNetworkController.send(EC2S.ATTACK,
+		new String[] { encodeUnit(initiator), encodeUnit(target), encodePath(path) });
 
     }
 
     @Override
-    public void sendWait(IUnit initator) {
-        mNetworkController.send(EC2S.WAIT, new String[] { encodeUnit(initator) });
+    public void sendWait(IUnit initator, Iterator<EdgeCost<Tile, Edge<Tile>>> path) {
+	mNetworkController.send(EC2S.WAIT, new String[] { encodeUnit(initator), encodePath(path) });
 
     }
 
     @Override
     public void sendEndTurn() {
-        mNetworkController.send(EC2S.END_TURN);
+	mNetworkController.send(EC2S.END_TURN);
 
     }
 
     private static String encodeUnit(IUnit unit) {
-        return unit.getName() + " " + unit.getAffiliation();
+	return unit.getId() + "";
 
     }
 
     private static String encodePath(Iterator<EdgeCost<Tile, Edge<Tile>>> path) {
 
-        String result = "";
+	String result = "";
 
-        while (path.hasNext()) {
-            EdgeCost<Tile, Edge<Tile>> edge = path.next();
+	while (path.hasNext()) {
+	    EdgeCost<Tile, Edge<Tile>> edge = path.next();
 
-            result += edge.getEdge().getSource().getX() + " " + edge.getEdge().getSource().getY() + " ";
-            result += edge.getEdge().getDestination().getX() + " " + edge.getEdge().getDestination().getY() + " ";
+	    result += edge.getEdge().getSource().getX() + " " + edge.getEdge().getSource().getY() + " ";
+	    result += edge.getEdge().getDestination().getX() + " " + edge.getEdge().getDestination().getY() + " ";
 
-            System.out
-                    .println("Encoding " + edge.getEdge().getSource().getX() + " " + edge.getEdge().getSource().getY());
-            System.out.println("Encoding " + edge.getEdge().getDestination().getX() + " "
-                    + edge.getEdge().getDestination().getY());
+	    System.out.println("Encoding " + edge.getEdge().getSource().getX() + " " + edge.getEdge().getSource().getY());
+	    System.out.println("Encoding " + edge.getEdge().getDestination().getX() + " " + edge.getEdge().getDestination().getY());
 
-        }
-        
-        System.out.println("Written: " + result);
+	}
 
-        return result;
+	System.out.println("Written: " + result);
+
+	return result;
 
     }
 
     @Override
     public void register(INetworkController<EC2S, ES2C> networkController) {
-        mNetworkController = networkController;
+	mNetworkController = networkController;
 
     }
 }

@@ -44,52 +44,52 @@ public class NetworkRoutine {
     private INetworkController<EC2S, ES2C> mNetworkController;
 
     public NetworkRoutine(Camera camera, IScreenManager manager, InputManager inputManager) {
-        mCamera = camera;
-        mManager = manager;
-        mInputManager = inputManager;
+	mCamera = camera;
+	mManager = manager;
+	mInputManager = inputManager;
 
-        this.connect();
+	this.connect();
 
     }
 
     private void connect() {
-        mMap = new TutorialMap(0, 0);
-        mCamera.setBounds(mMap);
-        mGameScreen = new GameScreen(mMap, mCamera);
-        mUiScreen = new GameUIScreen();
+	mMap = new TutorialMap(0, 0);
+	mCamera.setBounds(mMap);
+	mGameScreen = new GameScreen(mMap, mCamera);
+	mUiScreen = new GameUIScreen();
 
-        mReceiveBehavior = new ReceiveDrivenBehavior(mMap, EAffiliation.OPPOSED, this);
+	mReceiveBehavior = new ReceiveDrivenBehavior(mMap, EAffiliation.OPPOSED, this);
 
-        try {
-            @SuppressWarnings("resource")
-            Socket server = new Socket(InetAddress.getByName("localhost"), 2555);
-            mNetworkController = new ClientNetworkController(mReceiveBehavior, server.getInputStream(),
-                    server.getOutputStream());
-            new Thread(mNetworkController).start();
+	try {
+	    @SuppressWarnings("resource")
+	    Socket server = new Socket(InetAddress.getByName("localhost"), 2555);
+	    mNetworkController = new ClientNetworkController(mReceiveBehavior, server.getInputStream(),
+		    server.getOutputStream());
+	    new Thread(mNetworkController).start();
 
-        } catch (Exception e) {
+	} catch (Exception e) {
 
-        }
+	}
     }
 
-    public void start(int playerId) {
+    public void start(int playerId, long seed) {
 
-        IPlayerControllerSender<EC2S, ES2C> controllerSender = new DefaultPlayerControllerSender();
-        controllerSender.register(mNetworkController);
+	IPlayerControllerSender<EC2S, ES2C> controllerSender = new DefaultPlayerControllerSender();
+	controllerSender.register(mNetworkController);
 
-        IBehavior behavior1 = new SendDrivenBehavior(mMap, EAffiliation.ALLIED, controllerSender);
+	IBehavior behavior1 = new SendDrivenBehavior(mMap, EAffiliation.ALLIED, controllerSender);
 
-        if (playerId == 0) {
-            new GameController(mManager, mInputManager, mMap, mCamera, mGameScreen, mUiScreen, behavior1,
-                    mReceiveBehavior);
-        } else {
-            mReceiveBehavior.setAffiliation(EAffiliation.ALLIED);
-            behavior1.setAffiliation(EAffiliation.OPPOSED);
-            new GameController(mManager, mInputManager, mMap, mCamera, mGameScreen, mUiScreen, mReceiveBehavior,
-                    behavior1);
-        }
-        mManager.addScreen(mGameScreen);
-        mManager.addScreen(mUiScreen);
+	if (playerId == 0) {
+	    new GameController(mManager, mInputManager, mMap, mCamera, mGameScreen, mUiScreen, behavior1,
+		    mReceiveBehavior).setSeed(seed);
+	} else {
+	    mReceiveBehavior.setAffiliation(EAffiliation.ALLIED);
+	    behavior1.setAffiliation(EAffiliation.OPPOSED);
+	    new GameController(mManager, mInputManager, mMap, mCamera, mGameScreen, mUiScreen, mReceiveBehavior,
+		    behavior1).setSeed(seed);
+	}
+	mManager.addScreen(mGameScreen);
+	mManager.addScreen(mUiScreen);
     }
 
 }

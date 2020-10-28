@@ -24,7 +24,7 @@ public interface IPlayerControllerSender<POut, PIn> {
 
     public void sendAttack(final IUnit initiator, final IUnit target, Iterator<EdgeCost<Tile, Edge<Tile>>> path);
 
-    public void sendWait(final IUnit initator);
+    public void sendWait(final IUnit initator, Iterator<EdgeCost<Tile, Edge<Tile>>> path);
 
     public void sendEndTurn();
 

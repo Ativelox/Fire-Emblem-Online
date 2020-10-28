@@ -33,119 +33,126 @@ public class SmoothMoveRoutine implements IMoveRoutine {
     private int mMovedTiles;
 
     public SmoothMoveRoutine(ICanMove caller) {
-        mToMove = caller;
+	mToMove = caller;
     }
 
     @Override
     public void move(Iterator<EdgeCost<Tile, Edge<Tile>>> path, boolean reversed, int limit) {
-        mLastDirection = EDirection.RIGHT;
-        mPath = path;
-        mLastX = mToMove.getX();
-        mLastY = mToMove.getY();
-        mReversed = reversed;
-        mLimit = limit;
+	if (!isFinished()) {
+	    return;
+	}
 
-        if (!mPath.hasNext()) {
-            mPath = null;
-            mToMove.onMoveFinished();
-            return;
-        }
+	mLastDirection = EDirection.RIGHT;
+	mPath = path;
+	mLastX = mToMove.getX();
+	mLastY = mToMove.getY();
+	mReversed = reversed;
+	mLimit = limit;
 
-        if (reversed) {
-            mCurrent = mPath.next().getEdge().getSource();
-        } else {
+	if (!mPath.hasNext()) {
+	    mPath = null;
+	    mToMove.onMoveFinished();
+	    return;
+	}
 
-            mCurrent = mPath.next().getEdge().getDestination();
-        }
+	if (reversed) {
+	    mCurrent = mPath.next().getEdge().getSource();
+	} else {
 
-        mToMove.onDirectionChange(mLastDirection);
+	    mCurrent = mPath.next().getEdge().getDestination();
+	}
+
+	mToMove.onDirectionChange(mLastDirection);
 
     }
 
     @Override
     public void update(TimeSnapshot ts) {
-        if (mPath == null) {
-            return;
-        }
+	if (mPath == null) {
+	    return;
+	}
 
-        int destX = mCurrent.getX();
-        int destY = mCurrent.getY();
+	int destX = mCurrent.getX();
+	int destY = mCurrent.getY();
 
-        EDirection dir;
+	EDirection dir;
 
-        int distanceX = 0;
-        int distanceY = 0;
+	int distanceX = 0;
+	int distanceY = 0;
 
-        if (mToMove.getX() > destX) {
-            dir = EDirection.LEFT;
-            distanceX = destX - mLastX;
+	if (mToMove.getX() > destX) {
+	    dir = EDirection.LEFT;
+	    distanceX = destX - mLastX;
 
-        } else if (mToMove.getX() < destX) {
-            dir = EDirection.RIGHT;
-            distanceX = destX - mLastX;
+	} else if (mToMove.getX() < destX) {
+	    dir = EDirection.RIGHT;
+	    distanceX = destX - mLastX;
 
-        } else if (mToMove.getY() < destY) {
-            dir = EDirection.DOWN;
-            distanceY = destY - mLastY;
+	} else if (mToMove.getY() < destY) {
+	    dir = EDirection.DOWN;
+	    distanceY = destY - mLastY;
 
-        } else {
-            dir = EDirection.UP;
-            distanceY = destY - mLastY;
+	} else {
+	    dir = EDirection.UP;
+	    distanceY = destY - mLastY;
 
-        }
+	}
 
-        if (dir != mLastDirection) {
-            mToMove.onDirectionChange(dir);
-        }
+	if (dir != mLastDirection) {
+	    mToMove.onDirectionChange(dir);
+	}
 
-        distanceX *= (1f / ts.getPassed()) * SPEED;
-        distanceY *= (1f / ts.getPassed()) * SPEED;
+	distanceX *= (1f / ts.getPassed()) * SPEED;
+	distanceY *= (1f / ts.getPassed()) * SPEED;
 
-        mToMove.setX(mToMove.getX() + distanceX);
-        mToMove.setY(mToMove.getY() + distanceY);
+	mToMove.setX(mToMove.getX() + distanceX);
+	mToMove.setY(mToMove.getY() + distanceY);
 
-        boolean reachedTempGoal = false;
+	boolean reachedTempGoal = false;
 
-        if (dir == EDirection.UP && mToMove.getY() <= destY) {
-            mToMove.setY(destY);
-            reachedTempGoal = true;
+	if (dir == EDirection.UP && mToMove.getY() <= destY) {
+	    mToMove.setY(destY);
+	    reachedTempGoal = true;
 
-        } else if (dir == EDirection.DOWN && mToMove.getY() >= destY) {
-            mToMove.setY(destY);
-            reachedTempGoal = true;
+	} else if (dir == EDirection.DOWN && mToMove.getY() >= destY) {
+	    mToMove.setY(destY);
+	    reachedTempGoal = true;
 
-        } else if (dir == EDirection.LEFT && mToMove.getX() <= destX) {
-            mToMove.setX(destX);
-            reachedTempGoal = true;
+	} else if (dir == EDirection.LEFT && mToMove.getX() <= destX) {
+	    mToMove.setX(destX);
+	    reachedTempGoal = true;
 
-        } else if (dir == EDirection.RIGHT && mToMove.getX() >= destX) {
-            mToMove.setX(destX);
-            reachedTempGoal = true;
+	} else if (dir == EDirection.RIGHT && mToMove.getX() >= destX) {
+	    mToMove.setX(destX);
+	    reachedTempGoal = true;
 
-        }
+	}
 
-        if (reachedTempGoal) {
-            mMovedTiles++;
-            
-            System.out.println("REACHED TEMP GOAL " + mMovedTiles + " " + mPath.hasNext());
+	if (reachedTempGoal) {
+	    mMovedTiles++;
 
-            if (!mPath.hasNext() || mMovedTiles >= mLimit) {
-                mPath = null;
-                mToMove.onMoveFinished();
-                mMovedTiles = 0;
-                return;
-            }
-            if (mReversed) {
+	    if (!mPath.hasNext() || mMovedTiles >= mLimit) {
+		mPath = null;
+		mToMove.onMoveFinished();
+		mMovedTiles = 0;
+		return;
+	    }
+	    if (mReversed) {
 
-                mCurrent = mPath.next().getEdge().getSource();
-            } else {
-                mCurrent = mPath.next().getEdge().getDestination();
-            }
-            mLastX = mToMove.getX();
-            mLastY = mToMove.getY();
+		mCurrent = mPath.next().getEdge().getSource();
+	    } else {
+		mCurrent = mPath.next().getEdge().getDestination();
+	    }
+	    mLastX = mToMove.getX();
+	    mLastY = mToMove.getY();
 
-        }
-        mLastDirection = dir;
+	}
+	mLastDirection = dir;
 
+    }
+
+    @Override
+    public boolean isFinished() {
+	return mPath == null;
     }
 }

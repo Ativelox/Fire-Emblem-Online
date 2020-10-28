@@ -22,78 +22,89 @@ public class SimplePath implements Path<Tile, Edge<Tile>> {
     private final List<EdgeCost<Tile, Edge<Tile>>> mCol;
 
     private SimplePath(List<EdgeCost<Tile, Edge<Tile>>> col) {
-        mCol = col;
+	mCol = col;
 
     }
 
     public static Path<Tile, Edge<Tile>> of(List<Pair<Integer, Integer>> coords, Map map) {
-        List<Edge<Tile>> result = new ArrayList<>();
+	List<Edge<Tile>> result = new ArrayList<>();
 
-        Iterator<Pair<Integer, Integer>> iterator = coords.iterator();
+	Iterator<Pair<Integer, Integer>> iterator = coords.iterator();
 
-        Pair<Integer, Integer> first = iterator.next();
+	Pair<Integer, Integer> first = iterator.next();
 
-        while (iterator.hasNext()) {
+	while (iterator.hasNext()) {
 
-            Pair<Integer, Integer> next = iterator.next();
+	    Pair<Integer, Integer> next = iterator.next();
 
-            result.add(new SimpleEdge<Tile>(map.getByPos(first.getFirst(), first.getSecond()),
-                    map.getByPos(next.getFirst(), next.getSecond()), 1));
+	    result.add(new SimpleEdge<Tile>(map.getByPos(first.getFirst(), first.getSecond()),
+		    map.getByPos(next.getFirst(), next.getSecond()), 1));
 
-            first = next;
+	    first = next;
 
-        }
+	}
 
-        result.forEach(s -> System.out.println(s.getSource().getX() + " " + s.getSource().getY() + " -> "
-                + s.getDestination().getX() + " " + s.getDestination().getY()));
+	result.forEach(s -> System.out.println(s.getSource().getX() + " " + s.getSource().getY() + " -> "
+		+ s.getDestination().getX() + " " + s.getDestination().getY()));
 
-        return SimplePath.of(result);
+	Path<Tile, Edge<Tile>> path = SimplePath.of(result);
+	Iterator<EdgeCost<Tile, Edge<Tile>>> a = path.iterator();
+
+	System.out.println("checking SimplePath conversion:");
+	while (a.hasNext()) {
+	    EdgeCost<Tile, Edge<Tile>> cur = a.next();
+	    System.out.println("(" + cur.getEdge().getSource().getX() + ", " + cur.getEdge().getSource().getY() + ")"
+		    + " -> (" + cur.getEdge().getDestination().getX() + ", " + cur.getEdge().getDestination().getY()
+		    + ")");
+	}
+
+	return SimplePath.of(result);
 
     }
 
     public static Path<Tile, Edge<Tile>> of(List<Edge<Tile>> edges) {
-        List<EdgeCost<Tile, Edge<Tile>>> result = new ArrayList<>();
+	List<EdgeCost<Tile, Edge<Tile>>> result = new ArrayList<>();
 
-        for (Edge<Tile> edge : edges) {
-            result.add(new EdgeCost<Tile, Edge<Tile>>(edge, 0));
-        }
+	for (Edge<Tile> edge : edges) {
+	    result.add(new EdgeCost<Tile, Edge<Tile>>(edge, 0));
+	}
 
-        return new SimplePath(result);
+	return new SimplePath(result);
 
     }
 
     @Override
     public Iterator<EdgeCost<Tile, Edge<Tile>>> reverseIterator() {
-        return new ReverseIterator<>(mCol);
+	return new ReverseIterator<>(mCol);
     }
 
     @Override
     public Iterator<EdgeCost<Tile, Edge<Tile>>> iterator() {
-        return mCol.iterator();
+	return mCol.iterator();
     }
 
     @Override
     public Tile getDestination() {
-        // TODO Auto-generated method stub
-        return null;
+	// TODO Auto-generated method stub
+	return null;
     }
 
     @Override
     public Tile getSource() {
-        // TODO Auto-generated method stub
-        return null;
+	// TODO Auto-generated method stub
+	return null;
     }
 
     @Override
     public double getTotalCost() {
-        // TODO Auto-generated method stub
-        return 0;
+	// TODO Auto-generated method stub
+	return 0;
     }
 
     @Override
     public int length() {
-        // TODO Auto-generated method stub
-        return mCol.size();
+	// TODO Auto-generated method stub
+	return mCol.size();
     }
 
 }

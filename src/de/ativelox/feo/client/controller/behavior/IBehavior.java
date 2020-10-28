@@ -74,5 +74,7 @@ public interface IBehavior {
     void beforeAttack(IUnit target);
     
     void beforeTurnEnd();
+    
+    void beforeWait();
 
 }

@@ -196,4 +196,9 @@ public class BehaviorAdapter implements IBehavior {
         mUnits = mMap.getUnitsBy(affiliation);
 
     }
+
+    @Override
+    public void beforeWait() {
+	
+    }
 }

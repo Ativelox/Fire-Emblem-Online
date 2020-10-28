@@ -46,7 +46,7 @@ public class SimpleAIBehavior extends BehaviorAdapter {
 
     @Override
     public void onMovementFinished(IUnit unit) {
-        Iterator<IUnit> units = mMap.getOpponentsInRange(unit, unit.getRange()).iterator();
+        Iterator<IUnit> units = mMap.getOpponentsInRange(unit, unit.getMaxRange()).iterator();
 
         if (units.hasNext()) {
             mController.initiateAttack(unit, units.next());

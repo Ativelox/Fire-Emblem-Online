@@ -2,6 +2,7 @@ package de.ativelox.feo.server.controller;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.StringJoiner;
 
 import de.ativelox.feo.network.ANetworkController;
 import de.ativelox.feo.network.INetworkController;
@@ -45,11 +46,11 @@ public final class ServerNetworkController extends ANetworkController<ES2C, EC2S
      * @param os       The output stream this instance writes to.
      */
     public ServerNetworkController(final IGameControllerReceiver gc, final int playerId, final InputStream is,
-            final OutputStream os) {
-        super(is, os, EC2S.class);
+	    final OutputStream os) {
+	super(is, os, EC2S.class);
 
-        mPlayerId = playerId;
-        mGc = gc;
+	mPlayerId = playerId;
+	mGc = gc;
     }
 
     /*
@@ -60,9 +61,9 @@ public final class ServerNetworkController extends ANetworkController<ES2C, EC2S
      */
     @Override
     public void send(final ES2C protocol, final String[] additional) {
-        super.send(protocol, additional);
+	super.send(protocol, additional);
 
-        System.out.println("Sending " + protocol.toString() + " to player " + mPlayerId);
+	System.out.println("Sending " + protocol.toString() + " to player " + mPlayerId);
     }
 
     /*
@@ -72,22 +73,41 @@ public final class ServerNetworkController extends ANetworkController<ES2C, EC2S
      */
     @Override
     public void serve(final EC2S protocol, final String[] op) {
-        System.out.println("Received " + protocol.toString() + " from player " + mPlayerId);
+	System.out.println("Received " + protocol.toString() + " from player " + mPlayerId + "with arguments: "
+		+ prettyPrintedArray(op));
 
-        switch (protocol) {
-        case ATTACK:
-            mGc.onAttackReceived(mPlayerId, op);
-            break;
-        case END_TURN:
-            break;
-        case WAIT:
-            break;
+	switch (protocol) {
+	case ATTACK:
+	    mGc.onAttackReceived(mPlayerId, op);
+	    break;
+	case END_TURN:
+	    mGc.onEndTurnReceived(mPlayerId);
+	    break;
+	case WAIT:
+	    mGc.onWaitReceived(mPlayerId, op);
+	    break;
 
-        default:
-            throw new UnsupportedProtocolException(
-                    "The protocol named " + EC2S.class.getName() + "." + protocol.toString() + " isn't supported.");
+	default:
+	    throw new UnsupportedProtocolException(
+		    "The protocol named " + EC2S.class.getName() + "." + protocol.toString() + " isn't supported.");
 
-        }
+	}
+    }
+
+    private static String prettyPrintedArray(String[] array) {
+	if (array == null) {
+	    return "";
+	}
+
+	StringJoiner sj = new StringJoiner(", ", "[", "]");
+
+	int i = 0;
+	for (final String s : array) {
+	    sj.add(i + ": \"" + s + "\"");
+
+	    i++;
+	}
+	return sj.toString();
     }
 
 }

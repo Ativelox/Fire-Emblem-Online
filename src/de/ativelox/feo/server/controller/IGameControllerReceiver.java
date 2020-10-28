@@ -9,5 +9,9 @@ package de.ativelox.feo.server.controller;
 public interface IGameControllerReceiver {
 
     void onAttackReceived(final int playerId, String[] args);
+    
+    void onEndTurnReceived(final int playerId);
+    
+    void onWaitReceived(final int playerId, String[] args);
 
 }
