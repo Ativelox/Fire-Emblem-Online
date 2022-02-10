@@ -18,16 +18,21 @@ import de.ativelox.feo.logging.Logger;
  */
 public class DefaultPlayerBehavior implements IBehavior {
 
-    private GameController mController;
+    protected GameController mController;
 
     protected PathCalculationRoutine mPathRoutine;
 
-    private EAffiliation mAffiliation;
+    protected EAffiliation mAffiliation;
 
     private boolean mIsOnTurn;
+    
+    protected final Map mMap;
+    
 
     public DefaultPlayerBehavior(final Map map, EAffiliation affiliation) {
 	mPathRoutine = new PathCalculationRoutine(map);
+	
+	mMap = map;
 
 	mAffiliation = affiliation;
     }

@@ -79,6 +79,22 @@ public class Map extends SpatialObject implements IRequireResource<Tile[][]>, IR
 
     }
 
+    public Optional<IUnit> getCommander(final EAffiliation affiliation) {
+	List<IUnit> units = mAlliedUnits;
+
+	if (affiliation.equals(EAffiliation.OPPOSED)) {
+	    units = mOpposedUnits;
+	}
+
+	for (final IUnit unit : units) {
+	    if (unit.isCommander()) {
+		return Optional.of(unit);
+	    }
+	}
+	return Optional.empty();
+
+    }
+
     public Optional<Path<Tile, Edge<Tile>>> getNearestPathToAttackable(IUnit unit) {
 	if (unit.getAffiliation() == EAffiliation.ALLIED) {
 	    ShortestPathComputation<Tile, Edge<Tile>> algo = new ShortestPathComputationBuilder<>(mGraphRepresentation)

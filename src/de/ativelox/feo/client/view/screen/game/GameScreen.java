@@ -35,7 +35,7 @@ import de.ativelox.feo.client.view.screen.EScreen;
  *
  */
 public class GameScreen extends InputReceiver
-        implements IGameScreen, ISelectionListener, IMoveListener, ICancelListener, IConfirmListener {
+	implements IGameScreen, ISelectionListener, IMoveListener, ICancelListener, IConfirmListener {
 
     private final Map mMap;
 
@@ -54,162 +54,162 @@ public class GameScreen extends InputReceiver
     private TargetSelector mTargetSelector;
 
     public GameScreen(Map map, Camera camera) {
-        mMap = map;
+	mMap = map;
 
-        map.getAlliedUnits().forEach(u -> {
-            u.add(this);
-            u.addMoveFinishedListener(this);
-        });
-        map.getOpposedUnits().forEach(u -> {
-            u.add(this);
-            u.addMoveFinishedListener(this);
-        });
+	map.getAlliedUnits().forEach(u -> {
+	    u.add(this);
+	    u.addMoveFinishedListener(this);
+	});
+	map.getOpposedUnits().forEach(u -> {
+	    u.add(this);
+	    u.addMoveFinishedListener(this);
+	});
 
-        mSelectionCursor = new MapSelector(0, 0, map);
+	mSelectionCursor = new MapSelector(0, 0, map);
 
-        mSelectionRoutine = new UnitSelectionRoutine(mSelectionCursor, map);
+	mSelectionRoutine = new UnitSelectionRoutine(mSelectionCursor, map);
 
-        mTargetSelector = new TargetSelector();
+	mTargetSelector = new TargetSelector();
 
-        camera.ensureInViewport(mSelectionCursor);
+	camera.setPrimaryFollow(mSelectionCursor);
     }
 
     @Override
     public void setController(final GameController gc) {
-        mController = gc;
-        gc.getActiveBehavior().onCursorMove(mSelectionCursor);
+	mController = gc;
+	gc.getActiveBehavior().onCursorMove(mSelectionCursor);
     }
 
     @Override
     public void render(DepthBufferedGraphics g) {
-        mMap.render(g);
+	mMap.render(g);
 
-        if (mMovementRange != null) {
-            mMovementRange.render(g);
+	if (mMovementRange != null) {
+	    mMovementRange.render(g);
 
-        }
+	}
 
-        if (mMovementIndicator != null) {
-            mMovementIndicator.render(g);
-        }
-        mSelectionCursor.render(g);
+	if (mMovementIndicator != null) {
+	    mMovementIndicator.render(g);
+	}
+	mSelectionCursor.render(g);
 
-        if (mUnitDisplayPlaceholder != null) {
-            mUnitDisplayPlaceholder.render(g);
-        }
+	if (mUnitDisplayPlaceholder != null) {
+	    mUnitDisplayPlaceholder.render(g);
+	}
 
-        if (mTargetSelector != null) {
-            mTargetSelector.render(g);
-        }
+	if (mTargetSelector != null) {
+	    mTargetSelector.render(g);
+	}
     }
 
     @Override
     public EScreen getIdentifier() {
-        return EScreen.GAME_SCREEN;
+	return EScreen.GAME_SCREEN;
 
     }
 
     @Override
     public boolean renderLower() {
-        return false;
+	return false;
     }
 
     @Override
     public boolean updateLower() {
-        return false;
+	return false;
     }
 
     @Override
     public ECameraApplication cameraApplied() {
-        return ECameraApplication.DYNAMIC;
+	return ECameraApplication.DYNAMIC;
 
     }
 
     @Override
     public void update(TimeSnapshot ts) {
-        mMap.update(ts);
+	mMap.update(ts);
 
-        int tempX = mSelectionCursor.getX();
-        int tempY = mSelectionCursor.getY();
+	int tempX = mSelectionCursor.getX();
+	int tempY = mSelectionCursor.getY();
 
-        mSelectionCursor.setX((int) (mSelectionCursor.getX() + getMovement(EAxis.X) * Tile.WIDTH));
-        mSelectionCursor.setY((int) (mSelectionCursor.getY() + getMovement(EAxis.Y) * Tile.HEIGHT));
+	mSelectionCursor.setX((int) (mSelectionCursor.getX() + getMovement(EAxis.X) * Tile.WIDTH));
+	mSelectionCursor.setY((int) (mSelectionCursor.getY() + getMovement(EAxis.Y) * Tile.HEIGHT));
 
-        mSelectionCursor.update(ts);
+	mSelectionCursor.update(ts);
 
-        if (tempX != mSelectionCursor.getX() || tempY != mSelectionCursor.getY()) {
-            this.cursorMoved();
+	if (tempX != mSelectionCursor.getX() || tempY != mSelectionCursor.getY()) {
+	    this.cursorMoved();
 
-        }
-        mSelectionRoutine.update(ts);
+	}
+	mSelectionRoutine.update(ts);
 
-        if (mTargetSelector != null) {
-            mTargetSelector.update(ts);
-        }
+	if (mTargetSelector != null) {
+	    mTargetSelector.update(ts);
+	}
 
-        if (isActiveInitially(EAction.CONFIRMATION)) {
-            confirm();
+	if (isActiveInitially(EAction.CONFIRMATION)) {
+	    confirm();
 
-        }
-        if (isActiveInitially(EAction.CANCEL)) {
-            cancel();
-        }
+	}
+	if (isActiveInitially(EAction.CANCEL)) {
+	    cancel();
+	}
 
-        this.cycleFinished();
+	this.cycleFinished();
     }
 
     private void cancel() {
-        mController.getActiveBehavior().onCancel();
+	mController.getActiveBehavior().onCancel();
     }
 
     private void cursorMoved() {
-        mController.getActiveBehavior().onCursorMove(mSelectionCursor);
+	mController.getActiveBehavior().onCursorMove(mSelectionCursor);
 
     }
 
     private void confirm() {
-        if (mSelectionRoutine.getSelected().isPresent()) {
-            mController.getActiveBehavior().onUnitConfirm(mSelectionRoutine.getSelected().get());
+	if (mSelectionRoutine.getSelected().isPresent()) {
+	    mController.getActiveBehavior().onUnitConfirm(mSelectionRoutine.getSelected().get());
 
-        } else {
-            mController.getActiveBehavior().onConfirm();
-        }
+	} else {
+	    mController.getActiveBehavior().onConfirm();
+	}
     }
 
     @Override
     public void onSelect(ISelectable selectable) {
-        if (selectable instanceof IUnit) {
-            mSelectionCursor.stop();
-            mController.getActiveBehavior().onUnitSelect((IUnit) selectable);
+	if (selectable instanceof IUnit) {
+	    mSelectionCursor.stop();
+	    mController.getActiveBehavior().onUnitSelect((IUnit) selectable);
 
-        }
+	}
     }
 
     @Override
     public void onDeSelect(ISelectable selectable) {
-        if (selectable instanceof IUnit) {
-            mSelectionCursor.start();
-            mController.getActiveBehavior().onUnitDeselect((IUnit) selectable);
-        }
+	if (selectable instanceof IUnit) {
+	    mSelectionCursor.start();
+	    mController.getActiveBehavior().onUnitDeselect((IUnit) selectable);
+	}
 
     }
 
     @Override
     public void onMoveFinished(ICanMove mover) {
-        if (mover instanceof IUnit) {
-            mController.getActiveBehavior().onMovementFinished((IUnit) mover);
-        }
+	if (mover instanceof IUnit) {
+	    mController.getActiveBehavior().onMovementFinished((IUnit) mover);
+	}
 
     }
 
     @Override
     public void displayUnitMovementRange(MovementRange range) {
-        mMovementRange = range;
+	mMovementRange = range;
     }
 
     @Override
     public void removeUnitMovementRange() {
-        mMovementRange = null;
+	mMovementRange = null;
 
     }
 
@@ -220,65 +220,65 @@ public class GameScreen extends InputReceiver
 
     @Override
     public void displayMovementIndicator(MovementIndicator indicator) {
-        mMovementIndicator = indicator;
+	mMovementIndicator = indicator;
 
     }
 
     @Override
     public void removeMovementIndicator() {
-        mMovementIndicator = null;
+	mMovementIndicator = null;
 
     }
 
     @Override
     public void onCancel(ICancelable cancelable) {
-        if (cancelable instanceof ActionWindowButton) {
-            mController.getActiveBehavior().onActionWindowCanceled();
+	if (cancelable instanceof ActionWindowButton) {
+	    mController.getActiveBehavior().onActionWindowCanceled();
 
-        } else if (cancelable instanceof TargetSelectionWindow) {
-            mController.getActiveBehavior().onTargetSelectCancel();
+	} else if (cancelable instanceof TargetSelectionWindow) {
+	    mController.getActiveBehavior().onTargetSelectCancel();
 
-        }
+	}
     }
 
     @Override
     public void blockInput() {
-        this.block();
+	this.block();
 
     }
 
     @Override
     public void unblockInput() {
-        this.unblock();
+	this.unblock();
 
     }
 
     @Override
     public void moveTargetSelection(ISpatial target) {
-        mTargetSelector.setX(target.getX());
-        mTargetSelector.setY(target.getY());
-        mTargetSelector.show();
+	mTargetSelector.setX(target.getX());
+	mTargetSelector.setY(target.getY());
+	mTargetSelector.show();
 
     }
 
     @Override
     public void removeTargetSelection() {
-        mTargetSelector.hide();
+	mTargetSelector.hide();
 
     }
 
     @Override
     public void onConfirm(IConfirmable confirmable) {
-        if (confirmable instanceof TargetSelectionWindow) {
-            mController.getActiveBehavior().onUnitSelect(((TargetSelectionWindow) confirmable).getSelectedUnit());
+	if (confirmable instanceof TargetSelectionWindow) {
+	    mController.getActiveBehavior().onUnitSelect(((TargetSelectionWindow) confirmable).getSelectedUnit());
 
-        }
+	}
     }
 
     @Override
     public void moveCursor(Tile tile) {
-        mSelectionCursor.setX(tile.getX());
-        mSelectionCursor.setY(tile.getY());
+	mSelectionCursor.setX(tile.getX());
+	mSelectionCursor.setY(tile.getY());
 
     }
 }

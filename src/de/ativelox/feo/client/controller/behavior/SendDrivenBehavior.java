@@ -26,6 +26,13 @@ public class SendDrivenBehavior extends DefaultPlayerBehavior {
     }
 
     @Override
+    public void onTurnStart() {
+	mMap.getCommander(mAffiliation).ifPresent(c -> mController.moveCursor(mMap.getByPos(c.getX(), c.getY())));
+
+	super.onTurnStart();
+    }
+
+    @Override
     public void beforeAttack(IUnit target) {
 	mPc.sendAttack(mPathRoutine.getActor(), target, mPathRoutine.getPath());
 

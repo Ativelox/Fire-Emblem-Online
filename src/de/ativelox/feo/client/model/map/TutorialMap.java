@@ -23,6 +23,10 @@ public class TutorialMap extends Map {
 	wolt.getInventory().add(ItemFactory.generate(EWeapon.IRON_BOW));
 	wolt.equip(wolt.getInventory().getWeapons()[0]);
 	
+	IUnit lilina = UnitFactory.get("lilina.json", EAffiliation.ALLIED, 13, 9);
+	lilina.getInventory().add(ItemFactory.generate(EWeapon.FIRE));
+	lilina.equip(lilina.getInventory().getWeapons()[0]);
+	
 	
 
 	IUnit soldier1 = UnitFactory.get("soldier.json", EAffiliation.OPPOSED, 9, 5);
@@ -53,6 +57,7 @@ public class TutorialMap extends Map {
 	this.add(bors);
 	this.add(archer);
 	this.add(wolt);
+	this.add(lilina);
 
     }
 }

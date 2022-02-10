@@ -44,6 +44,13 @@ public class ReceiveDrivenBehavior extends BehaviorAdapter implements IPlayerCon
 
     @Override
     public void onTurnStart() {
+	EAffiliation aff = EAffiliation.ALLIED;
+
+	if (mAffiliation.equals(EAffiliation.ALLIED)) {
+	    aff = EAffiliation.OPPOSED;
+	}
+
+	mMap.getCommander(aff).ifPresent(c -> mController.moveCursor(mMap.getByPos(c.getX(), c.getY())));
 	super.onTurnStart();
 	mController.blockNonUiInput();
 
@@ -52,6 +59,7 @@ public class ReceiveDrivenBehavior extends BehaviorAdapter implements IPlayerCon
     @Override
     public void onTurnEnd() {
 	super.onTurnEnd();
+	mController.removeFocus();
 	mController.unBlockNonUiInput();
     }
 
@@ -81,9 +89,6 @@ public class ReceiveDrivenBehavior extends BehaviorAdapter implements IPlayerCon
 	if (!mIsOnTurn) {
 	    return;
 	}
-	System.out.println("onUnitSelect called");
-	unit.move(mCurrentPath.iterator(), false);
-
     }
 
     @Override
@@ -102,21 +107,7 @@ public class ReceiveDrivenBehavior extends BehaviorAdapter implements IPlayerCon
 	mTarget = target;
 
 	mNextAction = EPlayerAction.ATTACK;
-	this.onUnitSelect(initiator);
-    }
-
-    private Optional<IUnit> getAppropriateUnit(IUnit fake) {
-
-	List<IUnit> units = mMap.getUnitsBy(fake.getAffiliation());
-
-	for (final IUnit unit : units) {
-	    if (unit.getName().equals(fake.getName())) {
-		return Optional.of(unit);
-	    }
-
-	}
-	return Optional.empty();
-
+	this.startMove(initiator);
     }
 
     @Override
@@ -137,7 +128,15 @@ public class ReceiveDrivenBehavior extends BehaviorAdapter implements IPlayerCon
 
 	mCurrentPath = SimplePath.of(path, mMap);
 	mNextAction = EPlayerAction.WAIT;
-	this.onUnitSelect(initator);
+	this.startMove(initator);
 
+    }
+
+    private void startMove(IUnit unit) {
+	if (!mIsOnTurn) {
+	    return;
+	}
+	mController.focusOn(unit);
+	unit.move(mCurrentPath.iterator(), false);
     }
 }

@@ -62,7 +62,7 @@ public class NetworkRoutine {
 
 	try {
 	    @SuppressWarnings("resource")
-	    Socket server = new Socket(InetAddress.getByName("localhost"), 2555);
+	    Socket server = new Socket(InetAddress.getByName("192.168.2.101"), 8000);
 	    mNetworkController = new ClientNetworkController(mReceiveBehavior, server.getInputStream(),
 		    server.getOutputStream());
 	    new Thread(mNetworkController).start();

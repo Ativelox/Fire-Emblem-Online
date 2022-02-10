@@ -29,11 +29,9 @@ public class CombatRule {
 	if (target.getEquippedWeapon().isEmpty()) {
 	    return false;
 	}
-	
-	
 
-	return target.getEquippedWeapon().get().getRange().intersect(attacker.getEquippedWeapon().get().getRange())
-		.isPresent();
+	return target.getEquippedWeapon().get().getRange()
+		.contains((int) new ManhattanDistance<>().distance(attacker, target));
 
     }
 

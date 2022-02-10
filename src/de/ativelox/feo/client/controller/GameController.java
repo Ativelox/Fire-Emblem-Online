@@ -91,6 +91,14 @@ public class GameController {
 
     }
 
+    public void focusOn(ISpatial object) {
+	mCamera.ensureInViewport(object);
+    }
+
+    public void removeFocus() {
+	mCamera.removeFollow();
+    }
+
     public void blockNonUiInput() {
 	mScreen.blockInput();
     }

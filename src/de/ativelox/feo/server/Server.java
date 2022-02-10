@@ -33,7 +33,7 @@ public final class Server {
      * @throws IOException If a socket related I/O exception occurs.
      */
     public static void main(final String[] args) throws IOException {
-        final Server s = new Server(2555, 2);
+        final Server s = new Server(8000, 2);
         s.init();
         s.waitForPlayers();
 

@@ -24,17 +24,18 @@ public class BehaviorAdapter implements IBehavior {
     protected boolean mIsOnTurn;
 
     public BehaviorAdapter(final Map map, EAffiliation affiliation) {
-        mAffiliation = affiliation;
+	mAffiliation = affiliation;
 
-        mMap = map;
+	mMap = map;
 
-        mUnits = map.getUnitsBy(affiliation);
+	mUnits = map.getUnitsBy(affiliation);
+	mIsOnTurn = false;
 
     }
 
     @Override
     public void setController(GameController controller) {
-        mController = controller;
+	mController = controller;
 
     }
 
@@ -95,15 +96,15 @@ public class BehaviorAdapter implements IBehavior {
 
     @Override
     public void onTurnStart() {
-        mIsOnTurn = true;
-        mController.turnStart(this);
+	mIsOnTurn = true;
+	mController.turnStart(this);
 
     }
 
     @Override
     public void onTurnEnd() {
-        mIsOnTurn = false;
-        mController.turnEnd(this);
+	mIsOnTurn = false;
+	mController.turnEnd(this);
 
     }
 
@@ -139,7 +140,7 @@ public class BehaviorAdapter implements IBehavior {
 
     @Override
     public EAffiliation getAffiliation() {
-        return mAffiliation;
+	return mAffiliation;
 
     }
 
@@ -150,7 +151,7 @@ public class BehaviorAdapter implements IBehavior {
 
     @Override
     public void onInventoryCancel() {
-        // TODO Auto-generated method stub
+	// TODO Auto-generated method stub
 
     }
 
@@ -186,19 +187,19 @@ public class BehaviorAdapter implements IBehavior {
 
     @Override
     public void beforeTurnEnd() {
-        // TODO Auto-generated method stub
+	// TODO Auto-generated method stub
 
     }
 
     @Override
     public void setAffiliation(EAffiliation affiliation) {
-        mAffiliation = affiliation;
-        mUnits = mMap.getUnitsBy(affiliation);
+	mAffiliation = affiliation;
+	mUnits = mMap.getUnitsBy(affiliation);
 
     }
 
     @Override
     public void beforeWait() {
-	
+
     }
 }
